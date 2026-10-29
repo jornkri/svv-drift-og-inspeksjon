@@ -73,6 +73,10 @@ export interface AppState {
   nvdbAntall: Record<number, number>;
   /** Skjulte NVDB-typer (overstyrer standardvalget) */
   nvdbTyper: Record<number, boolean>;
+  /** Valgt årgang for historiske flyfoto (null = av) */
+  flyfotoAar: number | null;
+  /** Resultat av identify i temalag */
+  temaTreff: { x: number; y: number; treff: import("../map/tema-layers.ts").TemaTreff[] } | null;
 }
 
 export const initialState: AppState = {
@@ -104,6 +108,8 @@ export const initialState: AppState = {
   nvdbValgt: null,
   nvdbAntall: {},
   nvdbTyper: {},
+  flyfotoAar: null,
+  temaTreff: null,
 };
 
 type Listener = (s: AppState, prev: AppState) => void;

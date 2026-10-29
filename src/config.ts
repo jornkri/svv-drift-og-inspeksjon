@@ -56,6 +56,8 @@ export interface AppConfig {
     basemaps: BasemapDef[];
     elevationUrl: string;
     adresseSokUrl: string;
+    temalag: TemalagDef[];
+    flyfoto: { url: string; aar: number[] };
   };
   nvdb: {
     baseUrl: string;
@@ -77,6 +79,38 @@ export interface AppConfig {
 }
 
 const GDO = "https://services.geodataonline.no/arcgis/rest/services";
+const GDO_VEKTOR = "https://vector.services.geodataonline.no/arcgis/rest/services/GeocacheVector";
+
+/**
+ * Temalag fra Geodata Online. Tjenestene, lag-ID-ene og antall treff i prosjektområdet er
+ * kartlagt i docs/research/gdo-tjenester.json.
+ */
+export interface TemalagDef {
+  id: string;
+  navn: string;
+  gruppe: "Vann og drenering" | "Skred og grunn" | "Eiendom og plan" | "Natur, kultur og miljø" | "Terreng" | "Trafikk";
+  type: "map-image" | "feature" | "vector-tile" | "tile";
+  url: string;
+  /** Underlag i MapServer som vises (map-image) */
+  sublag?: number[];
+  beskrivelse: string;
+  opasitet?: number;
+}
+
+export const GDO_TEMALAG: TemalagDef[] = [
+  { id: "drenering", navn: "Dreneringslinjer og forsenkninger", gruppe: "Vann og drenering", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDrenering/MapServer`, sublag: [1, 5, 7, 13, 17, 19], beskrivelse: "Beregnede vannveger fra 0,5 m terrengmodell med oppstrøms areal, stikkrenner og risikoområder." },
+  { id: "flom", navn: "Flom – aktsomhet", gruppe: "Vann og drenering", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer`, sublag: [1149, 1159], beskrivelse: "NVEs aktsomhetskart for flom (DOK).", opasitet: 0.7 },
+  { id: "skred", navn: "Skred – aktsomhet og hendelser", gruppe: "Skred og grunn", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer`, sublag: [1113, 1119, 1125, 1191], beskrivelse: "Jord- og flomskred, steinsprang, snøskred (S3) og registrerte skredhendelser (DOK).", opasitet: 0.7 },
+  { id: "geologi", navn: "Løsmasser og grunnundersøkelser", gruppe: "Skred og grunn", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKGeologi/MapServer`, sublag: [408, 427, 422], beskrivelse: "NGUs løsmassekart, grunnundersøkelser og mulig marin leire (DOK).", opasitet: 0.6 },
+  { id: "eiendom", navn: "Eiendomsgrenser", gruppe: "Eiendom og plan", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapEiendom2/MapServer`, sublag: [1, 3], beskrivelse: "Eiendomsgrenser og gårds-/bruksnummer fra matrikkelen." },
+  { id: "regulering", navn: "Reguleringsplaner", gruppe: "Eiendom og plan", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer`, beskrivelse: "Vedtatte reguleringsplaner.", opasitet: 0.6 },
+  { id: "natur", navn: "Naturvern og vannforekomster", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer`, sublag: [809, 813, 807, 837, 828, 861], beskrivelse: "Verneområder, vernede vassdrag, viktige naturtyper, arter og anadrom laksefisk (DOK).", opasitet: 0.6 },
+  { id: "kulturminner", navn: "Kulturminner", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapKulturminner/MapServer`, beskrivelse: "Kulturminner med sikringssoner (Askeladden)." },
+  { id: "stoy", navn: "Støysoner fra veg", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapForurensning/MapServer`, sublag: [2], beskrivelse: "Beregnede støysoner langs veg.", opasitet: 0.5 },
+  { id: "hoydekurver", navn: "Høydekurver", gruppe: "Terreng", type: "vector-tile", url: `${GDO_VEKTOR}/GeocacheHoydekurver/VectorTileServer`, beskrivelse: "Høydekurver fra Geodata Online." },
+  { id: "helning", navn: "Terrenghelning", gruppe: "Terreng", type: "tile", url: `${GDO}/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer`, beskrivelse: "Helningskart fra terrengmodellen.", opasitet: 0.5 },
+  { id: "ulykker", navn: "Trafikkulykker (NVDB)", gruppe: "Trafikk", type: "feature", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer/20`, beskrivelse: "Politirapporterte trafikkulykker med personskade fra NVDB." },
+];
 const GDO_VT = "https://vector.services.geodataonline.no/arcgis/rest/services/GeocacheVector";
 
 /**
@@ -191,6 +225,8 @@ export function parseConfig(env: Record<string, string | boolean | undefined>): 
       basemaps: GDO_BASEMAPS,
       elevationUrl: `${GDO}/Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer`,
       adresseSokUrl: `${GDO}/ProxyServices/search/adresse`,
+      temalag: GDO_TEMALAG,
+      flyfoto: { url: `${GDO}/Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer`, aar: [1958, 1966, 1968, 2005, 2006, 2009, 2011, 2013, 2015, 2024] },
     },
     nvdb: {
       baseUrl: "https://nvdbapiles.atlas.vegvesen.no",

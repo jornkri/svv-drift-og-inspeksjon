@@ -9,6 +9,7 @@ import { StoreElement } from "./base.ts";
 import { icons } from "./icons.ts";
 import { swatch } from "./legend.ts";
 import { NVDB_MAKS_SKALA, nvdbSynlig } from "../map/nvdb-objekter-layer.ts";
+import { hasGdoAccess } from "../map/basemaps.ts";
 import { NVDB_FARGE, NVDB_TYPER, type NvdbType } from "../nvdb/vegobjekter.ts";
 
 export function nvdbSwatch(t: NvdbType) {
@@ -144,7 +145,54 @@ export class SvvLayerPanel extends StoreElement {
           </label>`,
         )}
       </div>
+      ${this.renderTema()}
     `;
+  }
+
+  private renderTema() {
+    const s = this.store.state;
+    const { cfg, data } = services();
+    if (!hasGdoAccess() && data.mode !== "portal") {
+      return html`<div class="laggruppe">
+        <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">TEMA (GEODATA ONLINE)</span></div>
+        <p class="laggruppe__merknad">Krever tilgang til Geodata Online.</p>
+      </div>`;
+    }
+    const grupper = [...new Set(cfg.gdo.temalag.map((t) => t.gruppe))];
+    return html`<div class="laggruppe">
+        <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">TEMA (GEODATA ONLINE)</span></div>
+        ${grupper.map(
+          (g) => html`<p class="laggruppe__undertittel">${g}</p>
+            ${cfg.gdo.temalag
+              .filter((t) => t.gruppe === g)
+              .map(
+                (t) => html`<label class="lagrad" title=${t.beskrivelse}>
+                  <input
+                    type="checkbox"
+                    .checked=${!!s.referanse[`tema:${t.id}`]}
+                    @change=${() => store.set({ referanse: { ...s.referanse, [`tema:${t.id}`]: !s.referanse[`tema:${t.id}`] } })}
+                  />
+                  <span class="lagrad__navn">${t.navn}</span>
+                </label>`,
+              )}`,
+        )}
+        <p class="laggruppe__merknad">Klikk i kartet for å se informasjon fra temalagene som er slått på.</p>
+      </div>
+      <div class="laggruppe">
+        <label class="laggruppe__hode laggruppe__hode--tekst" for="flyfoto-aar"><span class="kategori">HISTORISKE FLYFOTO</span></label>
+        <select
+          id="flyfoto-aar"
+          class="lagpanel__velger"
+          @change=${(e: Event) => {
+            const v = (e.target as HTMLSelectElement).value;
+            store.set({ flyfotoAar: v ? Number(v) : null });
+          }}
+        >
+          <option value="" ?selected=${s.flyfotoAar == null}>Av</option>
+          ${[...cfg.gdo.flyfoto.aar].reverse().map((a) => html`<option value=${a} ?selected=${s.flyfotoAar === a}>${a}</option>`)}
+        </select>
+        <p class="laggruppe__merknad">Sammenlign dagens situasjon med eldre flybilder (Geodata Online).</p>
+      </div>`;
   }
 
   private renderLegend() {

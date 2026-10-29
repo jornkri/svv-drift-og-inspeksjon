@@ -1695,3 +1695,38 @@ svv-login {
   font-weight: 600;
   font-size: 14px;
 }
+.tema__lag {
+  margin: 10px 0 2px;
+  font-size: 14px;
+}
+.laggruppe__undertittel {
+  margin: 8px 0 0;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--svv-grey-dark-80, #5d6a70);
+}
+.lagpanel__velger {
+  margin: 4px 12px 0;
+  width: calc(100% - 24px);
+  min-height: 40px;
+  font: inherit;
+  border: 1px solid var(--svv-grey-dark-65);
+  background: var(--svv-white);
+  padding: 0 8px;
+}
+.flyfotomerke {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 14px;
+  background: var(--svv-white);
+  border: 1px solid var(--svv-grey-dark-65);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  z-index: 3;
+}

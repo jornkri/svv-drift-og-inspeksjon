@@ -3,6 +3,7 @@ import type { ArcgisMap } from "@arcgis/map-components/components/arcgis-map";
 import { html, nothing } from "lit";
 import { setup2DMap, type Map2D } from "../map/setup-2d.ts";
 import { services } from "../services.ts";
+import { store } from "../state/store.ts";
 import { StoreElement } from "../ui/base.ts";
 import "../ui/filter-bar.ts";
 import "../ui/layer-panel.ts";
@@ -11,6 +12,7 @@ import "../ui/coord-bar.ts";
 import "../ui/mmi-legend.ts";
 import "../ui/object-panel.ts";
 import "../ui/nvdb-panel.ts";
+import "../ui/tema-panel.ts";
 
 export const MAP_ID = "kart-2d";
 
@@ -44,12 +46,20 @@ export class SvvMapView extends StoreElement {
           <svv-map-controls dim="2d"></svv-map-controls>
           ${s.colorByMmi ? html`<svv-mmi-legend></svv-mmi-legend>` : nothing}
           <svv-coord-bar dim="2d"></svv-coord-bar>
+          ${s.flyfotoAar != null
+            ? html`<div class="flyfotomerke" role="status">
+                Flyfoto ${s.flyfotoAar}
+                <button class="knapp knapp--sekundar knapp--liten" @click=${() => store.set({ flyfotoAar: null })}>Slå av</button>
+              </div>`
+            : nothing}
         </div>
         ${s.selection
           ? html`<svv-object-panel dim="2d"></svv-object-panel>`
           : s.nvdbValgt
             ? html`<svv-nvdb-panel></svv-nvdb-panel>`
-            : nothing}
+            : s.temaTreff
+              ? html`<svv-tema-panel></svv-tema-panel>`
+              : nothing}
       </div>
     `;
   }

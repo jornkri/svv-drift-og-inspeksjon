@@ -1,0 +1,3030 @@
+[
+ {
+  "navn": "GeocacheBasis (vektorfliser)",
+  "kategori": "bakgrunnskart",
+  "url": "https://vector.services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasis/VectorTileServer",
+  "type": "VectorTileServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheBasis",
+    "minScale": 0.0,
+    "maxScale": 19.53125,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "begge",
+  "merknad": "Vektorfliser i UTM33 (22 LOD, maxScale ~1:20). Samme katalog finnes på services.- og vector.services.geodataonline.no (mappen GeocacheVector; roten på vector-host gir 404). Varianter: GeocacheGraatone, GeocacheKanvas, GeocacheKanvasMork og *Terreng (med terrengskygge). _UTM32/_UTM35/_WM/_WGS84-suffiks = andre projeksjoner."
+ },
+ {
+  "navn": "GeocacheGraatone (vektorfliser)",
+  "kategori": "bakgrunnskart",
+  "url": "https://vector.services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatone/VectorTileServer",
+  "type": "VectorTileServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheGraatone",
+    "minScale": 0.0,
+    "maxScale": 19.53125,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "2D",
+  "merknad": "Gråtone-bakgrunn, egnet under tematiske lag (NVDB/flom/skred)."
+ },
+ {
+  "navn": "GeocacheBilder (ortofoto, tilet)",
+  "kategori": "ortofoto",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheBilder/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheBilder",
+    "minScale": 81920000.0,
+    "maxScale": 625.0,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "begge",
+  "merknad": "Tilet ortofoto-cache, 18 LOD ned til 1:625. Kan draperes på terreng i 3D (SceneView i UTM33, viewingMode local)."
+ },
+ {
+  "navn": "GeocacheTerrengskygge",
+  "kategori": "terrengskygge",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheTerrengskygge/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheTerrengskygge",
+    "minScale": 81920000.0,
+    "maxScale": 1250.0,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "2D",
+  "merknad": "Tilet terrengskygge (JPEG) til 1:1250. Alternativ: GeocacheVector/GeocacheBasisTerreng, eller rasterfunksjonen LysMultihillshade på GeomapDTM."
+ },
+ {
+  "navn": "GeocacheHelning",
+  "kategori": "terreng/helning",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheHelning",
+    "minScale": 81920000.0,
+    "maxScale": 2500.0,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "2D",
+  "merknad": "Tilet helningskart (PNG8) til 1:2500 – nyttig sammen med skredaktsomhet."
+ },
+ {
+  "navn": "GeocacheHoydekurver (vektorfliser)",
+  "kategori": "høydekurver",
+  "url": "https://vector.services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheHoydekurver/VectorTileServer",
+  "type": "VectorTileServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheHoydekurver",
+    "minScale": 0.0,
+    "maxScale": 19.53125,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "2D",
+  "merknad": "Høydekurver som vektorflis-overlegg. For spørrbare kurver med høydeverdi: GeomapFKB lag 43."
+ },
+ {
+  "navn": "GeocacheTerreng (terrengmodell, tilet LERC)",
+  "kategori": "3D-terreng",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer",
+  "type": "ImageServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheTerreng",
+    "minScale": 81920000,
+    "maxScale": 2500,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "3D",
+  "merknad": "Tilet LERC F32, 16 LOD (1:81,9M–1:2500), oppløsning ned til ~0,23 m. Brukes som ElevationLayer i SceneView med UTM33. identify støttes ikke (cachet) – bruk GeomapDTM for punkthøyder. Variant GeocacheTerreng_ND."
+ },
+ {
+  "navn": "GeocacheOverflate (overflatemodell, tilet LERC)",
+  "kategori": "3D-terreng",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheOverflate/ImageServer",
+  "type": "ImageServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeocacheOverflate",
+    "minScale": 81920000,
+    "maxScale": 2500,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "ikke",
+  "merknad": "DOM (inkl. vegetasjon/bygg) som tilet LERC. Kan brukes som alternativ ElevationLayer, men gir «hud» over trær – normalt bruk GeocacheTerreng."
+ },
+ {
+  "navn": "GeomapDTM (terrengmodell, dynamisk)",
+  "kategori": "høydedata",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDTM/ImageServer",
+  "type": "ImageServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeomapDTM",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": 15,
+  "anbefaling": "2D",
+  "merknad": "Dynamisk terrengmodell fra laser (identify/getSamples). identify i (817000, 7764250) = 104,7 moh. Katalog i området: Alta 2009, Finnmark 2013, NDH Alta 5pkt 2017, NDH Altaelva 2pkt 2018. Rasterfunksjoner: LysMultihillshade, Aspect, Grayscale_Hillshade m.fl. GeomapDOM (overflate) og GeomapHOB (nDSM) tilsvarende."
+ },
+ {
+  "navn": "GeomapBilder3 (alle flyfoto inkl. historiske)",
+  "kategori": "historiske flyfoto",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer",
+  "type": "ImageServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeomapBilder3",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": 248,
+  "anbefaling": "2D",
+  "merknad": "Mosaikkdatasett fra Norge i bilder. Viktige felt: aar, src_prosjektnavn, ortofototype, pixelstorrelse, bildekategori, src_foto_date. I prosjektområdet (248 katalogelementer): Alta 1958, Alta Kautokeino riksgrensen 1966, Kautokeino Alta 1966, Alta 1968, Alta 2005, Alta 2006, Troms Finnmark 2006, Alta Eibydalen 2009, Finnmark 2011, Kautokeino 2013, Finnmark 2015 (+CIR), Finnmark 2024 (+CIR) og Sentinel-2-mosaikker. Velg årgang med mosaicRule (where \"aar=1958\" eller lockRaster). NB: query på ImageServer krever geometry som JSON-envelope med spatialReference – kommaseparert envelope ignoreres (gir hele landet)."
+ },
+ {
+  "navn": "GeomapBilderNyeste",
+  "kategori": "ortofoto",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBilderNyeste/ImageServer",
+  "type": "ImageServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeomapBilderNyeste",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": 6,
+  "anbefaling": "ikke",
+  "merknad": "Kun nyeste ortofoto per område (her Finnmark 2024, 0,25 m). Dynamisk – tregere enn GeocacheBilder."
+ },
+ {
+  "navn": "GeomapEiendom2",
+  "kategori": "eiendom/matrikkel",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapEiendom2/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 1,
+    "navn": "Eiendomsgrense",
+    "geometri": "Polyline",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "grensetype",
+     "malemetodebeskr",
+     "noyaktighet",
+     "omtvistet",
+     "datafangstdato"
+    ],
+    "treff": 5
+   },
+   {
+    "id": 3,
+    "navn": "Eiendomsident",
+    "geometri": "Polygon",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "kommunenr",
+     "gardsnr",
+     "bruksnr",
+     "festenr",
+     "seksjonsnr",
+     "bruksnavn"
+    ],
+    "treff": 14
+   },
+   {
+    "id": 10,
+    "navn": "Teiggrensepunkt",
+    "geometri": "Point",
+    "minScale": 1500,
+    "maxScale": 0,
+    "felt": [
+     "grensepunkttype",
+     "malemetodebeskr",
+     "noyaktighet"
+    ],
+    "treff": 19
+   },
+   {
+    "id": 0,
+    "navn": "Eiendomspunkt",
+    "geometri": "Point",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "kommunenr",
+     "gardsnr",
+     "bruksnr",
+     "bruksnavn",
+     "matrikkeltype"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 5,
+  "anbefaling": "2D",
+  "merknad": "Eiendomsgrenser og teig-ID (gnr/bnr) fra Matrikkelen. Grenselag 1 vises kun < 1:5000. FeatureServer har kun Query (maxRecordCount 5000). Samme lag-ID-er i MapServer."
+ },
+ {
+  "navn": "GeomapMatrikkel",
+  "kategori": "eiendom/matrikkel",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapMatrikkel/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 5,
+    "navn": "DekTeigFlate",
+    "geometri": "Polygon",
+    "minScale": 30000,
+    "maxScale": 0,
+    "felt": [
+     "kommunenr",
+     "gardsnr",
+     "bruksnr",
+     "festenr",
+     "bruksnavn"
+    ],
+    "treff": 14
+   },
+   {
+    "id": 6,
+    "navn": "Eiendomsgrense",
+    "geometri": "Polyline",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "grensetype",
+     "malemetodebeskr",
+     "noyaktighet"
+    ],
+    "treff": 5
+   },
+   {
+    "id": 0,
+    "navn": "AdressePunkt",
+    "geometri": "Point",
+    "minScale": 30000,
+    "maxScale": 0,
+    "felt": [
+     "adresse",
+     "postnr",
+     "postnavn",
+     "gardsnr",
+     "bruksnr",
+     "kommunenavn"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 3,
+    "navn": "ByggPunkt",
+    "geometri": "Point",
+    "minScale": 30000,
+    "maxScale": 0,
+    "felt": [
+     "bygningsnr",
+     "bygningstype",
+     "bygningstatus",
+     "bebygdareal"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 9,
+    "navn": "ByggFlate",
+    "geometri": "Polygon",
+    "minScale": 30000,
+    "maxScale": 0,
+    "felt": [
+     "bygningsnr",
+     "bygningstype",
+     "bygningstatus",
+     "antalletasjer",
+     "bebygdareal"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 14,
+  "anbefaling": "2D",
+  "merknad": "Full matrikkel: teiger, grenser, adresser, bygg (punkt/flate). Lag synlige < 1:30000. 0 adresser og 0 bygg i testområdet (Kløfta er et ubebygd skar langs E45)."
+ },
+ {
+  "navn": "GeomapOffentligEiendom",
+  "kategori": "eiendom/matrikkel",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapOffentligEiendom/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 17,
+    "navn": "Primært heleierforhold",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "eierkommune_id",
+     "eierfylke_id",
+     "stat",
+     "hovedorgnr",
+     "hovedorfkode"
+    ],
+    "treff": 6
+   }
+  ],
+  "treff_i_prosjektomraade": 6,
+  "anbefaling": "ikke",
+  "merknad": "Eiendommer med offentlig eier. Lag 17 = Stat, primært heleierforhold (6 treff)."
+ },
+ {
+  "navn": "GeomapNVDB",
+  "kategori": "veg/NVDB",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 210,
+    "navn": "Vegnett",
+    "geometri": "Polyline",
+    "minScale": 10000,
+    "maxScale": 0,
+    "felt": [
+     "kortform",
+     "typeveg",
+     "gate_navn",
+     "startposisjon",
+     "sluttposisjon",
+     "veglenkesekvensid"
+    ],
+    "treff": 12
+   },
+   {
+    "id": 211,
+    "navn": "Vegsystem",
+    "geometri": "Polyline",
+    "minScale": 10000,
+    "maxScale": 0,
+    "felt": [
+     "vegkategori",
+     "vegnummer",
+     "fase",
+     "nvdb_id"
+    ],
+    "treff": 8
+   },
+   {
+    "id": 47,
+    "navn": "Skredutsatt veg",
+    "geometri": "Polyline",
+    "minScale": 1280000,
+    "maxScale": 0,
+    "felt": [
+     "navn",
+     "skredtype",
+     "gjentakelsesintervall",
+     "tilleggsinformasjon"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 232,
+    "navn": "Tilstand/skade bergskjæring",
+    "geometri": "Polyline",
+    "minScale": 40000,
+    "maxScale": 0,
+    "felt": [
+     "tilstand",
+     "fare_for_nedfall",
+     "observert_nedfall",
+     "dato_kontrollert",
+     "tiltak_når"
+    ],
+    "treff": 11
+   },
+   {
+    "id": 220,
+    "navn": "BergsikringLinje",
+    "geometri": "Polyline",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "type",
+     "høyde_over_veg",
+     "antall_bolter_anker_stag",
+     "etableringsår",
+     "lengde"
+    ],
+    "treff": 11
+   },
+   {
+    "id": 36,
+    "navn": "Grøft, åpen",
+    "geometri": "Polyline",
+    "minScale": 160000,
+    "maxScale": 0,
+    "felt": [
+     "type",
+     "materiale",
+     "dybde",
+     "lengde",
+     "vedlikeholdsansvarlig"
+    ],
+    "treff": 14
+   },
+   {
+    "id": 84,
+    "navn": "Stikkrenne/kulvertLinje",
+    "geometri": "Polyline",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "materialtype",
+     "diameter__innvendig",
+     "lengde",
+     "etableringsår",
+     "varmekabler",
+     "spesielle_problem"
+    ],
+    "treff": 7
+   },
+   {
+    "id": 30,
+    "navn": "Stikkrenne/kulvertPunkt",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "materialtype",
+     "diameter__innvendig",
+     "lengde",
+     "etableringsår",
+     "spesielle_problem"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 52,
+    "navn": "Rekkverk",
+    "geometri": "Polyline",
+    "minScale": 100000,
+    "maxScale": 0,
+    "felt": [
+     "rekkverkstype",
+     "styrkeklasse",
+     "lengde",
+     "høyde",
+     "etableringsår"
+    ],
+    "treff": 11
+   },
+   {
+    "id": 53,
+    "navn": "Rekkverksende",
+    "geometri": "Point",
+    "minScale": 100000,
+    "maxScale": 0,
+    "felt": [
+     "type",
+     "etableringsår"
+    ],
+    "treff": 18
+   },
+   {
+    "id": 11,
+    "navn": "Skiltplate",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "skiltnummer",
+     "tekst",
+     "størrelse",
+     "folieklasse",
+     "oppsettingsdato"
+    ],
+    "treff": 27
+   },
+   {
+    "id": 203,
+    "navn": "Skiltpunkt",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "eier",
+     "vedlikeholdsansvarlig"
+    ],
+    "treff": 23
+   },
+   {
+    "id": 44,
+    "navn": "Fartsgrenser",
+    "geometri": "Polyline",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "fartsgrense",
+     "vedtaksnummer",
+     "gyldig_fra_dato"
+    ],
+    "treff": 2
+   },
+   {
+    "id": 18,
+    "navn": "Trafikkmengde",
+    "geometri": "Polyline",
+    "minScale": 160000,
+    "maxScale": 0,
+    "felt": [
+     "ådt__total",
+     "ådt__andel_lange_kjøretøy",
+     "år__gjelder_for"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 20,
+    "navn": "Trafikkulykke",
+    "geometri": "Point",
+    "minScale": 160000,
+    "maxScale": 0,
+    "felt": [
+     "ulykkesdato",
+     "uhell_kategori",
+     "antall_drepte_i_ulykken",
+     "føreforhold",
+     "beskrivelse"
+    ],
+    "treff": 9
+   },
+   {
+    "id": 71,
+    "navn": "BruFlate",
+    "geometri": "Polygon",
+    "minScale": 640000,
+    "maxScale": 0,
+    "felt": [
+     "navn"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 249,
+    "navn": "Vegoppmerking, langsgående",
+    "geometri": "Polyline",
+    "minScale": 10000,
+    "maxScale": 0,
+    "felt": [
+     "type"
+    ],
+    "treff": 8
+   },
+   {
+    "id": 0,
+    "navn": "Belysningspunkt",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "eier",
+     "vedlikeholdsansvarlig"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 187,
+    "navn": "Lysmast",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "type",
+     "total_mastelengde",
+     "etableringsår",
+     "eier",
+     "vedlikeholdsansvarlig"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 186,
+    "navn": "Lysarmatur",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "lyskilde_type",
+     "effekt",
+     "armaturtype",
+     "høyde_over_veg",
+     "antall_lyskilder_per_armatur"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 185,
+    "navn": "Elektrisk anlegg",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "målernummer",
+     "målepunktid",
+     "bruksområde",
+     "anleggsadresse",
+     "energikilde"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 188,
+    "navn": "Kabel",
+    "geometri": "Polyline",
+    "minScale": 160000,
+    "maxScale": 0,
+    "felt": [
+     "etableringsår",
+     "eier"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 29,
+    "navn": "Kum",
+    "geometri": "Point",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "type",
+     "etableringsår",
+     "eier"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 34,
+    "navn": "Rørledning",
+    "geometri": "Polyline",
+    "minScale": 160000,
+    "maxScale": 0,
+    "felt": [
+     "bruksområde",
+     "materialtype",
+     "tverrsnittform",
+     "diameter",
+     "tykkelse"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 12,
+  "anbefaling": "2D",
+  "merknad": "Kopi av NVDB-vegobjekter (190+ lag) i UTM33, med nvdb_id/nvdb_href til NVDB API. I Kløfta: E45 + private veger. Treff: vegnett 12, skredutsatt veg 1 («Kløfta», 9,8 km), tilstand/skade bergskjæring 11, bergsikring 11, åpen grøft 14, stikkrenner 7+1, rekkverk 11, skiltplater 27, trafikkulykker 9. Ingen belysning/elektro/kum/rør i området. Vegnett/Vegsystem synlig < 1:10000."
+ },
+ {
+  "navn": "GeomapSamferdsel",
+  "kategori": "veg/NVDB",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapSamferdsel/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 21,
+    "navn": "VegSenterlinje",
+    "geometri": "Polyline",
+    "minScale": 1280000,
+    "maxScale": 0,
+    "felt": [
+     "vegkategori",
+     "vegnummer",
+     "vegstatus",
+     "ref_kortform",
+     "vkjorflt"
+    ],
+    "treff": 7
+   },
+   {
+    "id": 11,
+    "navn": "Trafikkmengde",
+    "geometri": "Polyline",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "veg",
+     "langeprosent",
+     "lange",
+     "aar",
+     "ruteid"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 22,
+    "navn": "Anleggsveg",
+    "geometri": "Polyline",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "detaljnivå",
+     "feltoversikt",
+     "fylke",
+     "gate_gatekode",
+     "gate_navn"
+    ],
+    "treff": 5
+   },
+   {
+    "id": 25,
+    "navn": "Traktorveg",
+    "geometri": "Polyline",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "typeveg",
+     "klasselandbruksveg",
+     "konnekteringslenke",
+     "belysning"
+    ],
+    "treff": 3
+   }
+  ],
+  "treff_i_prosjektomraade": 7,
+  "anbefaling": "2D",
+  "merknad": "Vegsenterlinje med vegkategori/vegnummer/kortform, trafikkmengde (ÅDT), anleggs- og traktorveg."
+ },
+ {
+  "navn": "GeomapDOKSamferdsel",
+  "kategori": "veg/NVDB",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKSamferdsel/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 1024,
+    "navn": "elveg2_forenkletveglenkelinje",
+    "geometri": "Polyline",
+    "minScale": 300000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "typeveg",
+     "detaljniva",
+     "konnekteringslenke",
+     "adressekode"
+    ],
+    "treff": 7
+   },
+   {
+    "id": 1020,
+    "navn": "SAMFERDSEL_TrafikkLinje",
+    "geometri": "Polyline",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "veg",
+     "langeprosent",
+     "lange",
+     "aar",
+     "ruteid"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 1022,
+    "navn": "SAMFERDSEL_TrafikkulykkePunkt",
+    "geometri": "Point",
+    "minScale": 41000,
+    "maxScale": 0,
+    "felt": [
+     "ulykkesdato",
+     "registreringsdato_for_fagdata",
+     "ulykke_registrert_av",
+     "meldingsdato",
+     "behandlende_politidistrikt"
+    ],
+    "treff": 9
+   }
+  ],
+  "treff_i_prosjektomraade": 7,
+  "anbefaling": "ikke",
+  "merknad": "DOK-utgave (Forenklet Elveg 2.0, trafikkmengde, trafikkulykker). Dekkes bedre av GeomapNVDB."
+ },
+ {
+  "navn": "GeomapFlom",
+  "kategori": "vann/flom",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapFlom/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "10-års flom",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "lavpunkt",
+     "opphav",
+     "noyaktighet",
+     "malemetode"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 3,
+    "navn": "100-års flom",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "flomsonenavn",
+     "gjentaksintervall",
+     "vassdragsnr",
+     "rapporturl"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 4,
+    "navn": "200-års flom",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "lavpunkt",
+     "opphav",
+     "noyaktighet",
+     "malemetode"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 7,
+    "navn": "1000-års flom",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "lavpunkt",
+     "opphav",
+     "noyaktighet",
+     "malemetode"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 9,
+    "navn": "Vann / Elv",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "lavpunkt",
+     "opphav",
+     "noyaktighet",
+     "malemetode"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 10,
+    "navn": "Aktsomhetsflater",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "dtmkilde",
+     "vannkilde",
+     "temakvalitet",
+     "prosjekturl"
+    ],
+    "treff": 35
+   },
+   {
+    "id": 11,
+    "navn": "Flomhendelser",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "flomid",
+     "navn",
+     "datafangstdato",
+     "opphav"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 22,
+    "navn": "Hovednedbørfelt",
+    "geometri": "Polygon",
+    "minScale": 10000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "vassdragnr",
+     "navnnedbf",
+     "areal",
+     "elvlengdkm"
+    ],
+    "treff": 12
+   },
+   {
+    "id": 42,
+    "navn": "Sidenedbørfelt",
+    "geometri": "Polygon",
+    "minScale": 1000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "vassdragnr",
+     "navn1orden",
+     "areal_km2",
+     "elvelengde_km"
+    ],
+    "treff": 12
+   },
+   {
+    "id": 43,
+    "navn": "REGINE-enhet",
+    "geometri": "Polygon",
+    "minScale": 500000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "vassdragnr",
+     "lokalnavn",
+     "arealenhet",
+     "arealtotalt"
+    ],
+    "treff": 17
+   }
+  ],
+  "treff_i_prosjektomraade": 35,
+  "anbefaling": "2D",
+  "merknad": "NVE flomsoner (10–1000 år, 200 år i 2100), aktsomhetsflater, flomhendelser, nedbørfelt/REGINE. I testområdet: 0 kartlagte flomsoner, 35 aktsomhetsflater, 17 REGINE-enheter."
+ },
+ {
+  "navn": "GeomapDOKSamfunnssikkerhet",
+  "kategori": "skred/flom (DOK)",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 1149,
+    "navn": "FlomAktsomhetflate",
+    "geometri": "Polygon",
+    "minScale": 81000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "dtmkilde",
+     "temakvalitet",
+     "prosjekturl"
+    ],
+    "treff": 35
+   },
+   {
+    "id": 1159,
+    "navn": "FlomAktsomhetElvLinje",
+    "geometri": "Polyline",
+    "minScale": 81000,
+    "maxScale": 0,
+    "felt": [
+     "maksvannstandstigning",
+     "nedborfeltarealkm2",
+     "qnormal6190m3s",
+     "temakvalitet"
+    ],
+    "treff": 28
+   },
+   {
+    "id": 1102,
+    "navn": "Flomsone",
+    "geometri": "Polygon",
+    "minScale": 41000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "flomsoneid",
+     "flomsonenavn",
+     "flomsoneomrade",
+     "gjentaksintervall"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 1113,
+    "navn": "JordOgFlomskredAktsomhetflate",
+    "geometri": "Polygon",
+    "minScale": 81000,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "temakval",
+     "skredfarevurdering"
+    ],
+    "treff": 26
+   },
+   {
+    "id": 1119,
+    "navn": "SkredHendelsepunkt",
+    "geometri": "Point",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "skrednavn",
+     "skredtidspunkt"
+    ],
+    "treff": 52
+   },
+   {
+    "id": 1125,
+    "navn": "SteinsprangAktsomhetflate",
+    "geometri": "Polygon",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "temakval",
+     "skredfarevurdering"
+    ],
+    "treff": 47
+   },
+   {
+    "id": 1189,
+    "navn": "SnoeskredAktsomhetSikkerhetskl2MSkog",
+    "geometri": "Polygon",
+    "minScale": 500000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "skredtype",
+     "skogeffekt",
+     "sikkerhetsklasse",
+     "datauttaksdato"
+    ],
+    "treff": 35
+   },
+   {
+    "id": 1190,
+    "navn": "SnoeskredAktsomhetSikkerhetskl2USkog",
+    "geometri": "Polygon",
+    "minScale": 500000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "skredtype",
+     "skogeffekt",
+     "sikkerhetsklasse",
+     "datauttaksdato"
+    ],
+    "treff": 36
+   },
+   {
+    "id": 1191,
+    "navn": "SnoeskredAktsomhetSikkerhetskl3",
+    "geometri": "Polygon",
+    "minScale": 500000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "skredtype",
+     "skogeffekt",
+     "sikkerhetsklasse",
+     "datauttaksdato"
+    ],
+    "treff": 31
+   },
+   {
+    "id": 1194,
+    "navn": "KvikkleireskredAktsomhetflate",
+    "geometri": "Polygon",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "skredtype",
+     "forstedigitaliseringsdato",
+     "oppdateringsdato",
+     "kartbladindeks"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 1199,
+    "navn": "SkredKvikkleireFaregrad",
+    "geometri": "Polygon",
+    "minScale": 641000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "skredomrnavn",
+     "skredomrid",
+     "areal_km2",
+     "skredfaregradklasse"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 47,
+  "anbefaling": "2D",
+  "merknad": "DOK-samling fra NVE: flom-aktsomhet (flate + elvelinje med maksvannstandstigning), jord-/flomskred, steinsprang, snøskred, kvikkleire, skredhendelser. Kun MapServer."
+ },
+ {
+  "navn": "GeomapFKB",
+  "kategori": "vann/høydekurver/FKB",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapFKB/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 36,
+    "navn": "FKB Vann (linje)",
+    "geometri": "Polyline",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "hoyde",
+     "medium",
+     "datafangstdato"
+    ],
+    "treff": 148
+   },
+   {
+    "id": 56,
+    "navn": "FKB Vann (flate)",
+    "geometri": "Polygon",
+    "minScale": 12000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "hoyde",
+     "regulert",
+     "datafangstdato"
+    ],
+    "treff": 25
+   },
+   {
+    "id": 43,
+    "navn": "FKB Hoyde (linje)",
+    "geometri": "Polyline",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "hoyde",
+     "datakilde",
+     "noyaktighet"
+    ],
+    "treff": 9628
+   },
+   {
+    "id": 28,
+    "navn": "FKB Veg (linje)",
+    "geometri": "Polyline",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "rekkverkstype",
+     "medium",
+     "datafangstdato"
+    ],
+    "treff": 48
+   },
+   {
+    "id": 50,
+    "navn": "FKB Veg (flate)",
+    "geometri": "Polygon",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "medium",
+     "datafangstdato"
+    ],
+    "treff": 6
+   },
+   {
+    "id": 2,
+    "navn": "FKB Ledning (punkt)",
+    "geometri": "Point",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "ledningsnettverkstype",
+     "driftsmerking",
+     "eierorgnr",
+     "datafangstdato"
+    ],
+    "treff": 28
+   },
+   {
+    "id": 21,
+    "navn": "FKB Ledning (linje)",
+    "geometri": "Polyline",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "ledningsnettverkstype",
+     "driftsmerking",
+     "eierorgnr"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 41,
+    "navn": "FKB Bygning (flate)",
+    "geometri": "Polygon",
+    "minScale": 5000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "byggtyp_nbr",
+     "byggnr",
+     "byggstat",
+     "medium"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 148,
+  "anbefaling": "2D",
+  "merknad": "FKB-detaljdata; alle lag synlige kun < 1:5000 (vann flate < 1:12000). Høydekurver (lag 43, Høydekurve/Forsenkningskurve, felt hoyde): 9628 objekter i området – tungt som features; bruk vektorflis-kurver i oversikt. Vann linje 148 (ElvBekk, elve-/innsjøkant, VeggrøftÅpen), vann flate 25. Ledning punkt 28 (lavspent-master). Kun MapServer."
+ },
+ {
+  "navn": "GeomapDOKNatur",
+  "kategori": "naturvern/vann",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 809,
+    "navn": "NATUR_NaturvernOmradeFlate",
+    "geometri": "Polygon",
+    "minScale": 2561000,
+    "maxScale": 0,
+    "felt": [
+     "offisieltnavn",
+     "verneform",
+     "vernedato",
+     "verneforskrift",
+     "faktaark"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 811,
+    "navn": "NATUR_ForeslattVernFlate",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "navn",
+     "verneform",
+     "verneplan",
+     "kommnr"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 813,
+    "navn": "NATUR_VassdragvernFlate",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "objektnavn",
+     "vassdragsnummer",
+     "verneplanurl"
+    ],
+    "treff": 2
+   },
+   {
+    "id": 807,
+    "navn": "NATUR_ViktigeNaturtyperFlate",
+    "geometri": "Polygon",
+    "minScale": 161000,
+    "maxScale": 0,
+    "felt": [
+     "naturtype",
+     "bmverdi",
+     "navn",
+     "faktaark"
+    ],
+    "treff": 5
+   },
+   {
+    "id": 836,
+    "navn": "NATUR_ArtNasjonalInteressePunkt",
+    "geometri": "Point",
+    "minScale": 161000,
+    "maxScale": 0,
+    "felt": [
+     "norsknavn",
+     "artsgruppe",
+     "forvaltningskategori",
+     "rodlistekategori"
+    ],
+    "treff": 17
+   },
+   {
+    "id": 837,
+    "navn": "NATUR_ArtNasjonalInteresseFlate",
+    "geometri": "Polygon",
+    "minScale": 161000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "aktivitet",
+     "antallobservasjoner",
+     "artsgruppe",
+     "forvaltningskategori"
+    ],
+    "treff": 16
+   },
+   {
+    "id": 828,
+    "navn": "NATUR_VannforekomstLinje",
+    "geometri": "Polyline",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "vannforekomstnavn",
+     "okologisk_tilstand_potensial",
+     "kjemisk_tilstand",
+     "faktaark"
+    ],
+    "treff": 8
+   },
+   {
+    "id": 829,
+    "navn": "NATUR_VannforekomstFlate",
+    "geometri": "Polygon",
+    "minScale": 1281000,
+    "maxScale": 0,
+    "felt": [
+     "vannforekomstnavn",
+     "okologisk_tilstand_potensial",
+     "kjemisk_tilstand",
+     "faktaark"
+    ],
+    "treff": 2
+   },
+   {
+    "id": 861,
+    "navn": "natur_anadromelaksefisklinje",
+    "geometri": "Polyline",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "elvenavn",
+     "nasjonaltlaksevassdrag",
+     "vassdragsnr",
+     "lakseregurl"
+    ],
+    "treff": 1
+   }
+  ],
+  "treff_i_prosjektomraade": 1,
+  "anbefaling": "2D",
+  "merknad": "Naturvernområder (Goskamark naturreservat), vernet vassdrag (Alta-Kautokeinovassdraget), viktige naturtyper, arter av nasjonal forvaltningsinteresse (kan være sensitive), vannforekomster (Vann-Nett), anadrom laksefisk."
+ },
+ {
+  "navn": "GeomapHydrologi",
+  "kategori": "vann/flom",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapHydrologi/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "NVE Målestasjoner",
+    "geometri": "Point",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "stationid",
+     "stationname",
+     "latitude",
+     "longitude",
+     "councilname"
+    ],
+    "treff": 1
+   }
+  ],
+  "treff_i_prosjektomraade": 1,
+  "anbefaling": "ikke",
+  "merknad": "NVE målestasjoner (vannføring/vannstand) – 1 stasjon i området."
+ },
+ {
+  "navn": "GeomapDrenering",
+  "kategori": "vann/drenering",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDrenering/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 1,
+    "navn": "Oppstrøms areal 1-10 dekar",
+    "geometri": "Polyline",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "drensarealstart",
+     "drensarealstopp",
+     "feilkildetype"
+    ],
+    "treff": 2182
+   },
+   {
+    "id": 5,
+    "navn": "Oppstrøms areal 100-500 dekar",
+    "geometri": "Polyline",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "drensarealstart",
+     "drensarealstopp",
+     "feilkildetype"
+    ],
+    "treff": 267
+   },
+   {
+    "id": 7,
+    "navn": "Oppstrøms areal over 1000 dekar",
+    "geometri": "Polyline",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "drensarealstart",
+     "drensarealstopp",
+     "feilkildetype"
+    ],
+    "treff": 193
+   },
+   {
+    "id": 13,
+    "navn": "Stikkrenne, kulvert o.l.",
+    "geometri": "Polyline",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "Materialtype",
+     "Diameter__innvendig",
+     "Lengde",
+     "Spesielle_problem"
+    ],
+    "treff": 9
+   },
+   {
+    "id": 17,
+    "navn": "Risikoområder",
+    "geometri": "Polygon",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "feilkildetype",
+     "nedborsfeltid"
+    ],
+    "treff": 158
+   },
+   {
+    "id": 19,
+    "navn": "Forsenkningsområder",
+    "geometri": "Polygon",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "MIN",
+     "MAX",
+     "MEAN"
+    ],
+    "treff": 27
+   }
+  ],
+  "treff_i_prosjektomraade": 193,
+  "anbefaling": "2D",
+  "merknad": "Dreneringslinjer avledet fra 0,5 m DTM (klasser etter oppstrøms areal), stikkrenner, risikoområder og forsenkninger – relevant for stikkrenne-/grøfteinspeksjon. Synlig < 1:50000. Mange objekter (2182 i minste klasse)."
+ },
+ {
+  "navn": "GeomapSkred",
+  "kategori": "skred/kvikkleire",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapSkred/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 1,
+    "navn": "Skredtype",
+    "geometri": "Point",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "skrednavn",
+     "skredtidspunkt",
+     "vegskadet",
+     "beskrivelse"
+    ],
+    "treff": 52
+   },
+   {
+    "id": 10,
+    "navn": "Steinsprang utløsningsområde",
+    "geometri": "Polygon",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "temakval",
+     "skredfarevurdering",
+     "oppdateringsdato"
+    ],
+    "treff": 22
+   },
+   {
+    "id": 11,
+    "navn": "Steinsprang utløpsområde",
+    "geometri": "Polygon",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "temakval",
+     "skredfarevurdering",
+     "oppdateringsdato"
+    ],
+    "treff": 25
+   },
+   {
+    "id": 53,
+    "navn": "Aktsomhetssone for sikkerhetsklasse S3",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "sikkerhetsklasse",
+     "skogeffekt",
+     "oppdateringsdato"
+    ],
+    "treff": 31
+   },
+   {
+    "id": 54,
+    "navn": "Aktsomhetssone for sikkerhetsklasse S2 uten skogeffekt",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "sikkerhetsklasse",
+     "skogeffekt",
+     "oppdateringsdato"
+    ],
+    "treff": 36
+   },
+   {
+    "id": 55,
+    "navn": "Aktsomhetssone for sikkerhetsklasse S2 med skogeffekt",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "sikkerhetsklasse",
+     "skogeffekt",
+     "oppdateringsdato"
+    ],
+    "treff": 35
+   },
+   {
+    "id": 17,
+    "navn": "Aktsomhetsområde for kvikkleire",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "oppdateringsdato",
+     "noyaktighet"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 21,
+    "navn": "Kvikkleire faregrad",
+    "geometri": "Polygon",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "skredomrid",
+     "skredomrnavn",
+     "areal_km2",
+     "opphav",
+     "skredkvalkartlegging"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 45,
+    "navn": "Mulig marin leire",
+    "geometri": "Polygon",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "losmassetypenavn",
+     "muligmarinleirenavn",
+     "informasjon"
+    ],
+    "treff": 6
+   },
+   {
+    "id": 35,
+    "navn": "Potensiell jordflom",
+    "geometri": "Polygon",
+    "minScale": 320000,
+    "maxScale": 0,
+    "felt": [
+     "skredtype",
+     "temakval",
+     "skredfarevurdering"
+    ],
+    "treff": 26
+   }
+  ],
+  "treff_i_prosjektomraade": 52,
+  "anbefaling": "2D",
+  "merknad": "NVE/NGU: skredhendelser (52 i området), aktsomhet steinsprang (22 utløsning/25 utløp), snøskred S2/S3 (31–36), potensiell jordflom (26), mulig marin leire (6), kvikkleire (0). Synlig < 1:320000."
+ },
+ {
+  "navn": "GeomapDOKGeologi",
+  "kategori": "geologi/grunnforhold",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKGeologi/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 408,
+    "navn": "GEOLOGI_LosmasseFlate",
+    "geometri": "Polygon",
+    "minScale": 81000,
+    "maxScale": 0,
+    "felt": [
+     "losmassetypenavn",
+     "infiltrasjonevnenavn",
+     "grunnvannpotensialenavn"
+    ],
+    "treff": 31
+   },
+   {
+    "id": 427,
+    "navn": "GEOLOGI_GrunnundersokelserPunkt",
+    "geometri": "Point",
+    "minScale": 161000,
+    "maxScale": 0,
+    "felt": [
+     "undersokelsenr",
+     "geotekniskmetode",
+     "borlengdetilberg",
+     "kvikkleirepavisning",
+     "hoyde"
+    ],
+    "treff": 44
+   },
+   {
+    "id": 428,
+    "navn": "GEOLOGI_GrunnundersokelserFlate",
+    "geometri": "Polygon",
+    "minScale": 161000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "prosjektnr",
+     "prosjektnavn",
+     "eksternid",
+     "eksternnavnerom"
+    ],
+    "treff": 2
+   },
+   {
+    "id": 422,
+    "navn": "GEOLOGI_MuligMarinLeireFlate",
+    "geometri": "Polygon",
+    "minScale": 161000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "losmassetypenavn",
+     "losmassetype",
+     "muligmarinleirenavn",
+     "muligmarinleire"
+    ],
+    "treff": 6
+   },
+   {
+    "id": 430,
+    "navn": "geologi_svakhetssonerfjellflate",
+    "geometri": "Polygon",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "gridcode",
+     "svakhetfjellsannsynlighet",
+     "svakhetfjellsannsynlighet_tekst",
+     "opphav"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 31,
+  "anbefaling": "2D",
+  "merknad": "Løsmasser (31), NADAG grunnundersøkelser (44 borpunkt), mulig marin leire, svakhetssoner i fjell. GeomapGeologi har samme data i annen gruppering."
+ },
+ {
+  "navn": "GeomapKulturminner",
+  "kategori": "kulturminner",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapKulturminner/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "SEFRAK-bygninger",
+    "geometri": "Point",
+    "minScale": 20000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "objektnavn",
+     "kulturminnehovedgruppe",
+     "kulturminneverneverdi",
+     "vernetype"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 1,
+    "navn": "Freda bygninger",
+    "geometri": "Point",
+    "minScale": 20000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "byggnr",
+     "navn",
+     "verntype",
+     "vern_lov"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 4,
+    "navn": "Enkeltminner flate",
+    "geometri": "Polygon",
+    "minScale": 40000,
+    "maxScale": 0,
+    "felt": [
+     "navn",
+     "kulturminneid",
+     "verntype",
+     "enkeltminneart",
+     "link_kulturminnesok"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 5,
+    "navn": "Lokaliteter flate",
+    "geometri": "Polygon",
+    "minScale": 80000,
+    "maxScale": 0,
+    "felt": [
+     "navn",
+     "kulturminneid",
+     "verntype",
+     "kategori",
+     "verneparagraf",
+     "link_askeladden"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 6,
+    "navn": "Sikringssoner flate",
+    "geometri": "Polygon",
+    "minScale": 160000,
+    "maxScale": 0,
+    "felt": [
+     "navn",
+     "kulturminneid",
+     "verntype"
+    ],
+    "treff": 1
+   },
+   {
+    "id": 9,
+    "navn": "Kulturmiljøer flate",
+    "geometri": "Polygon",
+    "minScale": 20480000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "navn",
+     "verntype",
+     "vernedato",
+     "informasjon"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 1,
+  "anbefaling": "2D",
+  "merknad": "Askeladden/SEFRAK: lokaliteter, enkeltminner, sikringssoner (1 lokalitet «Bjørnholtet», samisk kulturminne, i området). Felt link_askeladden/link_kulturminnesok. Kun MapServer."
+ },
+ {
+  "navn": "GeomapDOKKulturminner",
+  "kategori": "kulturminner",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKKulturminner/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 522,
+    "navn": "kultur_kulturminnefredetflate",
+    "geometri": "Polygon",
+    "minScale": 160000,
+    "maxScale": 0,
+    "felt": [
+     "navn",
+     "kulturminneid",
+     "verntype",
+     "vernelov"
+    ],
+    "treff": 3
+   },
+   {
+    "id": 507,
+    "navn": "KULTUR_BygningFredaPunkt",
+    "geometri": "Point",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "byggnr",
+     "navn",
+     "verntype",
+     "vern_lov"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 509,
+    "navn": "KULTUR_KulturmiljoFlate",
+    "geometri": "Polygon",
+    "minScale": 321000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "navn",
+     "verntype",
+     "vernedato",
+     "informasjon"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 514,
+    "navn": "KULTUR_BygningSefrakPunkt",
+    "geometri": "Point",
+    "minScale": 81000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "objektnavn",
+     "kulturminnehovedgruppe",
+     "kulturminneverneverdi",
+     "vernetype"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 3,
+  "anbefaling": "ikke",
+  "merknad": "DOK-utgave av kulturminner (3 fredete flater). Overlapper GeomapKulturminner."
+ },
+ {
+  "navn": "GeomapArealressurs",
+  "kategori": "arealressurs (AR5)",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapArealressurs/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 30,
+    "navn": "FKB AR5",
+    "geometri": "Polygon",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "artype",
+     "artreslag",
+     "arskogbon",
+     "argrunnf",
+     "datafangstdato"
+    ],
+    "treff": 168
+   },
+   {
+    "id": 70,
+    "navn": "SSB Arealbruk",
+    "geometri": "Polygon",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "arealbrukkode",
+     "hovedklasse",
+     "underklasse",
+     "kilde"
+    ],
+    "treff": 11
+   },
+   {
+    "id": 31,
+    "navn": "N50 Arealdekke",
+    "geometri": "Polygon",
+    "minScale": 160000,
+    "maxScale": 40000,
+    "felt": [
+     "objtype",
+     "vannbr",
+     "hoyde",
+     "vatnlnr",
+     "oppdateringsdato"
+    ],
+    "treff": 46
+   }
+  ],
+  "treff_i_prosjektomraade": 168,
+  "anbefaling": "2D",
+  "merknad": "FKB AR5 (lag 30, < 1:50000): 168 flater i området. Felt artype/artreslag/arskogbon/argrunnf. Gruppelag 0/6/11/18 er ferdig-symboliserte AR5-utsnitt (gruppelag kan ikke spørres). Også N50 arealdekke og SSB arealbruk."
+ },
+ {
+  "navn": "GeosceneBygning2 (3D-bygg)",
+  "kategori": "bygninger 3D",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneBygning2/SceneServer",
+  "type": "SceneServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "Bygninger",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "Polygon_Id",
+     "level",
+     "IsClosed",
+     "grunnkrets_id",
+     "objtype",
+     "byggnr"
+    ]
+   },
+   {
+    "id": 1,
+    "navn": "Enkle bygninger",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "Polygon_Id",
+     "level",
+     "IsClosed",
+     "grunnkrets_id",
+     "objtype",
+     "byggnr"
+    ]
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "3D",
+  "merknad": "I3S 3DObject, wkid 25833, nasjonal dekning (lag 0 Bygninger, lag 1 Enkle bygninger). NB: 0 bygg i testområdet ifølge Matrikkel/FKB. Varianter: GeosceneBygningUTM32/UTM35/WM2."
+ },
+ {
+  "navn": "GeosceneGarnityr (3D master, stolper, ledning)",
+  "kategori": "ledning/inventar 3D",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneGarnityr/SceneServer",
+  "type": "SceneServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "Mast",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "href",
+     "objtype",
+     "ledningsnettverkstype",
+     "mastekonstruksjon"
+    ]
+   },
+   {
+    "id": 1,
+    "navn": "Lyktestolpe",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "bridgeheight",
+     "originalterrainheight",
+     "href",
+     "objtype"
+    ]
+   },
+   {
+    "id": 2,
+    "navn": "Gjerdestolpe",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "terrainheight",
+     "href",
+     "surfaceobjectid",
+     "hob",
+     "rotation"
+    ]
+   },
+   {
+    "id": 3,
+    "navn": "Flaggstang",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "href",
+     "objtype",
+     "medium",
+     "surfaceobjectid"
+    ]
+   },
+   {
+    "id": 4,
+    "navn": "Pipe",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "href",
+     "objtype",
+     "medium",
+     "surfaceobjectid"
+    ]
+   },
+   {
+    "id": 5,
+    "navn": "Portstolpe",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "href",
+     "objtype",
+     "medium",
+     "surfaceobjectid"
+    ]
+   },
+   {
+    "id": 6,
+    "navn": "Ledning",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "ledningsnettverkstype",
+     "powerline_angle",
+     "powerline_azimuth",
+     "powerline_line_position"
+    ]
+   },
+   {
+    "id": 7,
+    "navn": "Åk",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "href",
+     "medium",
+     "color",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 8,
+    "navn": "Gjerde",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "hob",
+     "color",
+     "objekttype",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 9,
+    "navn": "Mur",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "hob",
+     "color",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 10,
+    "navn": "Steingjerde",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "hob",
+     "color",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 11,
+    "navn": "Vegg",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "hob",
+     "color",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 12,
+    "navn": "Vegrekkverk",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "hob",
+     "color",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 13,
+    "navn": "Vegbom",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "vegbomtype",
+     "funksjonvegsperring",
+     "medium",
+     "href",
+     "color"
+    ]
+   },
+   {
+    "id": 14,
+    "navn": "Fundament",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "hob",
+     "terrainheight",
+     "roofheight"
+    ]
+   },
+   {
+    "id": 15,
+    "navn": "Forstøtningsmur",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "hob",
+     "terrainheight",
+     "roofheight"
+    ]
+   },
+   {
+    "id": 16,
+    "navn": "Trapp",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "hob",
+     "terrainheight",
+     "roofheight"
+    ]
+   },
+   {
+    "id": 17,
+    "navn": "Trappetrinn",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "hob",
+     "terrainheight",
+     "roofheight"
+    ]
+   },
+   {
+    "id": 18,
+    "navn": "Hekk",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "hob",
+     "color",
+     "tretype",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 19,
+    "navn": "Brygge",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "hob",
+     "waterheight",
+     "topheight",
+     "color"
+    ]
+   },
+   {
+    "id": 20,
+    "navn": "Brudetalj",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "color",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 21,
+    "navn": "Brudekke",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 22,
+    "navn": "Tank",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "hob",
+     "terrainheight",
+     "roofheight"
+    ]
+   },
+   {
+    "id": 23,
+    "navn": "Svømmebasseng",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "hob",
+     "terrainheight",
+     "roofheight"
+    ]
+   },
+   {
+    "id": 24,
+    "navn": "Svømmebassengkant",
+    "layerType": "3DObject",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "objtype",
+     "surfaceobjectid",
+     "color",
+     "hob",
+     "terrainheight",
+     "roofheight"
+    ]
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "3D",
+  "merknad": "I3S UTM33: punktlag (Mast, Lyktestolpe, Gjerdestolpe, Flaggstang, Pipe, Portstolpe) og 3DObject (Ledning, Åk, Gjerde, Mur, Steingjerde …). Relevant for elektro i 3D. Dekning i Kløfta ikke verifisert."
+ },
+ {
+  "navn": "GeosceneTrees (3D-trær)",
+  "kategori": "vegetasjon 3D",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneTrees/SceneServer",
+  "type": "SceneServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "Trær",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "tre_typ",
+     "aar",
+     "kronediameter",
+     "rotation"
+    ]
+   },
+   {
+    "id": 1,
+    "navn": "Skog",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "tre_typ",
+     "aar",
+     "rotation",
+     "randomclass"
+    ]
+   },
+   {
+    "id": 2,
+    "navn": "Bytrær",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "hob",
+     "terrainheight",
+     "tre_typ",
+     "aar",
+     "kronediameter",
+     "rotation"
+    ]
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "3D",
+  "merknad": "I3S punktlag Trær/Skog/Bytrær, UTM33. Kosmetisk i 3D."
+ },
+ {
+  "navn": "GeosceneStedsnavn (3D-stedsnavn)",
+  "kategori": "stedsnavn",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneStedsnavn/SceneServer",
+  "type": "SceneServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "Stedsnavn fra N50",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "id",
+     "kilde",
+     "min_scale",
+     "max_scale",
+     "tekst",
+     "stedsnummer"
+    ]
+   },
+   {
+    "id": 1,
+    "navn": "Stedsnavn fra N250",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "id",
+     "kilde",
+     "min_scale",
+     "max_scale",
+     "tekst",
+     "stedsnummer"
+    ]
+   },
+   {
+    "id": 2,
+    "navn": "Stedsnavn fra N500",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "id",
+     "kilde",
+     "min_scale",
+     "max_scale",
+     "tekst",
+     "stedsnummer"
+    ]
+   },
+   {
+    "id": 3,
+    "navn": "Stedsnavn fra N1000",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "id",
+     "kilde",
+     "min_scale",
+     "max_scale",
+     "tekst",
+     "stedsnummer"
+    ]
+   },
+   {
+    "id": 4,
+    "navn": "Stedsnavn fra N2000",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "id",
+     "kilde",
+     "min_scale",
+     "max_scale",
+     "tekst",
+     "stedsnummer"
+    ]
+   },
+   {
+    "id": 5,
+    "navn": "Stedsnavn fra N5000",
+    "layerType": "Point",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "id",
+     "kilde",
+     "min_scale",
+     "max_scale",
+     "tekst",
+     "stedsnummer"
+    ]
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "3D",
+  "merknad": "I3S punktlag med stedsnavn fra N50–N5000, UTM33."
+ },
+ {
+  "navn": "GeosceneVegetasjon (punktsky)",
+  "kategori": "vegetasjon 3D",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjon/SceneServer",
+  "type": "SceneServer",
+  "wkid": 25833,
+  "tilet": true,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "utm33n_00010_00240",
+    "layerType": "PointCloud",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "ELEVATION",
+     "RGB",
+     "RETURNS"
+    ]
+   },
+   {
+    "id": 1,
+    "navn": "utm33n_00010_00250",
+    "layerType": "PointCloud",
+    "minScale": null,
+    "maxScale": null,
+    "felt": [
+     "ELEVATION",
+     "RGB",
+     "RETURNS"
+    ]
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "ikke",
+  "merknad": "PointCloud – kun små områder i Sør-Norge (Hedmark, Sandnes, Stor-Oslo m.fl.). Ingen dekning i Alta."
+ },
+ {
+  "navn": "Adresse- og stedsnavnsøk (proxy)",
+  "kategori": "adresser/stedsnavn",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/Adresse/GeocodeServer",
+  "type": "GeocodeServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "begge",
+  "merknad": "Geokoder (findAddressCandidates/suggest/reverseGeocode), utdata i 25833 (outSR). «Kløfta Alta» → (817346, 7763570) type skar; «Kløftatunnelen» → (818762, 7763190). Reverse i (817000, 7764250) → «Eaibojohka (Elv)». Variant ProxyServices/Adresse__filter_kilde-stedsnavn gir kun stedsnavn."
+ },
+ {
+  "navn": "GeosokLokasjon3",
+  "kategori": "adresser/stedsnavn",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geosok/GeosokLokasjon3/GeocodeServer",
+  "type": "GeocodeServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "begge",
+  "merknad": "Esri-standard geokoder (SingleLine, Suggest, ReverseGeocode) – passer rett i Search-widgeten. «Kløfta, Alta» → Locality (817346, 7763570)."
+ },
+ {
+  "navn": "GeomapInfrastruktur",
+  "kategori": "ledningsnett (FKB)",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapInfrastruktur/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 21,
+    "navn": "FKB_LedningPunkt (unntatt kumlokk)",
+    "geometri": "Point",
+    "minScale": 2500,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "ledningsnettverkstype",
+     "driftsmerking",
+     "eierorgnr"
+    ],
+    "treff": 28
+   },
+   {
+    "id": 31,
+    "navn": "FKB_LedningPunkt, kumlokk",
+    "geometri": "Point",
+    "minScale": 2500,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "ledningsnettverkstype",
+     "kumlokkform"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 41,
+    "navn": "FKB_LedningLinje",
+    "geometri": "Polyline",
+    "minScale": 2500,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "ledningsnettverkstype",
+     "driftsmerking",
+     "eierorgnr",
+     "trasenavn"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 51,
+    "navn": "FKB_BygnAnleggLinje",
+    "geometri": "Polyline",
+    "minScale": 2500,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "gjerdetype",
+     "taubanetype",
+     "skjermingfunk",
+     "slusetyp"
+    ],
+    "treff": 2
+   },
+   {
+    "id": 71,
+    "navn": "FKB_VegLinje",
+    "geometri": "Polyline",
+    "minScale": 2500,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "vegbomtype",
+     "rekkverkstype",
+     "funksjonvegsperring",
+     "nedsenketkantstein"
+    ],
+    "treff": 48
+   },
+   {
+    "id": 73,
+    "navn": "FKB_VannLinje, åpen veggrøft",
+    "geometri": "Polyline",
+    "minScale": 2500,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "medium",
+     "datafangstdato"
+    ],
+    "treff": 18
+   }
+  ],
+  "treff_i_prosjektomraade": 28,
+  "anbefaling": "2D",
+  "merknad": "FKB Ledning (punkt/kumlokk/linje), BygnAnlegg, Veg og åpen veggrøft. Alle lag synlige kun < 1:2500! I Kløfta: 28 ledningspunkt (lavspent-master), 0 ledningslinjer, 0 kumlokk, 18 åpne veggrøfter. Ingen kommunal VA-ledningsdatabase i katalogen – kun FKB-ledning (synlige objekter)."
+ },
+ {
+  "navn": "GeomapDOKEnergi",
+  "kategori": "ledningsnett (energi)",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKEnergi/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 108,
+    "navn": "ENERGI_NettanleggLinje",
+    "geometri": "Polyline",
+    "minScale": 641000,
+    "maxScale": 0,
+    "felt": [
+     "navn",
+     "spenning_kv",
+     "eier",
+     "driftsattar"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 102,
+    "navn": "ENERGI_ByggeforbudKraftgateFlate",
+    "geometri": "Polygon",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "hensynsonenavn",
+     "kpbandlegging",
+     "kommunenummer",
+     "omradeid"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 0,
+  "anbefaling": "2D",
+  "merknad": "NVE nettanlegg (kraftledninger med spenning_kv/eier) og byggeforbudssoner. 0 treff i testområdet."
+ },
+ {
+  "navn": "GeomapReguleringsplan",
+  "kategori": "plan",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 76,
+    "navn": "RpGrense",
+    "geometri": "Polyline",
+    "minScale": 10000000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "oppdateringsdato",
+     "lokalid"
+    ],
+    "treff": 2
+   },
+   {
+    "id": 125,
+    "navn": "RpArealformålOmråde",
+    "geometri": "Polygon",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "kommunenummer",
+     "planidentifikasjon",
+     "feltbetegnelse",
+     "uteoppholdsareal",
+     "utnyttingstall"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 126,
+    "navn": "RpOmråde",
+    "geometri": "Polygon",
+    "minScale": 500000,
+    "maxScale": 0,
+    "felt": [
+     "kommunenummer",
+     "planidentifikasjon",
+     "ikrafttredelsesdato",
+     "lovreferansebeskrivelse",
+     "oppdateringsdato"
+    ],
+    "treff": 0
+   },
+   {
+    "id": 87,
+    "navn": "RpFareSone",
+    "geometri": "Polygon",
+    "minScale": 50000,
+    "maxScale": 0,
+    "felt": [
+     "kommunenummer",
+     "planidentifikasjon",
+     "forstedigitaliseringsdato",
+     "oppdateringsdato",
+     "omradeid"
+    ],
+    "treff": 1
+   }
+  ],
+  "treff_i_prosjektomraade": 2,
+  "anbefaling": "ikke",
+  "merknad": "Reguleringsplaner (DiBK). 2 plangrenser + 1 faresone i området."
+ },
+ {
+  "navn": "GeomapForurensning",
+  "kategori": "støy/miljø",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapForurensning/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 2,
+    "navn": "Støy fra veg",
+    "geometri": "Polygon",
+    "minScale": 250000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "stoykilde",
+     "stoysonekategori",
+     "stoykildenavn",
+     "stoymetode"
+    ],
+    "treff": 12
+   },
+   {
+    "id": 8,
+    "navn": "Forurenset grunn",
+    "geometri": "Polygon",
+    "minScale": 500000,
+    "maxScale": 0,
+    "felt": [
+     "objtype",
+     "pavirkningsgrad",
+     "lokalitetnavn",
+     "lokalitettype",
+     "omradeid"
+    ],
+    "treff": 0
+   }
+  ],
+  "treff_i_prosjektomraade": 12,
+  "anbefaling": "ikke",
+  "merknad": "Støysoner veg (12 i området), forurenset grunn."
+ },
+ {
+  "navn": "GeomapAdmin",
+  "kategori": "administrativt",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapAdmin/FeatureServer",
+  "type": "FeatureServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 10,
+    "navn": "Kommune - ABAS",
+    "geometri": "Polygon",
+    "minScale": 750000,
+    "maxScale": 100000,
+    "felt": [
+     "kommune",
+     "kommunenavn",
+     "fylkesnavn"
+    ],
+    "treff": 1
+   }
+  ],
+  "treff_i_prosjektomraade": 1,
+  "anbefaling": "ikke",
+  "merknad": "Kommune (Alta 5601), fylke, grunnkretser."
+ },
+ {
+  "navn": "GeomapBasis2 (dynamisk basiskart)",
+  "kategori": "bakgrunnskart",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBasis2/MapServer",
+  "type": "MapServer",
+  "wkid": 25833,
+  "tilet": false,
+  "lag": [
+   {
+    "id": 0,
+    "navn": "GeomapBasis2",
+    "minScale": 0,
+    "maxScale": 0,
+    "felt": []
+   }
+  ],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "ikke",
+  "merknad": "Dynamisk kartografi med sublag for høydekurver (1/5/10 m), VA-punkt, ledning punkt/linje, SSR-navn – men query er IKKE støttet. Kan evt. brukes som MapImageLayer med utvalgte sublag (f.eks. 116 Hoydekurver/1m, 52 VA punkt)."
+ },
+ {
+  "navn": "Wms/* (Fiskeridirektoratet, Geonorge Arealbruk/Stedsnavn WFS)",
+  "kategori": "eksterne proxy",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Wms/Geonorge_Stedsnavn50_Wfs/Wfs",
+  "type": "Wfs",
+  "wkid": null,
+  "tilet": false,
+  "lag": [],
+  "treff_i_prosjektomraade": null,
+  "anbefaling": "ikke",
+  "merknad": "Proxy-tjenestene i mappen Wms svarte ikke med JSON (498 / ikke-JSON) med dette tokenet. Ikke bruk; stedsnavn dekkes av geokoder og GeosceneStedsnavn."
+ }
+]

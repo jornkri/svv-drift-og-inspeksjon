@@ -15,6 +15,7 @@ import { store } from "../state/store.ts";
 import { createBasemap, hasGdoAccess, portalBasemaps } from "./basemaps.ts";
 import { setMapContext } from "./map-context.ts";
 import { NvdbObjekterLayer } from "./nvdb-objekter-layer.ts";
+import { TemaLayers } from "./tema-layers.ts";
 import { NvdbVegnettLayer } from "./nvdb-layer.ts";
 import { ObjectLayerController } from "./object-layers.ts";
 
@@ -60,6 +61,8 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
   nvdb.layer.visible = store.get().referanse.nvdb ?? true;
   map.add(nvdb.layer);
   for (const ref of await data.createReferenceLayers()) map.add(ref);
+  const tema = new TemaLayers(cfg);
+  tema.attach(map);
   const nvdbObj = new NvdbObjekterLayer(cfg);
   map.add(nvdbObj.group);
 
@@ -96,12 +99,18 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
     if (document.body.dataset.maaling === "aktiv") return;
     const ids = await objects.hitTest(e);
     if (ids.length) {
-      store.set({ selection: { globalids: ids, index: 0 }, nvdbValgt: null, popover: null });
+      store.set({ selection: { globalids: ids, index: 0 }, nvdbValgt: null, temaTreff: null, popover: null });
       return;
     }
     const nvdbTreff = (await view.hitTest(e, { include: nvdbObj.layers })).results.find((r) => r.type === "graphic");
     const a = nvdbTreff && "graphic" in nvdbTreff ? nvdbTreff.graphic.attributes : null;
-    store.set({ selection: null, nvdbValgt: a ? { typeId: a.type_id as number, id: a.nvdb_id as number } : null, popover: null });
+    if (a) {
+      store.set({ selection: null, nvdbValgt: { typeId: a.type_id as number, id: a.nvdb_id as number }, temaTreff: null, popover: null });
+      return;
+    }
+    store.set({ selection: null, nvdbValgt: null, temaTreff: null, popover: null });
+    const treff = await tema.identifiser(view, e.mapPoint);
+    if (treff.length) store.set({ temaTreff: { x: e.mapPoint.x, y: e.mapPoint.y, treff } });
   });
 
   const unsubs = [
@@ -128,6 +137,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
       objects.destroy();
       nvdb.detach();
       nvdbObj.detach();
+      tema.detach();
       setMapContext(null);
     },
   };
