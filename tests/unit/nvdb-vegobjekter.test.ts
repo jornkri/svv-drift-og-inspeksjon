@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { formaterVerdi, hentVegobjekter, minsteAvstand, lesTilstand, oppsummer, parseWkt, tilstandSammendrag, type NvdbVegobjekt } from "../../src/nvdb/vegobjekter.ts";
+import { formaterVerdi, hentTilstander, hentVegobjekter, minsteAvstand, lesTilstand, oppsummer, parseWkt, tilstandSammendrag, type NvdbVegobjekt } from "../../src/nvdb/vegobjekter.ts";
 
 describe("NVDB vegobjekter", () => {
   it("tolker WKT for punkt, linje og flate", () => {
@@ -64,5 +64,27 @@ describe("NVDB vegobjekter", () => {
     expect(minsteAvstand([[[5, 3]]], [[[0, 0], [10, 0]]])).toBe(3);
     expect(minsteAvstand([[[0, 5], [10, 5]]], [[[0, 0], [10, 0]]])).toBe(5);
     expect(minsteAvstand([[[13, 4]]], [[[0, 0], [10, 0]]])).toBe(5);
+  });
+
+  it("henter tilstander i bunker med ider", async () => {
+    const svar = (ider: number[]) => ({
+      objekter: ider.map((id) => ({
+        id,
+        metadata: { type: { id: 947, navn: "Tilstandsgrad, rekkverk" } },
+        egenskaper: [
+          { id: 11779, navn: "Tilstand, samlet", verdi: "Ok", egenskapstype: "Tekstenum" },
+          { id: 11776, navn: "Dato kontrollert, enkel inspeksjon", verdi: `2019-11-${String(10 + (id % 10)).padStart(2, "0")}`, egenskapstype: "Dato" },
+        ],
+      })),
+    });
+    const fetchFn = vi.fn(async (url: string) => new Response(JSON.stringify(svar(new URL(url).searchParams.get("ider")!.split(",").map(Number)))));
+    const ut = await hentTilstander(
+      { baseUrl: "https://nvdb", client: "t" },
+      { id: 1, relasjoner: { barn: [{ type: { id: 947, navn: "Tilstandsgrad, rekkverk" }, vegobjekter: [1, 2, 3, 4, 5] }, { type: { id: 14, navn: "Rekkverksende" }, vegobjekter: [9] }] } },
+      { bunke: 2, fetchFn: fetchFn as unknown as typeof fetch },
+    );
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+    expect(ut).toHaveLength(5);
+    expect(ut[0]!.dato).toBe("2019-11-15");
   });
 });

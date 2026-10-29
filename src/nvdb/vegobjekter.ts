@@ -198,23 +198,41 @@ export async function hentVegobjekt(k: NvdbKlient, typeId: number, id: number, s
   return (await r.json()) as NvdbVegobjekt;
 }
 
-/** Siste tilstandsregistreringer for et objekt (via relasjoner til tilstandstyper). */
-export async function hentTilstander(k: NvdbKlient, o: NvdbVegobjekt, maks = 60): Promise<{ type: string; tilstand: string; dato: string | null; id: number }[]> {
+/**
+ * Tilstandsregistreringer for et objekt (via relasjoner til tilstandstyper).
+ * Henter i bunker med parameteren «ider» (ett kall per type og bunke) for å skåne rate-grensen.
+ */
+export async function hentTilstander(
+  k: NvdbKlient,
+  o: NvdbVegobjekt,
+  opts: { bunke?: number; fetchFn?: typeof fetch } = {},
+): Promise<{ type: string; tilstand: string; dato: string | null; id: number }[]> {
+  const f = opts.fetchFn ?? fetch;
+  const bunke = opts.bunke ?? 100;
   const barn = (o.relasjoner?.barn ?? []).filter((b) => NVDB_TILSTAND[b.type.id]);
-  const jobber = barn.flatMap((b) => b.vegobjekter.slice(0, maks).map((id) => ({ typeId: b.type.id, id })));
+  const kall = barn.flatMap((b) => {
+    const ut: { typeId: number; ider: number[] }[] = [];
+    for (let i = 0; i < b.vegobjekter.length; i += bunke) ut.push({ typeId: b.type.id, ider: b.vegobjekter.slice(i, i + bunke) });
+    return ut;
+  });
   const res = await Promise.all(
-    jobber.map(async (j) => {
+    kall.map(async (c) => {
       try {
-        const r = await fetch(`${k.baseUrl}/vegobjekter/api/v4/vegobjekter/${j.typeId}/${j.id}?inkluder=egenskaper,metadata`, { headers: headers(k) });
-        if (!r.ok) return null;
-        const t = lesTilstand((await r.json()) as NvdbVegobjekt);
-        return t ? { ...t, id: j.id } : null;
+        const r = await f(`${k.baseUrl}/vegobjekter/api/v4/vegobjekter/${c.typeId}?ider=${c.ider.join(",")}&inkluder=egenskaper,metadata&antall=${c.ider.length}`, {
+          headers: headers(k),
+        });
+        if (!r.ok) return [];
+        const j = (await r.json()) as { objekter?: NvdbVegobjekt[] };
+        return (j.objekter ?? []).flatMap((x) => {
+          const t = lesTilstand(x);
+          return t ? [{ ...t, id: x.id }] : [];
+        });
       } catch {
-        return null;
+        return [];
       }
     }),
   );
-  return res.filter((x): x is NonNullable<typeof x> => !!x).sort((a, b) => (b.dato ?? "").localeCompare(a.dato ?? ""));
+  return res.flat().sort((a, b) => (b.dato ?? "").localeCompare(a.dato ?? ""));
 }
 
 /** Oppsummerer tilstander: antall per verdi og siste kontrolldato. */
