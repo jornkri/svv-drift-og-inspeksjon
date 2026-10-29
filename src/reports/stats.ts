@@ -88,25 +88,35 @@ export function avviksliste(stats: ObjektStat[], latest: Map<string, Inspeksjon>
 
 export type FristGruppe = "ok" | "snart" | "aldri" | "forfalt";
 
+export interface FristRad {
+  globalid: string;
+  fag: Fag;
+  objekttype: string;
+  status: FristGruppe;
+  frist: Date | null;
+  intervallMnd: number;
+  siste: Inspeksjon | null;
+}
+
 /**
  * Inspeksjonsfrist per objekt etter intervallene i R610:2025 (via handbok/r610.ts).
- * Objekttyper uten fastsatt intervall telles ikke.
+ * Objekttyper uten fastsatt intervall telles ikke. Radene er sortert etter frist (aldri inspisert sist).
  */
 export function fristerPerFag(
   stats: ObjektStat[],
   latest: Map<string, Inspeksjon>,
   today: Date,
-): { perFag: Record<Fag, Record<FristGruppe, number>>; forfalt: { globalid: string; fag: Fag; frist: Date; siste: Inspeksjon }[] } {
+): { perFag: Record<Fag, Record<FristGruppe, number>>; rader: FristRad[] } {
   const perFag = Object.fromEntries(FAG.map((f) => [f, { ok: 0, snart: 0, aldri: 0, forfalt: 0 }])) as Record<Fag, Record<FristGruppe, number>>;
-  const forfalt: { globalid: string; fag: Fag; frist: Date; siste: Inspeksjon }[] = [];
+  const rader: FristRad[] = [];
   for (const s of stats) {
     const siste = latest.get(s.globalid) ?? null;
     const krav = driftskrav({ objekttype: s.objekttype, navn: siste?.obj_navn ?? "" });
     const n = nesteInspeksjon(siste?.tidspunkt ?? null, krav?.intervallMnd ?? null, today);
-    if (n.status === "ukjent") continue;
+    if (n.status === "ukjent" || !krav?.intervallMnd) continue;
     perFag[s.fag][n.status]++;
-    if (n.status === "forfalt" && siste && n.frist) forfalt.push({ globalid: s.globalid, fag: s.fag, frist: n.frist, siste });
+    rader.push({ globalid: s.globalid, fag: s.fag, objekttype: s.objekttype, status: n.status, frist: n.frist, intervallMnd: krav.intervallMnd, siste });
   }
-  forfalt.sort((a, b) => a.frist.getTime() - b.frist.getTime());
-  return { perFag, forfalt };
+  rader.sort((a, b) => (a.frist?.getTime() ?? Infinity) - (b.frist?.getTime() ?? Infinity));
+  return { perFag, rader };
 }

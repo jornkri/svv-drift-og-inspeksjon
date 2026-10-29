@@ -17,6 +17,8 @@ import { StoreElement, fmtDate } from "../../ui/base.ts";
 import { icons } from "../../ui/icons.ts";
 import "../../ui/layer-panel.ts";
 import "../../ui/object-panel.ts";
+import "../../ui/nvdb-panel.ts";
+import "../../ui/tema-panel.ts";
 import "../../ui/search-box.ts";
 import { startInspection } from "../../ui/object-panel.ts";
 import { forrigeTekst } from "../prefill.ts";
@@ -213,7 +215,13 @@ export class SvvFieldMap extends StoreElement {
               </div>`}
         </section>
 
-        ${s.selection ? html`<svv-object-panel dim="2d" class="feltkart__objekt"></svv-object-panel>` : nothing}
+        ${s.selection
+          ? html`<svv-object-panel dim="2d" class="feltkart__objekt"></svv-object-panel>`
+          : s.nvdbValgt
+            ? html`<svv-nvdb-panel class="feltkart__objekt"></svv-nvdb-panel>`
+            : s.temaTreff
+              ? html`<svv-tema-panel class="feltkart__objekt"></svv-tema-panel>`
+              : nothing}
       </div>
     `;
   }

@@ -4,6 +4,7 @@ import type { Inspeksjon } from "../../src/data/schema.ts";
 import {
   andelInspisertSiste12,
   avviksliste,
+  fristerPerFag,
   latestPerObject,
   perMaaned,
   phasePerFag,
@@ -62,5 +63,23 @@ describe("oversiktsstatistikk", () => {
 
   it("lister avvik med alvorligste først", () => {
     expect(avviksliste(stats, latest).map((r) => r.globalid)).toEqual(["D", "B"]);
+  });
+
+  it("beregner R610-frister per fag og sorterer planen etter frist", () => {
+    const st = [
+      s({ globalid: "R", fag: "Veg", objekttype: "Rekkverk" }),
+      s({ globalid: "K", fag: "VA", objekttype: "Kum" }),
+      s({ globalid: "N", fag: "Elektro", objekttype: "Teknisk skap" }),
+      s({ globalid: "X", fag: "Veg", objekttype: "Ukjent type" }),
+    ];
+    const ins = [
+      i({ objekt_globalid: "R", tidspunkt: "2025-09-01T00:00:00Z" }),
+      i({ objekt_globalid: "K", tidspunkt: "2024-01-01T00:00:00Z" }),
+    ];
+    const f = fristerPerFag(st, latestPerObject(ins), today);
+    expect(f.perFag.Veg.forfalt).toBe(1);
+    expect(f.perFag.VA.ok).toBe(1);
+    expect(f.perFag.Elektro.aldri).toBe(1);
+    expect(f.rader.map((r) => r.globalid)).toEqual(["R", "K", "N"]);
   });
 });

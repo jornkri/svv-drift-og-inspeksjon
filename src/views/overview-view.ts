@@ -2,7 +2,7 @@ import { html, nothing } from "lit";
 import type { ObjektStat, ObjektTreff } from "../data/DataService.ts";
 import { FAG, type Inspeksjon } from "../data/schema.ts";
 import { PHASES, phaseRange } from "../filters/mmi.ts";
-import { andelInspisertSiste12, avviksliste, fristerPerFag, latestPerObject, perMaaned, phasePerFag, statusPerFag, tgFordeling } from "../reports/stats.ts";
+import { andelInspisertSiste12, avviksliste, fristerPerFag, latestPerObject, type FristRad, perMaaned, phasePerFag, statusPerFag, tgFordeling } from "../reports/stats.ts";
 import { services } from "../services.ts";
 import { navigate } from "../state/router.ts";
 import { store } from "../state/store.ts";
@@ -11,6 +11,10 @@ import { isOpen, isoDay, taskStats } from "../tasks/tasks.ts";
 import { StoreElement, fmtDate } from "../ui/base.ts";
 import { columns, stackedBars } from "../ui/charts.ts";
 import { tgTekst } from "../ui/object-panel.ts";
+import { FRIST_KLASSE, FRIST_TEKST } from "../ui/driftskrav.ts";
+import { intervallKort } from "../handbok/r610.ts";
+
+const PLAN_ANTALL = 12;
 
 /** Kontor: oversikt med nøkkeltall, tilstand, MMI-fremdrift, aktivitet og avviksliste. */
 export class SvvOverviewView extends StoreElement {
@@ -35,7 +39,8 @@ export class SvvOverviewView extends StoreElement {
   private async load() {
     const { data } = services();
     [this.stats, this.insp] = await Promise.all([data.objectStats(), data.allInspections()]);
-    const avvik = this.stats.filter((s) => s.status_inspeksjon === "Avvik").map((s) => s.globalid);
+    const plan = fristerPerFag(this.stats, latestPerObject(this.insp), new Date()).rader.slice(0, PLAN_ANTALL).map((r) => r.globalid);
+    const avvik = [...this.stats.filter((s) => s.status_inspeksjon === "Avvik").map((s) => s.globalid), ...plan];
     await Promise.all(avvik.filter((id) => !this.navn.has(id)).map(async (id) => this.navn.set(id, await data.getObject(id).catch(() => null))));
     this.requestUpdate();
   }
@@ -54,6 +59,31 @@ export class SvvOverviewView extends StoreElement {
         fag: obj.fag,
         frist: isoDay(frist),
         prioritet: i && i.tilstandsgrad >= 3 ? "Høy" : "Middels",
+        status: "Ny",
+        tildelt: data.user.navn,
+        skjema: null,
+      });
+      store.notify(`Oppgave ${id} er opprettet for ${obj.navn}`, "suksess");
+      dataChanged();
+    } catch (e) {
+      store.notify(`Kunne ikke opprette oppgave: ${e instanceof Error ? e.message : String(e)}`, "feil");
+    }
+  }
+
+  private async planleggInspeksjon(r: FristRad) {
+    const { data } = services();
+    const obj = this.navn.get(r.globalid)?.objekt;
+    if (!obj) return;
+    const idag = new Date();
+    const frist = r.frist && r.frist > idag ? r.frist : new Date(idag.getTime() + 14 * 86_400_000);
+    try {
+      const id = await data.createTask({
+        tittel: `Inspeksjon etter R610 (${intervallKort(r.intervallMnd)})`,
+        beskrivelse: `Periodisk inspeksjon av ${obj.objekttype.toLowerCase()} etter R610:2025.${r.siste ? ` Sist inspisert ${fmtDate(r.siste.tidspunkt)}.` : ""}`,
+        objekt_globalid: r.globalid,
+        fag: obj.fag,
+        frist: isoDay(frist),
+        prioritet: r.status === "forfalt" ? "Høy" : "Middels",
         status: "Ny",
         tildelt: data.user.navn,
         skjema: null,
@@ -223,6 +253,66 @@ export class SvvOverviewView extends StoreElement {
                 </tr>`;
               })}
               ${avvik.length ? nothing : html`<tr><td colspan="7" class="tom">Ingen registrerte avvik.</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="kort kort--bred" aria-labelledby="ov-plan">
+        <div class="kort__hode">
+          <h2 id="ov-plan">Inspeksjonsplan (R610:2025)</h2>
+          <span class="sekundar">Neste ${PLAN_ANTALL} frister, regnet fra siste inspeksjon</span>
+        </div>
+        <div class="tabellramme">
+          <table class="tabell">
+            <caption class="visually-hidden">Neste inspeksjonsfrister etter R610</caption>
+            <thead>
+              <tr>
+                <th scope="col">Objekt</th>
+                <th scope="col">Type</th>
+                <th scope="col">Intervall</th>
+                <th scope="col">Sist inspisert</th>
+                <th scope="col">Frist</th>
+                <th scope="col">Status</th>
+                <th scope="col">Oppgave</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${frister.rader.slice(0, PLAN_ANTALL).map((r) => {
+                const o = this.navn.get(r.globalid)?.objekt;
+                const opg = apenOppgave(r.globalid);
+                return html`<tr>
+                  <td>
+                    <a
+                      href="?objekt=${o?.objekt_id ?? ""}#/kart"
+                      @click=${(e: Event) => {
+                        e.preventDefault();
+                        store.set({ selection: { globalids: [r.globalid], index: 0 }, zoomTil: r.globalid });
+                        navigate("kart");
+                      }}
+                      >${o?.navn ?? "…"}</a
+                    >
+                  </td>
+                  <td>${r.objekttype}</td>
+                  <td>${intervallKort(r.intervallMnd)}</td>
+                  <td>${r.siste ? fmtDate(r.siste.tidspunkt) : "Aldri"}</td>
+                  <td>${r.frist ? fmtDate(r.frist.toISOString()) : "Snarest"}</td>
+                  <td><span class="pille ${FRIST_KLASSE[r.status]}">${FRIST_TEKST[r.status]}</span></td>
+                  <td>
+                    ${opg
+                      ? html`<a
+                          href="#/oppgaver"
+                          @click=${(e: Event) => {
+                            e.preventDefault();
+                            store.set({ oppgaveValgt: opg.oppgave_id });
+                            navigate("oppgaver");
+                          }}
+                          >${opg.oppgave_id}</a
+                        >`
+                      : html`<button class="knapp knapp--sekundar knapp--liten" aria-label="Planlegg inspeksjon av ${o?.navn ?? r.objekttype}" @click=${() => this.planleggInspeksjon(r)}>Planlegg</button>`}
+                  </td>
+                </tr>`;
+              })}
             </tbody>
           </table>
         </div>
