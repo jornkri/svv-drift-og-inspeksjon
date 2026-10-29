@@ -16,6 +16,7 @@ import { autoFields, changeObject, prefill, toInspeksjon, unlock, validate, type
 import { inspectionSync, offlineQueue } from "../sync-setup.ts";
 import { KONSEKVENSGRADER, driftskrav, tiltakstid } from "../../handbok/r610.ts";
 import { hentAadt } from "../../nvdb/vegobjekter.ts";
+import { finnObjekt } from "../../nvdb/oppslag.ts";
 
 const draftId = (globalid: string) => `utkast-${globalid}`;
 
@@ -76,7 +77,7 @@ export class SvvInspectionForm extends StoreElement {
       return;
     }
     const { data } = services();
-    const hit = await data.getObject(target);
+    const hit = await finnObjekt(target).catch(() => null);
     if (!hit) {
       store.notify("Fant ikke objektet", "feil");
       return;
@@ -98,9 +99,8 @@ export class SvvInspectionForm extends StoreElement {
     const id = this.u?.objekt.globalid;
     if (!id || this.aadt?.globalid === id) return;
     this.aadt = { globalid: id, verdi: undefined };
-    const { data, cfg } = services();
-    void data
-      .getObject(id)
+    const { cfg } = services();
+    void finnObjekt(id)
       .then((t) => {
         const c = t?.geometry.extent?.center ?? (t?.geometry.type === "point" ? (t.geometry as Point) : null);
         return c ? hentAadt({ baseUrl: cfg.nvdb.baseUrl, client: cfg.nvdb.client }, c.x, c.y) : null;

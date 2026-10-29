@@ -125,7 +125,7 @@ Se `.env.example`. De viktigste variablene:
 
 Appen kobler prosjektmodellen mot ekte data selv i mock-modus.
 
-**NVDB (i drift).** Ekte vegobjekter hentes fra NVDB API Les v4 for kartutsnittet (zoom 1:25 000 eller nærmere): stikkrenner, grøfter, kummer, rørledninger, belysning, kabler, skap, rekkverk og -ender, skilt, kantstein, vegdekke, fartsgrense og bruer (`src/nvdb/vegobjekter.ts`). Typene kan slås av og på i lagpanelet. Når du klikker på et objekt, åpnes et panel med egenskaper, kontraktsområde og NVDB-tilstandsregistreringer, som hentes via relasjoner (f.eks. «Tilstandsgrad, rekkverk»). Linjeobjekter med målte høyder, som stikkrenner, får lengdeprofil mot terrenget. Objektpanelet viser hvilke NVDB-objekter som ligger innen 25 m. ÅDT (type 540) brukes til tiltakstid. Se `docs/research/nvdb.json`.
+**NVDB (i drift).** Ekte vegobjekter hentes fra NVDB API Les v4 for kartutsnittet (zoom 1:25 000 eller nærmere): stikkrenner, grøfter, kummer, rørledninger, belysning, kabler, skap, rekkverk og -ender, skilt, kantstein, vegdekke, fartsgrense og bruer (`src/nvdb/vegobjekter.ts`). Typene kan slås av og på i lagpanelet. Når du klikker på et objekt, åpnes et panel med egenskaper, kontraktsområde og NVDB-tilstandsregistreringer, som hentes via relasjoner (f.eks. «Tilstandsgrad, rekkverk»). Linjeobjekter med målte høyder, som stikkrenner, får lengdeprofil mot terrenget. Objektpanelet viser hvilke NVDB-objekter som ligger innen 25 m. NVDB-objekter kan inspiseres med samme skjema, sjekkliste og konsekvensgrad som modellobjektene. Inspeksjonen lagres med `objekt_globalid = "nvdb:<type>:<id>"`. Objektene vises også i 3D med målte høyder. ÅDT (type 540) brukes til tiltakstid. Se `docs/research/nvdb.json`.
 
 **Geodata Online.** I tillegg til bakgrunnskart finnes 12 temalag: drenering, flom- og skredaktsomhet, løsmasser og grunnundersøkelser, eiendom, regulering, naturvern, kulturminner, støy, høydekurver, helning og trafikkulykker. Klikk i kartet gir temainformasjon (identify). Historiske flyfoto fra 1958–2024 kan velges per årgang, og terrengprofil kommer fra GDO-terrengmodellen. Tjenestene er kartlagt i `docs/research/gdo-tjenester.json`.
 
@@ -188,6 +188,7 @@ Valg og begrunnelser:
 - [ ] Team/grupper for «Teamet» i oppgaver
 - [ ] Logo og app-ikon (plassholdere i `public/`), og LFT Etica-webfont (lisens)
 - [ ] Bekreft hva «Landskap» skal være hos Geodata Online
+- [ ] Avklar om inspeksjoner av NVDB-objekter (`objekt_globalid` = `nvdb:<type>:<id>`) skal ligge i samme inspeksjonstabell, og om de også skal registreres i NVDB (skriving krever NVDB API Skriv og tilgang).
 - [ ] Felt for `konsekvensgrad` og `sjekkliste` i inspeksjonstabellen. Appen sender dem bare hvis tabellen har feltene.
 - [ ] Bekreft TG-definisjonene mot NS 3424:2012 (ikke lest), og om R610-intervallene skal gjelde også for fylkesveger
 - [ ] Offisielle navn på hvert MMI-nivå. Merket viser foreløpig fasenavn («MMI 400 · Utførelse»), fordi mmi-veilederen.no ikke var tilgjengelig ved utvikling.

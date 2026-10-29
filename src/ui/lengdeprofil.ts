@@ -75,7 +75,7 @@ const fmtK = (n: number | null) => fmtNumber(n, 2);
 const fmtS = (s: number) => (Number.isInteger(s) ? String(s) : fmtNumber(s, 2));
 
 /** Tegner SVG-en for en ferdig modell. */
-export function profilSvg(m: ProfilModell, opts: { innlopUtlop: boolean; tittel: string }): TemplateResult {
+export function profilSvg(m: ProfilModell, opts: { innlopUtlop: boolean; tittel: string; objektEtikett?: string }): TemplateResult {
   const W = 360;
   const venstre = 88;
   const hoyre = 10;
@@ -170,7 +170,7 @@ export function profilSvg(m: ProfilModell, opts: { innlopUtlop: boolean; tittel:
       })}
     </svg>
     <figcaption class="forklaring">
-      <span class="forklaring__post"><span class="profil__strek profil__strek--objekt" aria-hidden="true"></span>Objekt (modell)</span>
+      <span class="forklaring__post"><span class="profil__strek profil__strek--objekt" aria-hidden="true"></span>${opts.objektEtikett ?? "Objekt (modell)"}</span>
       ${m.terreng.length
         ? html`<span class="forklaring__post"><span class="profil__strek profil__strek--terreng" aria-hidden="true"></span>Eksisterende terreng</span>`
         : nothing}
@@ -193,6 +193,8 @@ export interface ProfilKilde {
   geometry: Polyline;
   /** Opphav til høydene, for teksten under profilet */
   hoydekilde: string;
+  /** Tekst i tegnforklaringen for objektlinja */
+  etikett?: string;
 }
 
 export const kildeFraTreff = (t: ObjektTreff): ProfilKilde => ({
@@ -250,7 +252,7 @@ export class SvvLengdeprofil extends LightElement {
     return html`<section class="seksjon profilseksjon" aria-labelledby="profil-tittel">
       <h3 id="profil-tittel" class="seksjon__tittel">LENGDEPROFIL</h3>
       ${harZ
-        ? profilSvg(m, { innlopUtlop: t.innlopUtlop, tittel: `Lengdeprofil for ${t.navn}` })
+        ? profilSvg(m, { innlopUtlop: t.innlopUtlop, tittel: `Lengdeprofil for ${t.navn}`, ...(t.etikett ? { objektEtikett: t.etikett } : {}) })
         : html`<p class="sekundar">Objektet har ikke registrerte høyder, så profilet kan ikke tegnes.</p>`}
       <dl class="nokkeltall nokkeltall--kompakt">
         <div><dt>Lengde (plan)</dt><dd>${fmtNumber(lengde)} m</dd></div>

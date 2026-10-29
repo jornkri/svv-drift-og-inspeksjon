@@ -15,6 +15,10 @@ import { services } from "../services.ts";
 import { store } from "../state/store.ts";
 import { StoreElement, fmtDate, fmtDateTime, fmtNumber } from "./base.ts";
 import { icons } from "./icons.ts";
+import "./driftskrav.ts";
+import { TG_FARGE, startInspection, tgTekst } from "./object-panel.ts";
+import { nvdbGlobalid, nvdbTilObjekt } from "../nvdb/objekt.ts";
+import type { Inspeksjon } from "../data/schema.ts";
 import "./lengdeprofil.ts";
 import type Polyline from "@arcgis/core/geometry/Polyline.js";
 
@@ -39,6 +43,8 @@ export class SvvNvdbPanel extends StoreElement {
   private tilstander: Tilstand[] | null = null;
   private feil: string | null = null;
   private ctrl: AbortController | null = null;
+  private appInsp: Inspeksjon[] = [];
+  private inspVersjon = -1;
 
   protected override willUpdate(): void {
     const v = this.store.state.nvdbValgt;
@@ -46,6 +52,17 @@ export class SvvNvdbPanel extends StoreElement {
     if (key && key !== this.lastetFor) {
       this.lastetFor = key;
       void this.load(v!.typeId, v!.id, key);
+    }
+    if (v && this.store.state.dataVersjon !== this.inspVersjon) {
+      this.inspVersjon = this.store.state.dataVersjon;
+      const gid = nvdbGlobalid(v.typeId, v.id);
+      void services()
+        .data.getInspections(gid)
+        .then((l) => {
+          if (this.lastetFor !== key) return;
+          this.appInsp = l;
+          this.requestUpdate();
+        });
     }
   }
 
@@ -60,6 +77,8 @@ export class SvvNvdbPanel extends StoreElement {
     this.objekt = null;
     this.tilstander = null;
     this.feil = null;
+    this.appInsp = [];
+    this.inspVersjon = -1;
     const k = { baseUrl: services().cfg.nvdb.baseUrl, client: services().cfg.nvdb.client };
     try {
       const o = await hentVegobjekt(k, typeId, id, ctrl.signal);
@@ -80,7 +99,7 @@ export class SvvNvdbPanel extends StoreElement {
   private profil(o: NvdbVegobjekt, navn: string) {
     const g = nvdbGeometri(o);
     if (!g || g.type !== "polyline" || !(g as Polyline).hasZ || o.geometri?.egengeometri === false) return nothing;
-    const kilde = { id: `nvdb-${o.id}`, navn, innlopUtlop: [79, 77].includes(o.metadata?.type?.id ?? 0), geometry: g as Polyline, hoydekilde: "høyde registrert i NVDB" };
+    const kilde = { id: `nvdb-${o.id}`, navn, innlopUtlop: [79, 77].includes(o.metadata?.type?.id ?? 0), geometry: g as Polyline, hoydekilde: "høyde registrert i NVDB", etikett: "Objekt (NVDB)" };
     return html`<svv-lengdeprofil .kilde=${kilde}></svv-lengdeprofil>`;
   }
 
@@ -139,6 +158,7 @@ export class SvvNvdbPanel extends StoreElement {
           <div><dt>Kontraktsområde</dt><dd class="liten">${kontrakt?.navn ?? (kontrakt?.nummer != null ? String(kontrakt.nummer) : "–")}</dd></div>
           <div><dt>Sist endret i NVDB</dt><dd class="liten">${fmtDateTime(o.metadata?.sist_modifisert)}</dd></div>
         </dl>
+        <button class="knapp knapp--primar knapp--full" @click=${() => startInspection(nvdbGlobalid(o.metadata?.type?.id ?? 0, o.id))}>Start inspeksjon</button>
         <div class="knapperad">
           <button class="knapp knapp--sekundar" @click=${() => this.zoom()}>Zoom til</button>
           ${o.href
@@ -149,6 +169,25 @@ export class SvvNvdbPanel extends StoreElement {
         </div>
       </div>
       <div class="objektpanel__fane">
+        <svv-driftskrav .objekt=${nvdbTilObjekt(o)} .insp=${this.appInsp}></svv-driftskrav>
+        ${this.appInsp.length
+          ? html`<section class="egenskaper" aria-labelledby="nvdb-appinsp">
+              <h3 class="kategori" id="nvdb-appinsp">INSPEKSJONER I APPEN (${this.appInsp.length})</h3>
+              <ol class="tidslinje">
+                ${this.appInsp.map(
+                  (i) => html`<li class="tidslinje__punkt">
+                    <span class="tidslinje__prikk" style="background:${TG_FARGE[i.tilstandsgrad]}" aria-hidden="true"></span>
+                    <div class="tidslinje__innhold">
+                      <div class="tidslinje__hode"><strong>${tgTekst(i.tilstandsgrad)} · TG ${i.tilstandsgrad}${i.konsekvensgrad != null ? ` · KG ${i.konsekvensgrad}` : ""}</strong><span>${fmtDate(i.tidspunkt)}</span></div>
+                      ${i.avvikstype && i.avvikstype !== "Ingen avvik" ? html`<span>${i.avvikstype}</span>` : nothing}
+                      <span>${i.kommentar || "Ingen kommentar."}</span>
+                      <span class="sekundar">${i.inspektor}</span>
+                    </div>
+                  </li>`,
+                )}
+              </ol>
+            </section>`
+          : nothing}
         <section class="egenskaper" aria-labelledby="nvdb-tilstand">
           <h3 class="kategori" id="nvdb-tilstand">TILSTAND I NVDB</h3>
           ${this.tilstander == null
