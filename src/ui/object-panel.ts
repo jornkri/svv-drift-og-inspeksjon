@@ -8,8 +8,9 @@ import { store } from "../state/store.ts";
 import { isOpen } from "../tasks/tasks.ts";
 import { StoreElement, fmtDate, fmtDateTime, fmtNumber } from "./base.ts";
 import { icons } from "./icons.ts";
+import "./lengdeprofil.ts";
 
-type Tab = "oversikt" | "dokumenter" | "inspeksjoner" | "historikk";
+type Tab = "oversikt" | "profil" | "dokumenter" | "inspeksjoner" | "historikk";
 
 export const TG_FARGE = ["#1d7721", "#e27500", "#e27500", "#b63434"] as const;
 export const tgTekst = (tg: number) => (tg === 0 ? "OK" : tg === 1 ? "Mindre avvik" : tg === 2 ? "Avvik" : "Alvorlig avvik");
@@ -62,6 +63,7 @@ export class SvvObjectPanel extends StoreElement {
     const t = await data.getObject(id);
     if (this.currentId !== id) return;
     this.treff = t;
+    if (this.tab === "profil" && t?.geometry.type !== "polyline") this.tab = "oversikt";
     if (t) {
       setObjectParam(t.objekt.objekt_id);
       const [docs, insp] = await Promise.all([data.getDocuments(id), data.getInspections(id)]);
@@ -155,6 +157,7 @@ export class SvvObjectPanel extends StoreElement {
           ${(
             [
               ["oversikt", "Oversikt"],
+              ...(t.geometry.type === "polyline" ? [["profil", "Profil"]] : []),
               ["dokumenter", `Dokumenter ${this.docs.length}`],
               ["inspeksjoner", `Inspeksjoner ${this.insp.length}`],
               ["historikk", "Historikk"],
@@ -178,6 +181,7 @@ export class SvvObjectPanel extends StoreElement {
         </div>
         <div id="objektpanel-fane" class="objektpanel__fane" role="tabpanel" aria-labelledby="objfane-${this.tab}">
           ${this.tab === "oversikt" ? this.renderOversikt(o) : nothing}
+          ${this.tab === "profil" && t.geometry.type === "polyline" ? html`<svv-lengdeprofil .treff=${t}></svv-lengdeprofil>` : nothing}
           ${this.tab === "dokumenter" ? this.renderDocs() : nothing}
           ${this.tab === "inspeksjoner" ? this.renderInsp() : nothing}
           ${this.tab === "historikk" ? this.renderHist() : nothing}

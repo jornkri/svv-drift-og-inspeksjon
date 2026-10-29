@@ -13,6 +13,12 @@ test("hovedflyt: objekt, MMI-filter og telling", async ({ page }) => {
   await expect(page.locator(".nokkeltall")).toContainText("105,80–107,99");
   await expect(page.locator(".merke--mmi")).toContainText("MMI 400 · Utførelse");
 
+  // Lengdeprofil (R700) for linjeobjektet
+  await page.getByRole("tab", { name: "Profil" }).click();
+  await expect(page.getByRole("img", { name: "Lengdeprofil for Stikkrennetrase-003" })).toBeVisible();
+  await expect(page.locator("svv-lengdeprofil")).toContainText("3,83 %");
+  await page.getByRole("tab", { name: "Oversikt" }).click();
+
   // Standardfilteret (Detaljert, Utførelse, Som bygget, I drift)
   const antall = page.getByTestId("antall");
   await expect(antall).toHaveText(/300 av 312/);

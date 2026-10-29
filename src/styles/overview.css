@@ -176,3 +176,67 @@ svv-overview-view {
     break-inside: avoid;
   }
 }
+
+/* Lengdeprofil (R700): heltrukken modell, stiplet terreng, referanselinje */
+.profilseksjon {
+  padding: 4px 0 8px;
+}
+.profil__objekt {
+  fill: none;
+  stroke: var(--svv-blue-dark, #065e7f);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.profil__terreng {
+  fill: none;
+  stroke: var(--svv-gray-dark);
+  stroke-width: 1.25;
+  stroke-dasharray: 6 4;
+}
+.profil__referanse {
+  stroke: var(--svv-gray-dark);
+  stroke-width: 1.25;
+}
+.profil__kote {
+  font: 600 11px var(--svv-font);
+  fill: var(--svv-gray-dark);
+}
+.profil__ende {
+  fill: var(--svv-white);
+  stroke: var(--svv-blue-dark, #065e7f);
+  stroke-width: 2;
+}
+.profil__endetekst,
+.profil__fall {
+  font: 600 10.5px var(--svv-font);
+  fill: var(--svv-gray-dark);
+  paint-order: stroke;
+  stroke: var(--svv-white);
+  stroke-width: 3px;
+}
+.profil__radnavn {
+  font-size: 11px;
+  font-weight: 600;
+}
+.profil__verdi {
+  font: 10px var(--svv-font);
+  fill: var(--svv-gray-dark);
+}
+.profil__verdi--neg {
+  fill: #b63434;
+  font-weight: 600;
+}
+.profil__strek {
+  width: 22px;
+  height: 0;
+  border-top: 2.5px solid var(--svv-blue-dark, #065e7f);
+}
+.profil__strek--terreng {
+  border-top: 1.5px dashed var(--svv-gray-dark);
+}
+.profil__strek--ref {
+  border-top: 1.25px solid var(--svv-gray-dark);
+}
+.nokkeltall--kompakt {
+  margin: 10px 0 4px;
+}
