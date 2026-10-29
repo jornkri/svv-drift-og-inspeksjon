@@ -144,8 +144,9 @@
 }
 .bunnark__hank {
   align-self: center;
-  width: 64px;
-  height: 28px;
+  width: 88px;
+  height: 44px;
+  margin: -4px 0 -12px;
   border: 0;
   background: transparent;
   display: flex;
@@ -542,4 +543,27 @@
 }
 .statusboks--frakoblet {
   background: var(--svv-orange-bg);
+}
+
+/* Trykkflater minst 44 px på berøringsskjerm */
+@media (pointer: coarse) {
+  .ikonknapp,
+  .ikonknapp--ramme,
+  .ikonknapp--liten {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .chip,
+  .snarvei,
+  .fane,
+  .tellerboks__nullstill,
+  .segment__valg,
+  .kartknapp {
+    min-height: 44px;
+  }
+  .lagrad,
+  .laggruppe__hode,
+  .mmiliste__rad {
+    min-height: 44px;
+  }
 }

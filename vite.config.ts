@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig, loadEnv, type Plugin, type PreviewServer, type ViteDevServer } from "vite";
+import { cpSync } from "node:fs";
 import { VitePWA } from "vite-plugin-pwa";
 
 const GDO_TOKEN_URL = "https://services.geodataonline.no/arcgis/tokens/generateToken";
@@ -57,11 +58,36 @@ function gdoTokenPlugin(env: Record<string, string>): Plugin {
   return { name: "gdo-token", configureServer: attach, configurePreviewServer: attach };
 }
 
+/**
+ * Kopierer ressursene til ArcGIS og Calcite (arbeidere, oversettelser, ikoner) inn i bygget,
+ * slik at appen ikke er avhengig av js.arcgis.com og service workeren kan bufre dem for
+ * frakoblet bruk. De legges ikke i precache (ca. 90 MB), men bufres ved første bruk.
+ */
+function localAssetsPlugin(): Plugin {
+  const copies: [string, string][] = [
+    ["node_modules/@arcgis/core/assets", "arcgis/core"],
+    ["node_modules/@arcgis/map-components/dist/cdn/assets", "arcgis/components/assets"],
+    ["node_modules/@esri/calcite-components/dist/cdn/assets", "calcite/assets"],
+  ];
+  let outDir = "dist";
+  return {
+    name: "local-assets",
+    apply: "build",
+    configResolved(c) {
+      outDir = c.build.outDir;
+    },
+    writeBundle() {
+      for (const [from, to] of copies) cpSync(from, `${outDir}/${to}`, { recursive: true });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
     plugins: [
       gdoTokenPlugin(env),
+      localAssetsPlugin(),
       VitePWA({
         registerType: "autoUpdate",
         injectRegister: false,
@@ -84,9 +110,24 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ["**/*.{js,css,html,svg,png,json,woff2}"],
+          globIgnores: ["arcgis/**", "calcite/**", "mock-dok/**"],
           maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
           navigateFallback: "index.html",
           navigateFallbackDenylist: [/^\/api\//],
+          runtimeCaching: [
+            {
+              // ArcGIS-/Calcite-ressurser: bufres ved første bruk
+              urlPattern: ({ url }) => /\/(arcgis|calcite)\//.test(url.pathname),
+              handler: "CacheFirst",
+              options: { cacheName: "kartressurser", expiration: { maxEntries: 3000 } },
+            },
+            {
+              // NVDB vegnett og vegreferanseoppslag: nett først, bufret svar når frakoblet
+              urlPattern: ({ url }) => url.hostname === "nvdbapiles.atlas.vegvesen.no",
+              handler: "NetworkFirst",
+              options: { cacheName: "nvdb", networkTimeoutSeconds: 5, expiration: { maxEntries: 500, maxAgeSeconds: 7 * 24 * 3600 } },
+            },
+          ],
         },
       }),
     ],

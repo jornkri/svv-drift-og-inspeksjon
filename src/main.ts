@@ -7,7 +7,10 @@ import "./styles/field.css";
 import "./styles/tasks.css";
 import "./styles/scene.css";
 
+import esriConfig from "@arcgis/core/config.js";
 import { setLocale } from "@arcgis/core/intl.js";
+import { setAssetPath as setComponentsAssetPath } from "@arcgis/map-components";
+import { setAssetPath as setCalciteAssetPath } from "@esri/calcite-components";
 import { initAuth } from "./auth/auth.ts";
 import { config } from "./config.ts";
 import type { DataService } from "./data/DataService.ts";
@@ -17,6 +20,15 @@ import { startRouter } from "./state/router.ts";
 import { store } from "./state/store.ts";
 
 setLocale("nb");
+
+if (import.meta.env.PROD) {
+  // Ressurser fra eget bygg (se localAssetsPlugin i vite.config.ts) i stedet for js.arcgis.com
+  const base = new URL(import.meta.env.BASE_URL, location.href);
+  esriConfig.assetsPath = new URL("arcgis/core", base).href;
+  setComponentsAssetPath(new URL("arcgis/components/", base));
+  setCalciteAssetPath(new URL("calcite/", base));
+  void import("virtual:pwa-register").then(({ registerSW }) => registerSW({ immediate: true }));
+}
 
 function done() {
   document.getElementById("oppstart")?.remove();

@@ -137,7 +137,7 @@ export class SvvTopbar extends StoreElement {
         <div class="topbar__meny-wrap">
           <button
             class="topbar__bruker"
-            aria-label=${`Bruker: ${data.user.navn}`}
+            aria-label=${`${data.user.initialer} – brukermeny for ${data.user.navn}`}
             aria-haspopup="true"
             aria-expanded=${this.menu === "bruker"}
             @click=${this.toggle("bruker")}
