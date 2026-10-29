@@ -123,6 +123,7 @@ export class SvvObjectPanel extends StoreElement {
                   <span aria-live="polite">${sel.index + 1} av ${sel.globalids.length}</span>
                   <button class="ikonknapp ikonknapp--ramme" aria-label="Neste treff" @click=${() => this.step(1)}>${icons.chevronRight()}</button>`
               : nothing}
+            <button class="ikonknapp" aria-label="Objektrapport for utskrift" title="Objektrapport" @click=${() => navigate("rapport")}>${icons.print()}</button>
             <button class="ikonknapp" aria-label="Lukk objektpanel" @click=${() => store.set({ selection: null })}>${icons.close()}</button>
           </div>
           <div>

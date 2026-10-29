@@ -24,6 +24,8 @@ const LOADERS: Record<string, () => Promise<unknown>> = {
   "verktoy-kontor": () => import("./field/ui/field-pages.ts"),
   "meg-felt": () => import("./field/ui/field-pages.ts"),
   "meg-kontor": () => import("./field/ui/field-pages.ts"),
+  "rapport-kontor": () => import("./views/report-view.ts"),
+  "rapport-felt": () => import("./views/report-view.ts"),
 };
 
 export class SvvApp extends StoreElement {
@@ -95,6 +97,8 @@ export class SvvApp extends StoreElement {
         return html`<svv-field-tools></svv-field-tools>`;
       case "meg":
         return html`<svv-field-me></svv-field-me>`;
+      case "rapport":
+        return html`<svv-report-view></svv-report-view>`;
     }
   }
 

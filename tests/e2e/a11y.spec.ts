@@ -39,6 +39,14 @@ test("kontor: oversikt", async ({ page }) => {
   await sjekk(page, "Oversikt");
 });
 
+test("kontor: objektrapport", async ({ page }) => {
+  await page.goto("/?objekt=SR-003#/rapport");
+  await expect(page.getByRole("heading", { name: "Stikkrennetrase-003", level: 1 })).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByRole("table", { name: "Inspeksjoner av Stikkrennetrase-003" })).toBeVisible();
+  await expect(page.locator(".rapport")).toContainText("hvert 5. år");
+  await sjekk(page, "Objektrapport");
+});
+
 test.describe("felt", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 

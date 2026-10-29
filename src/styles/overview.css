@@ -243,3 +243,84 @@ svv-overview-view {
 .oversikt .nokkelkort {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
+
+/* Objektrapport */
+svv-report-view {
+  display: block;
+  height: 100%;
+  overflow: auto;
+  background: var(--svv-white);
+}
+.rapport {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 32px 48px;
+}
+.rapport__verktoy {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.rapport__hode {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--svv-orange);
+}
+.rapport__hode h1 {
+  margin: 4px 0;
+  font-size: 28px;
+}
+.rapport__meta {
+  min-width: 220px;
+  margin: 0;
+}
+.rapport__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 8px 32px;
+  margin-top: 16px;
+}
+.rapport__seksjon {
+  margin-top: 20px;
+  break-inside: avoid;
+}
+.rapport__seksjon svv-lengdeprofil {
+  display: block;
+  max-width: 560px;
+}
+.rapport__sjekkliste {
+  margin: 6px 0 0;
+  font: 12px/1.4 var(--svv-font);
+  white-space: pre-wrap;
+}
+.rapport__fot {
+  margin-top: 24px;
+  padding-top: 8px;
+  border-top: 1px solid var(--svv-gray-regular-dark);
+}
+@media (max-width: 768px) {
+  .rapport {
+    padding: 16px;
+  }
+  .rapport__hode {
+    flex-direction: column;
+  }
+}
+@media print {
+  .rapport__verktoy,
+  svv-report-view .diagram__tabell {
+    display: none !important;
+  }
+  svv-report-view {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .rapport {
+    padding: 0;
+    max-width: none;
+  }
+}

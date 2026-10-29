@@ -1,6 +1,6 @@
 import { store, type Route } from "./store.ts";
 
-const ROUTES: Route[] = ["kart", "3d", "oppgaver", "oversikt", "inspeksjon", "verktoy", "meg"];
+const ROUTES: Route[] = ["kart", "3d", "oppgaver", "oversikt", "inspeksjon", "verktoy", "meg", "rapport"];
 
 export function parseHash(hash: string): Route {
   const r = hash.replace(/^#\/?/, "").split(/[/?]/)[0] as Route;
