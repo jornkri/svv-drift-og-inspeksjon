@@ -291,11 +291,13 @@ export class MockDataService implements DataService {
     const o = this.objekter.find((x) => x.objekt.globalid === i.objekt_globalid);
     if (!o) return;
     o.objekt.status_inspeksjon = status;
+    // Lag fra kartvisninger som er lukket, er ødelagt og skal ikke oppdateres
+    this.createdLayers = this.createdLayers.filter((h) => !h.layer.destroyed);
     for (const layer of [...this.createdLayers.map((h) => h.layer), ...this.queryLayers]) {
-      if (!layer.loaded) continue;
-      void layer.applyEdits({
-        updateFeatures: [new Graphic({ attributes: { oid: o.oid, status_inspeksjon: status } })],
-      });
+      if (!layer.loaded || layer.destroyed) continue;
+      layer
+        .applyEdits({ updateFeatures: [new Graphic({ attributes: { oid: o.oid, status_inspeksjon: status } })] })
+        .catch((e: unknown) => console.warn("Kunne ikke oppdatere status i mocklag", e));
     }
   }
 }

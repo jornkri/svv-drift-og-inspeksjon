@@ -42,4 +42,10 @@ arcgis-scene * {
 svv-app {
   display: block;
   height: 100%;
+  overflow: hidden;
+}
+
+svv-toasts {
+  display: block;
+  height: 0;
 }

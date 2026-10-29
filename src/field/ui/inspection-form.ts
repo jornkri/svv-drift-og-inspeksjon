@@ -1,10 +1,384 @@
-import { html } from "lit";
-import { LightElement } from "../../ui/base.ts";
+import { html, nothing } from "lit";
+import type { Fotovedlegg, ObjektTreff } from "../../data/DataService.ts";
+import { AVVIKSTYPER, TILSTANDSGRADER, type Tilstandsgrad } from "../../data/schema.ts";
+import { formatDistance, formatUtm } from "../../map/coords.ts";
+import { services } from "../../services.ts";
+import { navigate } from "../../state/router.ts";
+import { store } from "../../state/store.ts";
+import { dataChanged, ensureTasks } from "../../tasks/task-store.ts";
+import { isOpen } from "../../tasks/tasks.ts";
+import { StoreElement, fmtDateTime } from "../../ui/base.ts";
+import { icons } from "../../ui/icons.ts";
+import { isSimGps, startFieldRuntime } from "../field-runtime.ts";
+import { watchCompass } from "../gps.ts";
+import { autoFields, changeObject, prefill, toInspeksjon, unlock, validate, type InspeksjonUtkast } from "../prefill.ts";
+import { inspectionSync, offlineQueue } from "../sync-setup.ts";
 
-/** Midlertidig plassholder – implementeres i et senere steg. */
-class FormStub extends LightElement {
+const draftId = (globalid: string) => `utkast-${globalid}`;
+
+/** Inspeksjonsskjema med autoutfylte felt fra objektet. */
+export class SvvInspectionForm extends StoreElement {
+  private u: InspeksjonUtkast | null = null;
+  private feil: string[] = [];
+  private velger = false;
+  private sokTreff: ObjektTreff[] = [];
+  private sender = false;
+  private retning: number | null = null;
+  private stopCompass: (() => void) | null = null;
+  private urls = new Map<string, string>();
+  private ingenObjekt = false;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    const felt = this.store.state.felt || window.matchMedia("(max-width: 768px)").matches;
+    if (felt || isSimGps()) void startFieldRuntime();
+    this.stopCompass = watchCompass((d) => (this.retning = d));
+    void ensureTasks().then(() => this.load());
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.stopCompass?.();
+    this.urls.forEach((u) => URL.revokeObjectURL(u));
+  }
+
+  private oppgaveFor(globalid: string): string | null {
+    return (
+      store
+        .get()
+        .oppgaver.filter((o) => o.objekt_globalid === globalid && isOpen(o))
+        .sort((a, b) => a.frist.localeCompare(b.frist))[0]?.oppgave_id ?? null
+    );
+  }
+
+  private posisjon() {
+    const g = store.get().gps;
+    return g.x != null && g.y != null ? { x: g.x, y: g.y, noyaktighet: g.noyaktighet } : null;
+  }
+
+  private async load() {
+    const s = store.get();
+    const target = s.inspeksjon?.globalid ?? s.valgtNaer ?? s.naer[0]?.objekt.globalid ?? null;
+    if (!target) {
+      this.ingenObjekt = true;
+      this.velger = true;
+      this.requestUpdate();
+      return;
+    }
+    const draft = await offlineQueue().getDraft(draftId(target)).catch(() => undefined);
+    if (draft) {
+      this.u = { ...draft, laast: true };
+      this.requestUpdate();
+      return;
+    }
+    const { data } = services();
+    const hit = await data.getObject(target);
+    if (!hit) {
+      store.notify("Fant ikke objektet", "feil");
+      return;
+    }
+    const insp = await data.getInspections(target);
+    const naer = s.naer.find((n) => n.objekt.globalid === target);
+    this.u = prefill(hit.objekt, insp, {
+      id: draftId(target),
+      inspektor: data.user.navn,
+      now: new Date(),
+      posisjon: this.posisjon(),
+      oppgaveId: s.inspeksjon?.oppgaveId ?? this.oppgaveFor(target),
+      avstand_m: naer?.avstand ?? null,
+    });
+    this.requestUpdate();
+  }
+
+  private set(patch: Partial<InspeksjonUtkast>) {
+    if (!this.u) return;
+    this.u = { ...this.u, ...patch };
+    if (this.feil.length) this.feil = validate(this.u);
+    this.requestUpdate();
+  }
+
+  private async velgObjekt(t: ObjektTreff, avstand: number | null) {
+    const { data } = services();
+    const insp = await data.getInspections(t.objekt.globalid);
+    const now = new Date();
+    if (this.u) {
+      this.u = changeObject(this.u, t.objekt, insp, { now, oppgaveId: this.oppgaveFor(t.objekt.globalid), avstand_m: avstand });
+    } else {
+      this.u = prefill(t.objekt, insp, {
+        id: draftId(t.objekt.globalid),
+        inspektor: data.user.navn,
+        now,
+        posisjon: this.posisjon(),
+        oppgaveId: this.oppgaveFor(t.objekt.globalid),
+        avstand_m: avstand,
+      });
+    }
+    this.velger = false;
+    this.ingenObjekt = false;
+    this.sokTreff = [];
+    store.set({ inspeksjon: { globalid: t.objekt.globalid, oppgaveId: this.u.oppgaveId } });
+    this.requestUpdate();
+  }
+
+  private async onPhotos(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const files = [...(input.files ?? [])];
+    input.value = "";
+    const g = store.get().gps;
+    const nye: Fotovedlegg[] = files.map((f) => ({
+      id: crypto.randomUUID(),
+      blob: f,
+      navn: f.name || `bilde-${Date.now()}.jpg`,
+      x: g.x,
+      y: g.y,
+      retning: this.retning ?? g.retning,
+      noyaktighet_m: g.noyaktighet,
+      tidspunkt: new Date().toISOString(),
+    }));
+    this.set({ bilder: [...(this.u?.bilder ?? []), ...nye] });
+  }
+
+  private photoUrl(b: Fotovedlegg): string {
+    let u = this.urls.get(b.id);
+    if (!u) {
+      u = URL.createObjectURL(b.blob);
+      this.urls.set(b.id, u);
+    }
+    return u;
+  }
+
+  private async saveDraft() {
+    if (!this.u) return;
+    await offlineQueue().saveDraft({ ...this.u, posisjon: this.u.posisjon ?? this.posisjon() });
+    store.notify("Utkastet er lagret på enheten", "suksess");
+  }
+
+  private async submit() {
+    if (!this.u || this.sender) return;
+    const u = { ...this.u, posisjon: this.posisjon() ?? this.u.posisjon };
+    this.feil = validate(u);
+    if (this.feil.length) {
+      this.requestUpdate();
+      await this.updateComplete;
+      this.querySelector<HTMLElement>(".feiloppsummering")?.focus();
+      return;
+    }
+    this.sender = true;
+    this.requestUpdate();
+    try {
+      const r = await inspectionSync().submitOrQueue(toInspeksjon(u, new Date()), u.bilder);
+      await offlineQueue().deleteDraft(u.id).catch(() => undefined);
+      if (r.status === "sendt") {
+        store.notify(`Inspeksjonen av ${u.objekt.navn} er sendt`, "suksess");
+        dataChanged();
+      } else {
+        store.notify(`Lagret i kø – sendes automatisk når du får dekning (${r.grunn.toLowerCase()})`, "info");
+      }
+      store.set({ inspeksjon: null });
+      navigate("kart");
+    } finally {
+      this.sender = false;
+      this.requestUpdate();
+    }
+  }
+
+  private async sok(q: string) {
+    this.sokTreff = q.trim().length >= 2 ? await services().data.search(q, 6) : [];
+    this.requestUpdate();
+  }
+
   protected override render() {
-    return html`<div class="laster" role="status">Inspeksjonsskjemaet kommer i steg 3.</div>`;
+    const u = this.u;
+    const s = this.store.state;
+    return html`
+      <div class="skjemaside">
+        <header class="skjemaside__hode">
+          <button class="ikonknapp ikonknapp--stor" aria-label="Tilbake til kart" @click=${() => navigate("kart")}>${icons.back()}</button>
+          <div class="skjemaside__tittel">
+            <h1>Inspeksjon${u ? ` · ${u.objekt.objekt_id}` : ""}</h1>
+            <span class="sekundar">${u ? [this.skjemanavn(u), u.oppgaveId].filter(Boolean).join(" · ") : "Velg objekt"}</span>
+          </div>
+          <span class="merke merke--noytral">Utkast</span>
+        </header>
+
+        <div class="skjemaside__innhold">
+          ${this.feil.length
+            ? html`<div class="feiloppsummering" role="alert" tabindex="-1">
+                <strong>Rett opp før innsending:</strong>
+                <ul>
+                  ${this.feil.map((f) => html`<li>${f}</li>`)}
+                </ul>
+              </div>`
+            : nothing}
+          ${u ? this.renderAuto(u) : nothing}
+          ${this.velger || this.ingenObjekt ? this.renderVelger() : nothing}
+          ${u ? this.renderFelt(u) : nothing}
+          ${u
+            ? html`<div class="registrert">
+                <span>Registrert av: ${u.inspektor} · ${fmtDateTime(new Date().toISOString())}</span>
+                <span
+                  >Posisjon:
+                  ${s.gps.x != null && s.gps.y != null
+                    ? `${formatUtm(s.gps.x, s.gps.y)} (±${Math.round(s.gps.noyaktighet ?? 0)} m)`
+                    : "ikke tilgjengelig"}</span
+                >
+              </div>`
+            : nothing}
+        </div>
+
+        <div class="skjemaside__fot">
+          <button class="knapp knapp--sekundar knapp--hoy" ?disabled=${!u} @click=${() => this.saveDraft()}>Lagre utkast</button>
+          <button class="knapp knapp--primar knapp--hoy" ?disabled=${!u || this.sender} @click=${() => this.submit()}>
+            ${this.sender ? "Sender …" : "Send inn"}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  private skjemanavn(u: InspeksjonUtkast): string {
+    const o = this.store.state.oppgaver.find((x) => x.oppgave_id === u.oppgaveId);
+    return o?.skjema ?? `Inspeksjon ${u.objekt.fag.toLowerCase()}`;
+  }
+
+  private renderAuto(u: InspeksjonUtkast) {
+    return html`<section class="autoboks ${u.laast ? "" : "autoboks--opplast"}" aria-labelledby="auto-tittel">
+      <div class="autoboks__hode">
+        ${icons.locate(18)}
+        <h2 id="auto-tittel">${u.avstand_m != null ? `Autoutfylt fra nærmeste objekt (${formatDistance(u.avstand_m)})` : "Autoutfylt fra objektet"}</h2>
+      </div>
+      <dl class="autoboks__felt">
+        ${autoFields(u).map((f) => html`<div><dt>${f.k}</dt><dd>${f.v}</dd></div>`)}
+      </dl>
+      ${u.laast
+        ? html`<button
+            class="knapp knapp--blaa"
+            @click=${() => {
+              this.u = unlock(u);
+              this.velger = true;
+              this.requestUpdate();
+            }}
+          >
+            Feil objekt? Velg annet
+          </button>`
+        : html`<p class="autoboks__hint">Feltene er låst opp. Velg riktig objekt under.</p>`}
+    </section>`;
+  }
+
+  private renderVelger() {
+    const naer = this.store.state.naer;
+    return html`<section class="velger" aria-labelledby="velger-tittel">
+      <h2 id="velger-tittel" class="felt__etikett">Velg objekt</h2>
+      ${naer.length
+        ? html`<ul class="velger__liste" aria-label="Objekter i nærheten">
+            ${naer.map(
+              (n) => html`<li>
+                <button class="naerknapp" @click=${() => this.velgObjekt(n, n.avstand)}>
+                  <span>${n.objekt.objekt_id} · ${n.objekt.navn}</span><span>${formatDistance(n.avstand)}</span>
+                </button>
+              </li>`,
+            )}
+          </ul>`
+        : html`<p class="sekundar">Ingen objekter i nærheten. Søk etter objekt-ID eller navn.</p>`}
+      <label class="felt">
+        <span class="visually-hidden">Søk etter objekt</span>
+        <input class="felt__input" type="search" placeholder="Søk objekt-ID eller navn" @input=${(e: Event) => this.sok((e.target as HTMLInputElement).value)} />
+      </label>
+      ${this.sokTreff.length
+        ? html`<ul class="velger__liste" aria-label="Søkeresultater">
+            ${this.sokTreff.map(
+              (t) => html`<li>
+                <button class="naerknapp" @click=${() => this.velgObjekt(t, null)}><span>${t.objekt.objekt_id} · ${t.objekt.navn}</span><span>${t.objekt.fag}</span></button>
+              </li>`,
+            )}
+          </ul>`
+        : nothing}
+      ${this.u && !this.ingenObjekt
+        ? html`<button
+            class="knapp knapp--sekundar"
+            @click=${() => {
+              this.u = { ...this.u!, laast: true };
+              this.velger = false;
+              this.requestUpdate();
+            }}
+          >
+            Behold ${this.u.objekt.objekt_id}
+          </button>`
+        : nothing}
+    </section>`;
+  }
+
+  private renderFelt(u: InspeksjonUtkast) {
+    return html`
+      <fieldset class="tg">
+        <legend class="felt__etikett">Tilstandsgrad <span aria-hidden="true">*</span></legend>
+        <div class="tg__valg">
+          ${TILSTANDSGRADER.map(
+            (t) => html`<label class="tg__seg ${u.tilstandsgrad === t.tg ? "is-valgt" : ""}">
+              <input
+                type="radio"
+                name="tilstandsgrad"
+                class="visually-hidden"
+                .checked=${u.tilstandsgrad === t.tg}
+                @change=${() => this.set({ tilstandsgrad: t.tg as Tilstandsgrad, ...(t.tg === 0 && !u.avvikstype ? { avvikstype: "Ingen avvik" } : {}) })}
+                aria-label="TG ${t.tg} – ${t.navn}"
+              />
+              <span class="tg__nr" aria-hidden="true">${t.tg}</span><span class="tg__navn" aria-hidden="true">${t.navn}</span>
+            </label>`,
+          )}
+        </div>
+      </fieldset>
+
+      <label class="felt">
+        <span class="felt__etikett">Avvikstype <span aria-hidden="true">*</span></span>
+        <select required @change=${(e: Event) => this.set({ avvikstype: (e.target as HTMLSelectElement).value })}>
+          <option value="" ?selected=${!u.avvikstype}>Velg …</option>
+          ${AVVIKSTYPER.map((a) => html`<option value=${a} ?selected=${u.avvikstype === a}>${a}</option>`)}
+        </select>
+      </label>
+
+      <fieldset class="radiogruppe">
+        <legend class="felt__etikett">Behov for tiltak <span aria-hidden="true">*</span></legend>
+        <div class="radiogruppe__valg">
+          ${(["ja", "nei"] as const).map(
+            (v) => html`<label class="avkrysning">
+              <input type="radio" name="tiltak" .checked=${u.tiltak_behov === v} @change=${() => this.set({ tiltak_behov: v })} />
+              ${v === "ja" ? "Ja" : "Nei"}
+            </label>`,
+          )}
+        </div>
+      </fieldset>
+
+      <label class="felt">
+        <span class="felt__etikett">Kommentar</span>
+        <textarea rows="3" .value=${u.kommentar} @input=${(e: Event) => this.set({ kommentar: (e.target as HTMLTextAreaElement).value })}></textarea>
+      </label>
+
+      <div class="felt">
+        <span class="felt__etikett" id="bilder-tittel">Bilder (${u.bilder.length})</span>
+        <div class="bildegrid" role="group" aria-labelledby="bilder-tittel">
+          ${u.bilder.map(
+            (b) => html`<figure class="bildegrid__bilde">
+              <img src=${this.photoUrl(b)} alt="Bilde tatt ${fmtDateTime(b.tidspunkt)}" />
+              <figcaption>${b.retning != null ? `${Math.round(b.retning)}°` : ""}</figcaption>
+              <button
+                class="ikonknapp ikonknapp--liten bildegrid__fjern"
+                aria-label="Fjern bilde"
+                @click=${() => this.set({ bilder: u.bilder.filter((x) => x.id !== b.id) })}
+              >
+                ${icons.close(14)}
+              </button>
+            </figure>`,
+          )}
+          <label class="bildegrid__ny">
+            <input class="visually-hidden" type="file" accept="image/*" capture="environment" multiple @change=${this.onPhotos} />
+            ${icons.camera(24)}<span>Ta bilde</span>
+          </label>
+        </div>
+        <span class="sekundar">Bildene får posisjon og retning automatisk.</span>
+      </div>
+    `;
   }
 }
-customElements.define("svv-inspection-form", FormStub);
+
+customElements.define("svv-inspection-form", SvvInspectionForm);

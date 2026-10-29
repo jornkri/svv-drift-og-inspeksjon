@@ -1,0 +1,545 @@
+/* =========================================================================
+   Felt (mobil): kart, bunnark, inspeksjonsskjema, Verktøy og Meg
+   ========================================================================= */
+.knapp--hoy {
+  min-height: 48px;
+}
+.knapp--blaa {
+  align-self: flex-start;
+  min-height: 44px;
+  border-color: var(--svv-blue-dark);
+  background: transparent;
+  color: var(--svv-blue-dark);
+}
+.knapperad--to {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.ikonknapp--stor {
+  width: 48px;
+  height: 48px;
+}
+
+.feltkart {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--svv-map-bg);
+}
+.feltkart > arcgis-map {
+  position: absolute;
+  inset: 0;
+}
+.feltkart__topp {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 6;
+}
+.feltkart__topp svv-search-box {
+  flex: 1;
+  min-width: 0;
+}
+.feltkart__topp .sok__felt {
+  height: 48px;
+  border: 1px solid var(--svv-grey-dark-65);
+}
+.feltknapp {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  background: var(--svv-white);
+  border: 1px solid var(--svv-grey-dark-65);
+  color: var(--svv-gray-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font: inherit;
+}
+.feltknapp--paa {
+  background: var(--svv-gray-dark);
+  color: var(--svv-white);
+  border-color: var(--svv-gray-dark);
+}
+.feltknapp--tekst {
+  font-weight: 600;
+}
+.feltkart__gps {
+  position: absolute;
+  top: 72px;
+  left: 12px;
+  z-index: 5;
+}
+.gpsstatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--svv-white);
+  border: 1px solid var(--svv-grey-dark-65);
+  font-size: 12px;
+}
+.gpsstatus__lampe {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+}
+.gpsstatus__lampe--ok {
+  background: var(--svv-green-dark);
+}
+.gpsstatus__lampe--svak {
+  background: var(--svv-orange-dark);
+}
+.gpsstatus__lampe--feil {
+  background: var(--svv-red-dark);
+}
+.feltkart__lag {
+  position: absolute;
+  top: 110px;
+  left: 12px;
+  right: 12px;
+  z-index: 7;
+}
+.feltkart__lag .lagpanel {
+  position: static;
+  width: auto;
+  max-height: 55vh;
+}
+.feltkart__hoyre {
+  position: absolute;
+  right: 12px;
+  top: 128px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 5;
+}
+.feltkart__objekt .objektpanel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  z-index: 20;
+  border-left: 0;
+}
+
+.bunnark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--svv-white);
+  border-top: 4px solid var(--svv-orange);
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 8;
+  max-height: 58%;
+  overflow: auto;
+}
+.bunnark__hank {
+  align-self: center;
+  width: 64px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.bunnark__hank span {
+  width: 40px;
+  height: 4px;
+  background: var(--svv-gray-regular-dark);
+}
+.bunnark__etikett {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+.bunnark__du-er-ved {
+  background: var(--svv-gray-dark);
+  color: var(--svv-white);
+  padding: 2px 8px;
+}
+.bunnark__objekt {
+  display: flex;
+  gap: 12px;
+}
+.bunnark__fagstrek {
+  width: 6px;
+  flex: 0 0 6px;
+  background: var(--svv-blue-regular);
+}
+.bunnark__fagstrek--elektro {
+  background: var(--svv-orange-dark);
+}
+.bunnark__fagstrek--veg {
+  background: var(--svv-gray-dark);
+}
+.bunnark__tekst {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.bunnark__navn {
+  font-size: 18px;
+  line-height: 24px;
+}
+.bunnark__oppgave {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--svv-orange-bg);
+}
+.bunnark__andre ul,
+.velger__liste {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.naerknapp {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid var(--svv-gray-regular-dark);
+  background: var(--svv-white);
+  color: var(--svv-gray-dark);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.naerknapp:hover {
+  background: var(--svv-gray-light);
+}
+.bunnark__tom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 4px;
+}
+
+/* Inspeksjonsskjema */
+.skjemaside {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--svv-white);
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+.app--kontor .skjemaside {
+  border-left: 1px solid var(--svv-gray-regular-dark);
+  border-right: 1px solid var(--svv-gray-regular-dark);
+}
+.skjemaside__hode {
+  flex: 0 0 auto;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 0 4px;
+  border-bottom: 4px solid var(--svv-orange);
+}
+.skjemaside__tittel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 18px;
+  min-width: 0;
+}
+.skjemaside__tittel h1 {
+  margin: 0;
+  font-size: 16px;
+}
+.skjemaside__innhold {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.skjemaside__fot {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--svv-gray-regular-dark);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.feiloppsummering {
+  padding: 12px 16px;
+  background: var(--svv-red-bg);
+  color: var(--svv-red-dark);
+  border-left: 6px solid var(--svv-red-dark);
+}
+.feiloppsummering ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.autoboks {
+  background: var(--svv-blue-bg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.autoboks--opplast {
+  outline: 2px dashed var(--svv-blue-dark);
+}
+.autoboks__hode {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--svv-blue-dark);
+}
+.autoboks__hode h2 {
+  margin: 0;
+  font-size: 14px;
+}
+.autoboks__felt {
+  margin: 0;
+}
+.autoboks__felt div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 4px 0;
+  border-top: 1px solid var(--svv-white);
+}
+.autoboks__felt dd {
+  margin: 0;
+  font-weight: 600;
+}
+.autoboks__hint {
+  margin: 0;
+  color: var(--svv-blue-dark);
+  font-weight: 600;
+}
+.velger {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--svv-gray-regular-dark);
+}
+.velger h2 {
+  margin: 0;
+}
+.tg,
+.radiogruppe,
+.bakgrunnsvalg {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.tg legend,
+.radiogruppe legend {
+  padding: 0 0 8px;
+}
+.tg__valg {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--svv-grey-dark-65);
+}
+.tg__seg {
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-right: 1px solid var(--svv-gray-regular-dark);
+  cursor: pointer;
+  background: var(--svv-white);
+}
+.tg__seg:last-child {
+  border-right: 0;
+}
+.tg__seg:has(input:focus-visible) {
+  outline: 3px solid var(--svv-blue-dark);
+  outline-offset: -3px;
+}
+/* Valgt: mørk flate med oransje aksentstrek (oransje bak tekst gir for lav kontrast) */
+.tg__seg.is-valgt {
+  background: var(--svv-gray-dark);
+  color: var(--svv-white);
+  box-shadow: inset 0 -5px 0 var(--svv-orange);
+}
+.tg__nr {
+  font-weight: 600;
+  font-size: 18px;
+}
+.tg__navn {
+  font-size: 12px;
+  line-height: 14px;
+}
+.radiogruppe__valg {
+  display: flex;
+  gap: 20px;
+}
+.bildegrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.bildegrid__bilde {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1;
+  background: var(--svv-gray-regular-dark);
+}
+.bildegrid__bilde img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bildegrid__bilde figcaption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 2px 6px;
+  background: var(--svv-gray-dark);
+  color: var(--svv-white);
+  font-size: 11px;
+}
+.bildegrid__fjern {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--svv-white);
+}
+.bildegrid__ny {
+  aspect-ratio: 1;
+  border: 2px dashed var(--svv-grey-dark-65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.bildegrid__ny:has(input:focus-visible) {
+  outline: 3px solid var(--svv-blue-dark);
+}
+.registrert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--svv-gray-light);
+  font-size: 12px;
+}
+
+/* Verktøy og Meg */
+.feltside {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: auto;
+  height: 100%;
+  background: var(--svv-gray-light);
+}
+.feltside h1 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 26px;
+  padding-bottom: 8px;
+  border-bottom: 4px solid var(--svv-orange);
+}
+.feltliste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.feltliste__valg {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--svv-gray-regular-dark);
+  background: var(--svv-white);
+  color: var(--svv-gray-dark);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.feltliste__valg > span {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+}
+.feltliste__valg strong {
+  font-size: 14px;
+}
+.bakgrunnsvalg {
+  background: var(--svv-white);
+  border: 1px solid var(--svv-gray-regular-dark);
+  padding: 8px 0;
+}
+.bakgrunnsvalg legend {
+  padding: 8px 14px 0;
+  float: left;
+  width: 100%;
+}
+.profil {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.profil__initialer {
+  width: 48px;
+  height: 48px;
+  background: var(--svv-gray-dark);
+  color: var(--svv-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+.statusboks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  align-items: flex-start;
+}
+.statusboks--ok {
+  background: var(--svv-green-bg);
+}
+.statusboks--ok strong {
+  color: var(--svv-green-dark);
+}
+.statusboks--frakoblet {
+  background: var(--svv-orange-bg);
+}

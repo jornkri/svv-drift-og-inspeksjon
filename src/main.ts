@@ -3,6 +3,7 @@ import "@arcgis/map-components/main.css";
 import "@arcgis/core/assets/esri/themes/light/view.css";
 import "./styles/app.css";
 import "./styles/components.css";
+import "./styles/field.css";
 
 import { setLocale } from "@arcgis/core/intl.js";
 import { initAuth } from "./auth/auth.ts";
@@ -55,8 +56,6 @@ async function bootstrap() {
 
   store.set({ felt: params.get("modus") === "felt" });
   startRouter();
-  window.addEventListener("online", () => store.set({ online: true }));
-  window.addEventListener("offline", () => store.set({ online: false }));
 
   await import("./app.ts");
   document.body.append(document.createElement("svv-app"));

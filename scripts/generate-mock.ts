@@ -565,6 +565,24 @@ writeFileSync(
   JSON.stringify({ team: INSPEKTORER, dokumenter, inspeksjoner, oppgaver }, null, 1),
 );
 
+// Simulert GPS-rute (?simgps=1): gå langs vegskulderen forbi SR-003 og tilbake på andre siden.
+{
+  const step = 1.4; // gangfart, én posisjon i sekundet
+  const pts: [number, number][] = [];
+  const leg = (m1: number, m2: number, d: number) => {
+    const n = Math.round(Math.abs(m2 - m1) / step);
+    for (let i = 0; i <= n; i++) {
+      const p = offsetPt(m1 + ((m2 - m1) * i) / n, d);
+      pts.push([p[0], p[1]]);
+    }
+  };
+  leg(10100, 10320, 9);
+  leg(10320, 10320, -9);
+  leg(10320, 10100, -9);
+  writeFileSync(join(outDir, "sim-rute.json"), JSON.stringify({ beskrivelse: "Simulert gangrute langs EV45 S2D1 ved SR-003 (UTM33)", punkter: pts }));
+  console.log(`Simulert rute: ${pts.length} punkter`);
+}
+
 const count = (pred: (o: Obj) => boolean) => objs.filter(pred).length;
 console.log(`Objekter: ${objs.length} (VA ${count((o) => o.props.fag === "VA")}, Elektro ${count((o) => o.props.fag === "Elektro")}, Veg ${count((o) => o.props.fag === "Veg")})`);
 console.log(`Dokumenter: ${dokumenter.length}, inspeksjoner: ${inspeksjoner.length}, oppgaver: ${oppgaver.length}`);

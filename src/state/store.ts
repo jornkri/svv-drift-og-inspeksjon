@@ -61,6 +61,12 @@ export interface AppState {
   /** Økes når data er endret (ny inspeksjon o.l.) slik at visninger kan laste på nytt */
   dataVersjon: number;
   oppgaver: import("../data/DataService.ts").OppgaveMedLogg[];
+  /** Standardobjekt for inspeksjon i felt (globalid; nærmeste eller valgt fra listen) */
+  valgtNaer: string | null;
+  /** Kartet følger brukerens posisjon */
+  folg: boolean;
+  /** Simulert frakoblet modus (test av køen) */
+  simFrakoblet: boolean;
 }
 
 export const initialState: AppState = {
@@ -86,6 +92,9 @@ export const initialState: AppState = {
   markor: null,
   dataVersjon: 0,
   oppgaver: [],
+  valgtNaer: null,
+  folg: true,
+  simFrakoblet: false,
 };
 
 type Listener = (s: AppState, prev: AppState) => void;

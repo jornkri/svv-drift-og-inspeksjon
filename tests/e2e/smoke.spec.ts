@@ -38,4 +38,48 @@ test("hovedflyt: objekt, MMI-filter og telling", async ({ page }) => {
   // Dokumenter-fanen
   await page.getByRole("tab", { name: /Dokumenter/ }).click();
   await expect(page.getByRole("link", { name: /G301/ })).toBeVisible();
+
+  // Start inspeksjon fra objektpanelet: skjemaet er autoutfylt fra objektet
+  await page.getByRole("button", { name: "Start inspeksjon" }).click();
+  const auto = page.locator(".autoboks");
+  await expect(auto).toContainText("SR-003 · Stikkrennetrase-003");
+  await expect(auto).toContainText("57,21 m");
+  await expect(page.getByText("OPG-1042")).toBeVisible();
+});
+
+test.describe("felt (mobil)", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  test("geofence → bunnark → autoutfylt skjema → frakoblet kø → synk", async ({ page }) => {
+    await page.goto("/?simgps=1#/kart");
+    const ark = page.getByRole("region", { name: "Nærmeste objekt" });
+    await expect(ark).toContainText("DU ER VED", { timeout: 60_000 });
+    await expect(page.locator(".gpsstatus")).toContainText("Simulert GPS ±3 m");
+    const navn = (await ark.locator(".bunnark__navn").textContent())!.trim();
+
+    // Frakoblet modus
+    await page.getByRole("link", { name: "Meg" }).click();
+    await page.getByLabel("Simuler frakoblet modus (test av køen)").check();
+    await page.getByRole("link", { name: "Kart" }).click();
+    await expect(page.getByRole("region", { name: "Nærmeste objekt" })).toContainText("DU ER VED", { timeout: 30_000 });
+
+    await page.getByRole("region", { name: "Nærmeste objekt" }).getByRole("button", { name: "Start inspeksjon" }).click();
+    await expect(page.locator(".autoboks")).toContainText("Autoutfylt fra nærmeste objekt");
+    const objekt = (await page.locator(".autoboks dd").first().textContent())!;
+    expect(navn.length).toBeGreaterThan(0);
+    expect(objekt).toContain(navn.split(" ").pop()!);
+
+    await page.getByLabel("TG 0 – Ingen").check({ force: true });
+    await page.getByLabel(/Avvikstype/).selectOption("Ingen avvik");
+    await page.getByLabel("Nei", { exact: true }).check();
+    await page.getByRole("button", { name: "Send inn" }).click();
+    await expect(page.locator(".toasts")).toContainText("Lagret i kø");
+    await expect(page.locator(".gpsstatus")).toContainText("Frakoblet · 1 i kø");
+
+    // På nett igjen: køen sendes automatisk
+    await page.getByRole("link", { name: "Meg" }).click();
+    await page.getByLabel("Simuler frakoblet modus (test av køen)").uncheck();
+    await expect(page.locator(".toasts")).toContainText("er sendt");
+    await expect(page.locator(".statusboks")).toContainText("0 inspeksjoner venter");
+  });
 });
