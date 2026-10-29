@@ -10,6 +10,7 @@ import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
 import SimpleLineSymbol from "@arcgis/core/symbols/SimpleLineSymbol.js";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol.js";
 import type MapView from "@arcgis/core/views/MapView.js";
+import type SceneView from "@arcgis/core/views/SceneView.js";
 import type { AppConfig } from "../config.ts";
 import { NVDB_FARGE, NVDB_TYPER, hentVegobjekter, oppsummer, parseWkt, type NvdbType, type NvdbVegobjekt } from "../nvdb/vegobjekter.ts";
 import { store } from "../state/store.ts";
@@ -71,9 +72,21 @@ export class NvdbObjekterLayer {
   private handles: { remove(): void }[] = [];
   private uthevet: Graphic | null = null;
 
-  constructor(private readonly cfg: AppConfig) {
+  /**
+   * I 3D tegnes bare objekter med målte høyder (Z), i absolutt høyde (NN2000), slik at
+   * f.eks. stikkrenner ligger under terrenget. Objekter uten Z utelates i 3D.
+   */
+  constructor(
+    private readonly cfg: AppConfig,
+    private readonly dim: "2d" | "3d" = "2d",
+  ) {
     for (const t of NVDB_TYPER) {
-      const l = new GraphicsLayer({ id: `nvdb-${t.id}`, title: t.navn, visible: nvdbSynlig(t.id) });
+      const l = new GraphicsLayer({
+        id: `nvdb-${t.id}`,
+        title: t.navn,
+        visible: nvdbSynlig(t.id),
+        ...(dim === "3d" ? { elevationInfo: { mode: "absolute-height" } } : {}),
+      });
       this.lag.set(t.id, l);
     }
     // Flater nederst, punkter øverst
@@ -81,7 +94,7 @@ export class NvdbObjekterLayer {
     this.group.addMany([...NVDB_TYPER].sort((a, b) => rekke[a.geometri] - rekke[b.geometri]).map((t) => this.lag.get(t.id)!));
   }
 
-  attach(view: MapView): void {
+  attach(view: MapView | SceneView): void {
     this.handles.push(
       reactiveUtils.watch(
         () => [view.stationary, view.extent] as const,
@@ -132,7 +145,7 @@ export class NvdbObjekterLayer {
     }
   }
 
-  private async refresh(view: MapView) {
+  private async refresh(view: MapView | SceneView) {
     if (!view.extent) return;
     if (view.scale > NVDB_MAKS_SKALA) {
       store.set({ nvdbAntall: {} });
@@ -159,6 +172,7 @@ export class NvdbObjekterLayer {
           for (const o of objekter) {
             const geometry = nvdbGeometri(o);
             if (!geometry) continue;
+            if (this.dim === "3d" && !geometry.hasZ) continue;
             this.objekter.set(`${t.id}:${o.id}`, o);
             graphics.push(
               new Graphic({
@@ -182,7 +196,7 @@ export class NvdbObjekterLayer {
     }
   }
 
-  private tell(view: MapView) {
+  private tell(view: MapView | SceneView) {
     const e = view.extent;
     const antall: Record<number, number> = {};
     for (const [id, l] of this.lag) {

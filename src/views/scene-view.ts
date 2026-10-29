@@ -18,6 +18,7 @@ import { createRef, ref } from "lit/directives/ref.js";
 import { createBasemap, hasGdoAccess } from "../map/basemaps.ts";
 import { setMapContext } from "../map/map-context.ts";
 import { ObjectLayerController } from "../map/object-layers.ts";
+import { NvdbObjekterLayer } from "../map/nvdb-objekter-layer.ts";
 import { services } from "../services.ts";
 import { store } from "../state/store.ts";
 import { StoreElement } from "../ui/base.ts";
@@ -26,6 +27,7 @@ import "../ui/filter-bar.ts";
 import "../ui/layer-panel.ts";
 import "../ui/map-controls.ts";
 import "../ui/object-panel.ts";
+import "../ui/nvdb-panel.ts";
 
 const SCENE_ID = "kart-3d";
 
@@ -48,6 +50,7 @@ type AnalysisEl = HTMLElement & { start(): Promise<void>; clear(): Promise<void>
 export class SvvSceneView extends StoreElement {
   private view: SceneView | null = null;
   private objects: ObjectLayerController | null = null;
+  private nvdb: NvdbObjekterLayer | null = null;
   private sceneLayers: { navn: string; layer: SceneLayer }[] = [];
   private fagmodeller: string[] = [];
   private verktoy: Verktoy = "naviger";
@@ -77,6 +80,7 @@ export class SvvSceneView extends StoreElement {
     this.handles.forEach((h) => h.remove());
     this.unsubs.forEach((u) => u());
     this.objects?.destroy();
+    this.nvdb?.detach();
     setMapContext(null);
   }
 
@@ -116,6 +120,9 @@ export class SvvSceneView extends StoreElement {
 
     this.objects = new ObjectLayerController(view, "3d", data);
     await this.objects.start();
+    const nvdb = (this.nvdb = new NvdbObjekterLayer(cfg, "3d"));
+    map.add(nvdb.group);
+    nvdb.attach(view);
     this.fagmodeller = [...new Set((await data.objectStats()).map((s) => s.fagmodell).filter((x): x is string => !!x))];
     setMapContext({ dim: "3d", elementId: SCENE_ID, view, objects: this.objects });
 
@@ -123,7 +130,13 @@ export class SvvSceneView extends StoreElement {
       view.on("click", async (e) => {
         if (this.verktoy !== "naviger" || !this.objects) return;
         const ids = await this.objects.hitTest(e);
-        store.set({ selection: ids.length ? { globalids: ids, index: 0 } : null, popover: null });
+        if (ids.length) {
+          store.set({ selection: { globalids: ids, index: 0 }, nvdbValgt: null, popover: null });
+          return;
+        }
+        const treff = (await view.hitTest(e, { include: nvdb.layers })).results.find((r) => r.type === "graphic");
+        const a = treff && "graphic" in treff ? treff.graphic.attributes : null;
+        store.set({ selection: null, nvdbValgt: a ? { typeId: a.type_id as number, id: a.nvdb_id as number } : null, popover: null });
       }),
       reactiveUtils.watch(
         () => view.camera,
@@ -280,7 +293,11 @@ export class SvvSceneView extends StoreElement {
             <span class="koordlinje__kilde">Terreng: ${this.harTerreng ? "Geodata Online høydemodell" : "mangler"} · BIM: ${this.sceneLayers.length ? "i3s fra IFC" : "objektlag"}</span>
           </div>
         </div>
-        ${s.selection ? html`<svv-object-panel dim="3d"></svv-object-panel>` : nothing}
+        ${s.selection
+          ? html`<svv-object-panel dim="3d"></svv-object-panel>`
+          : s.nvdbValgt
+            ? html`<svv-nvdb-panel></svv-nvdb-panel>`
+            : nothing}
       </div>
     `;
   }
