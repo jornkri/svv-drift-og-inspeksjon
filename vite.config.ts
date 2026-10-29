@@ -109,6 +109,9 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
+          // Ny versjon tar over straks (autoUpdate laster siden på nytt når den nye arbeideren styrer)
+          skipWaiting: true,
+          clientsClaim: true,
           globPatterns: ["**/*.{js,css,html,svg,png,json,woff2}"],
           globIgnores: ["arcgis/**", "calcite/**", "mock-dok/**"],
           maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
