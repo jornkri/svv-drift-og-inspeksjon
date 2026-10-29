@@ -48,17 +48,36 @@ export class SvvApp extends StoreElement {
     return `${route}-${this.store.state.felt || this.mobile ? "felt" : "kontor"}`;
   }
 
+  private failed = new Set<string>();
+  private pending = new Set<string>();
+
   private ensureLoaded(key: string): boolean {
     if (this.loaded.has(key)) return true;
-    void (LOADERS[key]?.() ?? Promise.resolve()).then(() => {
-      this.loaded.add(key);
-      this.requestUpdate();
-    });
+    if (this.pending.has(key) || this.failed.has(key)) return false;
+    this.pending.add(key);
+    void (LOADERS[key]?.() ?? Promise.resolve())
+      .then(() => this.loaded.add(key))
+      .catch((e) => {
+        console.error(`Kunne ikke laste visningen ${key}`, e);
+        this.failed.add(key);
+      })
+      .finally(() => {
+        this.pending.delete(key);
+        this.requestUpdate();
+      });
     return false;
   }
 
   private renderRoute(route: Route, felt: boolean) {
-    if (!this.ensureLoaded(this.key(route))) return html`<div class="laster" role="status">Laster …</div>`;
+    const key = this.key(route);
+    if (!this.ensureLoaded(key)) {
+      return this.failed.has(key)
+        ? html`<div class="laster" role="alert">
+            <p>Visningen kunne ikke lastes. Sjekk nettforbindelsen.</p>
+            <button class="knapp knapp--primar" @click=${() => location.reload()}>Prøv igjen</button>
+          </div>`
+        : html`<div class="laster" role="status">Laster …</div>`;
+    }
     switch (route) {
       case "kart":
         return felt ? html`<svv-field-map></svv-field-map>` : html`<svv-map-view></svv-map-view>`;

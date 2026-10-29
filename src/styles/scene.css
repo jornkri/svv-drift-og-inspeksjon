@@ -1,0 +1,131 @@
+/* =========================================================================
+   3D-scene
+   ========================================================================= */
+.kartflate__kart--3d {
+  background: var(--svv-blue-bg);
+}
+.kartflate__kart--3d .lagpanel {
+  top: 120px;
+  left: 324px;
+}
+.verktoylinje {
+  position: absolute;
+  top: 64px;
+  left: 324px;
+  display: flex;
+  flex-wrap: wrap;
+  background: var(--svv-white);
+  border: 1px solid var(--svv-grey-dark-65);
+  z-index: 4;
+}
+.verktoylinje__knapp {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-right: 1px solid var(--svv-gray-regular-dark);
+  background: var(--svv-white);
+  color: var(--svv-gray-dark);
+  font: inherit;
+  cursor: pointer;
+}
+.verktoylinje__knapp:last-child {
+  border-right: 0;
+}
+/* Aktivt verktøy: mørk flate med oransje strek (kontrast) */
+.verktoylinje__knapp.is-valgt {
+  background: var(--svv-gray-dark);
+  color: var(--svv-white);
+  font-weight: 600;
+  box-shadow: inset 0 -3px 0 var(--svv-orange);
+}
+.terrengpanel {
+  position: absolute;
+  top: 64px;
+  left: 12px;
+  width: 300px;
+  max-height: calc(100% - 120px);
+  overflow: auto;
+  background: var(--svv-white);
+  border: 1px solid var(--svv-grey-dark-65);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 3;
+}
+.terrengpanel h2 {
+  margin: 0;
+  font-size: 16px;
+}
+.terrengpanel .melding {
+  font-size: 12px;
+}
+.glider {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.glider__etikett {
+  display: flex;
+  justify-content: space-between;
+}
+.glider input[type="range"] {
+  accent-color: var(--svv-gray-dark);
+  min-height: 32px;
+}
+.fagmodeller {
+  border: 0;
+  border-top: 1px solid var(--svv-gray-regular-dark);
+  margin: 0;
+  padding: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+.fagmodeller legend {
+  float: left;
+  width: 100%;
+  padding-bottom: 4px;
+}
+.avkrysning--tett {
+  min-height: 36px;
+}
+.verktoypanel {
+  position: absolute;
+  left: 324px;
+  bottom: 44px;
+  width: 360px;
+  max-height: 60%;
+  overflow: auto;
+  background: var(--svv-white);
+  border: 1px solid var(--svv-gray-dark);
+  z-index: 4;
+}
+.verktoypanel__innhold {
+  padding: 0 14px 14px;
+}
+.verktoypanel__innhold > * {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .terrengpanel {
+    top: auto;
+    bottom: 40px;
+    width: calc(100% - 24px);
+    max-height: 40%;
+  }
+  .verktoylinje {
+    top: 112px;
+    left: 12px;
+    right: 76px;
+    transform: none;
+  }
+  .verktoypanel {
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+  .kartflate__kart--3d .lagpanel {
+    left: 12px;
+  }
+}

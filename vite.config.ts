@@ -94,6 +94,9 @@ export default defineConfig(({ mode }) => {
       target: "es2022",
       chunkSizeWarningLimit: 4000,
     },
+    // Skann alle moduler (også lazy-lastede visninger) ved oppstart, slik at Vite ikke
+    // må optimalisere avhengigheter på nytt midt i en økt
+    optimizeDeps: { entries: ["index.html", "src/**/*.ts"] },
     server: { port: 5180, strictPort: true },
     preview: { port: 4180, strictPort: true },
     test: {

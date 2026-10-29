@@ -73,6 +73,28 @@ test("oppgaver: nøkkeltall, detaljpanel og tildeling", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Stikkrennetrase-003" })).toBeVisible();
 });
 
+test("3D: lokal scene, IFC-egenskaper og fagmodeller", async ({ page }) => {
+  await page.goto("/?objekt=SR-003#/3d");
+  await expect(page.locator("svv-scene-view[data-klar]")).toBeAttached({ timeout: 90_000 });
+  const panel = page.getByRole("complementary").filter({ hasText: "Stikkrennetrase-003" });
+  await expect(panel).toContainText("IfcPipeSegment");
+  await expect(panel).toContainText("0FP5ek9CaZCpSiYpayArDh");
+  await expect(page.getByRole("heading", { name: "Under terreng" })).toBeVisible();
+
+  // Slå av fagmodellen Overvann: telleren går ned, og Nullstill vises
+  const antall = page.getByTestId("antall");
+  await expect(antall).toHaveText(/300 av 312/);
+  await page.getByRole("group", { name: "FAGMODELLER" }).getByLabel("Overvann").uncheck();
+  await expect(antall).not.toHaveText(/300 av 312/);
+  await expect(page.getByRole("button", { name: "Nullstill" })).toBeVisible();
+
+  // Snittverktøyet kan åpnes og lukkes
+  await page.getByRole("button", { name: "Snitt" }).click();
+  await expect(page.getByRole("region", { name: "Snitt" })).toBeVisible();
+  await page.getByRole("button", { name: "Lukk snitt" }).click();
+  await expect(page.getByRole("region", { name: "Snitt" })).toHaveCount(0);
+});
+
 test.describe("felt (mobil)", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 

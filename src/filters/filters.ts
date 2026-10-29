@@ -7,6 +7,8 @@ export interface FilterState {
   inspeksjon: StatusInspeksjon | "Alle";
   /** Objekttyper slått av i lagpanelet, som nøkkel "Fag|Objekttype". */
   skjulteTyper: string[];
+  /** Fagmodeller slått av (3D-panelet), f.eks. «Overvann» */
+  skjulteFagmodeller: string[];
   revisjon: string;
   modellfil: string;
   /** ISO-dato (YYYY-MM-DD) for revisjonsdato */
@@ -19,6 +21,7 @@ export const DEFAULT_FILTERS: FilterState = {
   phases: [...DEFAULT_PHASES],
   inspeksjon: "Alle",
   skjulteTyper: [],
+  skjulteFagmodeller: [],
   revisjon: "",
   modellfil: "",
   datoFra: "",
@@ -54,6 +57,7 @@ export function buildWhere(f: FilterState, fields: FieldMap<Objekt>, layerFag: F
     .filter((k) => k.startsWith(`${layerFag}|`))
     .map((k) => k.slice(layerFag.length + 1));
   if (hidden.length) parts.push(`${fields.objekttype} NOT IN (${hidden.map(sqlString).join(", ")})`);
+  if (f.skjulteFagmodeller.length) parts.push(`${fields.fagmodell} NOT IN (${f.skjulteFagmodeller.map(sqlString).join(", ")})`);
   parts.push(...extraWhere(f, fields));
   return parts.length ? parts.join(" AND ") : "1=1";
 }
@@ -73,12 +77,16 @@ export function isDirty(f: FilterState): boolean {
     !isDefaultSelection(f.phases) ||
     f.inspeksjon !== "Alle" ||
     f.skjulteTyper.length > 0 ||
+    f.skjulteFagmodeller.length > 0 ||
     hasExtra(f)
   );
 }
 
 /** Evaluerer filteret mot en post i minnet (brukes til telling og mobil-lister). */
-export function matches(f: FilterState, o: Pick<Objekt, "fag" | "mmi" | "status_inspeksjon" | "objekttype" | "revisjon" | "modellfil" | "rev_dato">): boolean {
+export function matches(
+  f: FilterState,
+  o: Pick<Objekt, "fag" | "mmi" | "status_inspeksjon" | "objekttype" | "revisjon" | "modellfil" | "rev_dato"> & Partial<Pick<Objekt, "fagmodell">>,
+): boolean {
   if (f.fag !== "Alle" && f.fag !== o.fag) return false;
   const sel = new Set(f.phases);
   if (sel.size < ALL_PHASES.length) {
@@ -88,6 +96,7 @@ export function matches(f: FilterState, o: Pick<Objekt, "fag" | "mmi" | "status_
   }
   if (f.inspeksjon !== "Alle" && f.inspeksjon !== o.status_inspeksjon) return false;
   if (f.skjulteTyper.includes(typeKey(o.fag, o.objekttype))) return false;
+  if (o.fagmodell && f.skjulteFagmodeller.includes(o.fagmodell)) return false;
   if (f.revisjon.trim() && o.revisjon !== f.revisjon.trim()) return false;
   if (f.modellfil.trim() && !(o.modellfil ?? "").toUpperCase().includes(f.modellfil.trim().toUpperCase())) return false;
   const d = o.rev_dato?.slice(0, 10) ?? "";

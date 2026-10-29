@@ -39,6 +39,15 @@ describe("kombinert filter", () => {
     expect(buildWhere(f({ phases: [...ALL_PHASES], revisjon: "O'B" }), fields, "Veg")).toBe("REV = 'O''B'");
   });
 
+  it("fagmodeller kan slås av hver for seg", () => {
+    const g = f({ phases: [...ALL_PHASES], skjulteFagmodeller: ["Overvann", "Drenering"] });
+    expect(buildWhere(g, OBJEKT_FIELDS, "VA")).toBe("fagmodell NOT IN ('Overvann', 'Drenering')");
+    expect(isDirty(g)).toBe(true);
+    const o = { fag: "VA", mmi: 400, status_inspeksjon: "OK", objekttype: "Kum", revisjon: "A", modellfil: null, rev_dato: null, fagmodell: "Overvann" } as const;
+    expect(matches(g, o)).toBe(false);
+    expect(matches(g, { ...o, fagmodell: "Belysning" })).toBe(true);
+  });
+
   it("ingen MMI-faser gir tomt resultat", () => {
     expect(buildWhere(f({ phases: [] }), OBJEKT_FIELDS, "VA")).toBe("1=0");
   });
