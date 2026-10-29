@@ -4,6 +4,7 @@ import "@arcgis/core/assets/esri/themes/light/view.css";
 import "./styles/app.css";
 import "./styles/components.css";
 import "./styles/field.css";
+import "./styles/tasks.css";
 
 import { setLocale } from "@arcgis/core/intl.js";
 import { initAuth } from "./auth/auth.ts";

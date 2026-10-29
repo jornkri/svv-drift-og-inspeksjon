@@ -1,0 +1,388 @@
+/* =========================================================================
+   Oppgaver (kontor og mobil)
+   ========================================================================= */
+.pille {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pille--gra {
+  background: var(--svv-gray-light);
+}
+.pille--blaa {
+  background: var(--svv-blue-bg);
+  color: var(--svv-blue-dark);
+}
+.pille--rod {
+  background: var(--svv-red-bg);
+  color: var(--svv-red-dark);
+}
+.pille--gronn {
+  background: var(--svv-green-bg);
+  color: var(--svv-green-dark);
+}
+.pille--oransje {
+  background: var(--svv-orange-bg);
+}
+.pille--ramme {
+  background: var(--svv-white);
+  border: 1px solid var(--svv-gray-regular-dark);
+}
+
+.oppgaveside {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+.oppgaveside__liste {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: auto;
+}
+.oppgaveside__hode {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.oppgaveside__hode h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 32px;
+}
+.oppgaveside__hode p {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+.nokkelkort {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.nokkelkort__kort {
+  padding: 14px 16px;
+  background: var(--svv-gray-light);
+}
+.nokkelkort__kort dt {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.nokkelkort__kort dd {
+  margin: 0;
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 600;
+}
+.nokkelkort__kort--oransje {
+  background: var(--svv-orange-bg);
+}
+.nokkelkort__kort--rod {
+  background: var(--svv-red-bg);
+  color: var(--svv-red-dark);
+}
+.nokkelkort__kort--gronn {
+  background: var(--svv-green-bg);
+  color: var(--svv-green-dark);
+}
+.oppgavefilter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.segment--inline {
+  margin: 0;
+  display: inline-grid;
+}
+.segment--inline .segment__valg {
+  padding: 0 14px;
+  min-height: 40px;
+}
+.velgfelt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--svv-grey-dark-65);
+}
+.velgfelt select {
+  border: 0;
+  font: inherit;
+  color: var(--svv-gray-dark);
+  background: transparent;
+  min-height: 36px;
+}
+.tabellramme {
+  overflow-x: auto;
+  border: 1px solid var(--svv-gray-regular-dark);
+}
+.tabell {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+.tabell th {
+  background: var(--svv-gray-light);
+  text-align: left;
+  font-weight: 600;
+  padding: 10px 12px;
+}
+.tabell td {
+  padding: 8px 12px;
+  border-top: 1px solid var(--svv-gray-regular-dark);
+}
+.tabell tr.is-valgt td {
+  background: var(--svv-blue-bg);
+}
+.tabell tr:hover td {
+  background: var(--svv-gray-light);
+}
+.tabell tr.is-valgt:hover td {
+  background: var(--svv-blue-bg);
+}
+.tabell__lenkeknapp {
+  border: 0;
+  background: transparent;
+  padding: 6px 0;
+  min-height: 32px;
+  font: inherit;
+  color: var(--svv-gray-dark);
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--svv-grey-dark-65);
+  text-underline-offset: 3px;
+}
+.oppgavedetalj {
+  flex: 0 0 420px;
+  border-left: 1px solid var(--svv-gray-regular-dark);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+.oppgavedetalj__tom {
+  padding: 32px;
+}
+.oppgavedetalj__kart {
+  height: 240px;
+  flex: 0 0 240px;
+  position: relative;
+  background: var(--svv-map-bg);
+}
+.oppgavedetalj__kart arcgis-map {
+  position: absolute;
+  inset: 0;
+}
+.oppgavedetalj__aapne {
+  position: absolute;
+  right: 12px;
+  bottom: 28px;
+  z-index: 2;
+}
+.oppgavedetalj__innhold {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.oppgavedetalj__innhold h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 26px;
+}
+.oppgavedetalj__innhold p {
+  margin: 0;
+}
+.detaljgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  margin: 0;
+}
+.detaljgrid dt {
+  color: var(--svv-grey-dark-80);
+}
+.detaljgrid dd {
+  margin: 0;
+}
+.logg {
+  border-top: 1px solid var(--svv-gray-regular-dark);
+  padding-top: 12px;
+}
+.logg ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Dialog */
+.dialogbakgrunn {
+  position: fixed;
+  inset: 0;
+  background: rgba(68, 79, 85, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+.dialog {
+  width: min(440px, 100%);
+  background: var(--svv-white);
+  border-top: 4px solid var(--svv-orange);
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.dialog__hode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dialog__hode h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.dialog__fot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Mobil: Mine oppgaver */
+.mineoppgaver {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--svv-gray-light);
+}
+.mineoppgaver__hode {
+  flex: 0 0 auto;
+  background: var(--svv-white);
+  border-bottom: 4px solid var(--svv-orange);
+  padding: 14px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mineoppgaver__tittel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.mineoppgaver__tittel h1 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 26px;
+}
+.filterknapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.filterknapp {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--svv-gray-regular-dark);
+  background: var(--svv-gray-light);
+  color: var(--svv-gray-dark);
+  font: inherit;
+  cursor: pointer;
+}
+.filterknapp.is-valgt {
+  background: var(--svv-gray-dark);
+  border-color: var(--svv-gray-dark);
+  color: var(--svv-white);
+  font-weight: 600;
+}
+.mineoppgaver__liste {
+  flex: 1;
+  overflow: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mineoppgaver__liste ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.oppgavekort {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  background: var(--svv-white);
+  padding: 12px;
+  border: 1px solid var(--svv-gray-regular-dark);
+  color: var(--svv-gray-dark);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.oppgavekort__fag {
+  width: 6px;
+  flex: 0 0 6px;
+  background: var(--svv-blue-regular);
+}
+.oppgavekort__fag--elektro {
+  background: var(--svv-orange-dark);
+}
+.oppgavekort__fag--veg {
+  background: var(--svv-gray-dark);
+}
+.oppgavekort__innhold {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.oppgavekort__topp {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.oppgavekort__avstand {
+  white-space: nowrap;
+}
+.oppgavekort__bunn {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+@media (max-width: 1100px) {
+  .oppgaveside {
+    flex-direction: column;
+  }
+  .oppgavedetalj {
+    flex: 0 0 auto;
+    border-left: 0;
+    border-top: 1px solid var(--svv-gray-regular-dark);
+  }
+  .nokkelkort {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

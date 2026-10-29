@@ -47,6 +47,32 @@ test("hovedflyt: objekt, MMI-filter og telling", async ({ page }) => {
   await expect(page.getByText("OPG-1042")).toBeVisible();
 });
 
+test("oppgaver: nøkkeltall, detaljpanel og tildeling", async ({ page }) => {
+  await page.goto("/#/oppgaver");
+  await expect(page.getByRole("heading", { name: "Oppgaver", level: 1 })).toBeVisible({ timeout: 60_000 });
+  await expect(page.locator(".nokkelkort")).toContainText("OVER FRIST");
+  await page.getByRole("button", { name: "Kontroll av innløp etter flom" }).click();
+  const detalj = page.getByRole("complementary", { name: "Valgt oppgave" });
+  await expect(detalj).toContainText("OPG-1042 · Kontroll av innløp etter flom");
+  await expect(detalj).toContainText("Inspeksjon overvann v2");
+
+  await detalj.getByRole("button", { name: "Tildel på nytt" }).click();
+  await page.getByRole("dialog").getByLabel("Tildel til").selectOption("Ola Hansen");
+  await page.getByRole("dialog").getByRole("button", { name: "Tildel" }).click();
+  await expect(detalj).toContainText("Ola Hansen");
+
+  // Fanen «Teamet» viser fortsatt oppgaven, «Mine» gjør det ikke
+  await page.getByRole("tab", { name: "Teamet" }).click();
+  await expect(page.getByRole("button", { name: "Kontroll av innløp etter flom" })).toBeVisible();
+  await page.getByRole("tab", { name: "Mine" }).click();
+  await expect(page.getByRole("button", { name: "Kontroll av innløp etter flom" })).toHaveCount(0);
+
+  // Objektlenken åpner kartet med objektet valgt
+  await page.getByRole("tab", { name: "Alle" }).click();
+  await page.getByRole("link", { name: "Stikkrennetrase-003" }).click();
+  await expect(page.getByRole("heading", { name: "Stikkrennetrase-003" })).toBeVisible();
+});
+
 test.describe("felt (mobil)", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 
@@ -81,5 +107,11 @@ test.describe("felt (mobil)", () => {
     await page.getByLabel("Simuler frakoblet modus (test av køen)").uncheck();
     await expect(page.locator(".toasts")).toContainText("er sendt");
     await expect(page.locator(".statusboks")).toContainText("0 inspeksjoner venter");
+
+    // Mine oppgaver, sortert etter avstand
+    await page.getByRole("link", { name: "Oppgaver" }).click();
+    await expect(page.getByRole("heading", { name: "Mine oppgaver" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /Denne uka/ })).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".oppgavekort").first()).toContainText(/\d+ m/);
   });
 });
