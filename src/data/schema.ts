@@ -90,6 +90,10 @@ export interface Inspeksjon {
   obj_lengde_m: number | null;
   obj_kote_min: number | null;
   obj_kote_max: number | null;
+  /** Konsekvensgrad 0–3 etter R610:2025 pkt. 1.3 (valgfri) */
+  konsekvensgrad?: number | null;
+  /** Utfylt sjekkliste fra håndboken, én linje per punkt: «OK|AVVIK: tekst» (valgfri) */
+  sjekkliste?: string | null;
   /** Antall bildevedlegg (beregnet, lagres ikke) */
   antall_bilder?: number;
 }
@@ -180,6 +184,9 @@ export const INSPEKSJON_FIELDS: FieldMap<Inspeksjon> = {
   obj_lengde_m: "obj_lengde_m",
   obj_kote_min: "obj_kote_min",
   obj_kote_max: "obj_kote_max",
+  // TODO(SVV): felt for konsekvensgrad og sjekkliste må legges til i inspeksjonstabellen
+  konsekvensgrad: "konsekvensgrad",
+  sjekkliste: "sjekkliste",
   antall_bilder: "antall_bilder",
 };
 

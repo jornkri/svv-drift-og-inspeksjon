@@ -240,3 +240,6 @@ svv-overview-view {
 .nokkeltall--kompakt {
   margin: 10px 0 4px;
 }
+.oversikt .nokkelkort {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}

@@ -261,7 +261,10 @@ export class PortalDataService implements DataService {
   async submitInspection(insp: Inspeksjon, bilder: Fotovedlegg[]): Promise<InnsendingResultat> {
     if (!this.inspTable) throw new Error("Inspeksjonstabellen er ikke konfigurert");
     const { antall_bilder: _n, globalid: _g, ...rest } = insp;
-    const attributes = toAttributes<Inspeksjon>(rest, this.cfg.fields.inspeksjon);
+    const alle = toAttributes<Inspeksjon>(rest, this.cfg.fields.inspeksjon);
+    // Felt tabellen ikke har (f.eks. konsekvensgrad/sjekkliste før tjenesten er utvidet) utelates.
+    const finnes = new Set((this.inspTable.fields ?? []).map((f) => f.name.toLowerCase()));
+    const attributes = finnes.size ? Object.fromEntries(Object.entries(alle).filter(([k]) => finnes.has(k.toLowerCase()))) : alle;
     const res = await this.inspTable.applyEdits({ addFeatures: [new Graphic({ attributes })] });
     const add = res.addFeatureResults[0];
     if (!add || add.error) throw new Error(add?.error?.message ?? "Lagring feilet");

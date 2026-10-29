@@ -255,3 +255,14 @@ export function minsteAvstand(a: number[][][], b: number[][][]): number {
   }
   return min;
 }
+
+/** ÅDT (Trafikkmengde, type 540) ved et punkt – brukes til tiltakstid etter R610 tabell 1.3—1. */
+export async function hentAadt(k: NvdbKlient, x: number, y: number, radius = 30): Promise<{ aadt: number; aar: number | null; vegref: string | null } | null> {
+  const objekter = await hentVegobjekter(k, 540, [x - radius, y - radius, x + radius, y + radius], { maksSider: 1, inkluder: "egenskaper,lokasjon" });
+  const beste = objekter
+    .map((o) => ({ o, aadt: egenskap(o, "ÅDT, total")?.verdi, aar: egenskap(o, "År, gjelder for")?.verdi }))
+    .filter((x): x is { o: NvdbVegobjekt; aadt: number; aar: number | null } => typeof x.aadt === "number")
+    .sort((a, b) => b.aadt - a.aadt)[0];
+  if (!beste) return null;
+  return { aadt: beste.aadt, aar: typeof beste.aar === "number" ? beste.aar : null, vegref: beste.o.lokasjon?.vegsystemreferanser?.[0]?.kortform ?? null };
+}

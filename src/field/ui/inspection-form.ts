@@ -1,3 +1,4 @@
+import type Point from "@arcgis/core/geometry/Point.js";
 import { html, nothing } from "lit";
 import type { Fotovedlegg, ObjektTreff } from "../../data/DataService.ts";
 import { AVVIKSTYPER, TILSTANDSGRADER, type Tilstandsgrad } from "../../data/schema.ts";
@@ -13,6 +14,8 @@ import { isSimGps, startFieldRuntime } from "../field-runtime.ts";
 import { watchCompass } from "../gps.ts";
 import { autoFields, changeObject, prefill, toInspeksjon, unlock, validate, type InspeksjonUtkast } from "../prefill.ts";
 import { inspectionSync, offlineQueue } from "../sync-setup.ts";
+import { KONSEKVENSGRADER, driftskrav, tiltakstid } from "../../handbok/r610.ts";
+import { hentAadt } from "../../nvdb/vegobjekter.ts";
 
 const draftId = (globalid: string) => `utkast-${globalid}`;
 
@@ -27,6 +30,7 @@ export class SvvInspectionForm extends StoreElement {
   private stopCompass: (() => void) | null = null;
   private urls = new Map<string, string>();
   private ingenObjekt = false;
+  private aadt: { globalid: string; verdi: Awaited<ReturnType<typeof hentAadt>> | undefined } | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -88,6 +92,81 @@ export class SvvInspectionForm extends StoreElement {
       avstand_m: naer?.avstand ?? null,
     });
     this.requestUpdate();
+  }
+
+  protected override updated(): void {
+    const id = this.u?.objekt.globalid;
+    if (!id || this.aadt?.globalid === id) return;
+    this.aadt = { globalid: id, verdi: undefined };
+    const { data, cfg } = services();
+    void data
+      .getObject(id)
+      .then((t) => {
+        const c = t?.geometry.extent?.center ?? (t?.geometry.type === "point" ? (t.geometry as Point) : null);
+        return c ? hentAadt({ baseUrl: cfg.nvdb.baseUrl, client: cfg.nvdb.client }, c.x, c.y) : null;
+      })
+      .catch(() => null)
+      .then((v) => {
+        if (this.aadt?.globalid !== id) return;
+        this.aadt = { globalid: id, verdi: v };
+        this.requestUpdate();
+      });
+  }
+
+  private renderSjekkliste(u: InspeksjonUtkast) {
+    const k = driftskrav(u.objekt);
+    if (!k || !k.sjekkpunkter.length) return nothing;
+    const valgt = u.sjekkliste ?? {};
+    return html`<fieldset class="sjekkliste">
+      <legend class="felt__etikett">Sjekkpunkter · ${k.type} <span class="sekundar">(valgfritt)</span></legend>
+      <p class="sekundar liten">Fra ${k.intervallKilde.split(" ")[0]}. Marker det du har kontrollert.</p>
+      <ol class="sjekkliste__liste">
+        ${k.sjekkpunkter.map((p, i) => {
+          const v = valgt[i];
+          const sett = (nytt: "ok" | "avvik") => {
+            const neste = { ...valgt };
+            if (v === nytt) delete neste[i];
+            else neste[i] = nytt;
+            this.set({ sjekkliste: neste });
+          };
+          return html`<li class="sjekkliste__punkt">
+            <span class="sjekkliste__tekst">${p.tekst}<span class="kravliste__kilde">${p.kilde}</span></span>
+            <span class="sjekkliste__valg" role="group" aria-label="Resultat for sjekkpunkt ${i + 1}">
+              <button type="button" class="sjekkliste__knapp ${v === "ok" ? "is-ok" : ""}" aria-pressed=${v === "ok"} @click=${() => sett("ok")}>OK</button>
+              <button type="button" class="sjekkliste__knapp ${v === "avvik" ? "is-avvik" : ""}" aria-pressed=${v === "avvik"} @click=${() => sett("avvik")}>Avvik</button>
+            </span>
+          </li>`;
+        })}
+      </ol>
+    </fieldset>`;
+  }
+
+  private renderKonsekvens(u: InspeksjonUtkast) {
+    if (u.tilstandsgrad == null || u.tilstandsgrad === 0) return nothing;
+    const a = this.aadt?.globalid === u.objekt.globalid ? this.aadt.verdi : undefined;
+    const aadt = a?.aadt ?? null;
+    const dager = u.konsekvensgrad != null ? tiltakstid(u.konsekvensgrad, aadt) : null;
+    const frist = dager != null ? new Date(Date.now() + dager * 86_400_000) : null;
+    return html`<fieldset class="radiogruppe konsekvens">
+      <legend class="felt__etikett">Konsekvensgrad (R610:2025 tabell 1.3—1)</legend>
+      <div class="konsekvens__valg">
+        ${KONSEKVENSGRADER.map(
+          (k) => html`<label class="avkrysning konsekvens__rad">
+            <input type="radio" name="kg" .checked=${u.konsekvensgrad === k.kg} @change=${() => this.set({ konsekvensgrad: k.kg })} />
+            <span><strong>KG ${k.kg} – ${k.navn}</strong><span class="sekundar liten">${k.beskrivelse}</span></span>
+          </label>`,
+        )}
+      </div>
+      <p class="sekundar liten" role="status">
+        ${a === undefined
+          ? "Henter ÅDT fra NVDB …"
+          : a
+            ? `ÅDT ${a.aadt.toLocaleString("nb-NO")}${a.aar ? ` (${a.aar})` : ""} fra NVDB${a.vegref ? `, ${a.vegref}` : ""}.`
+            : "Fant ikke ÅDT i NVDB – bruker kolonnen for ÅDT 0–3000."}
+        ${dager != null && frist ? html` <strong>Tiltakstid ${dager} dager – utbedres innen ${frist.toLocaleDateString("nb-NO")}.</strong>` : nothing}
+        ${u.konsekvensgrad === 3 ? html` Ved fare: sikre stedet straks etter kravene til trafikkberedskap (R610 Krav 1.3—7).` : nothing}
+      </p>
+    </fieldset>`;
   }
 
   private set(patch: Partial<InspeksjonUtkast>) {
@@ -329,6 +408,8 @@ export class SvvInspectionForm extends StoreElement {
         </div>
       </fieldset>
 
+      ${this.renderSjekkliste(u)}
+
       <label class="felt">
         <span class="felt__etikett">Avvikstype <span aria-hidden="true">*</span></span>
         <select required @change=${(e: Event) => this.set({ avvikstype: (e.target as HTMLSelectElement).value })}>
@@ -348,6 +429,8 @@ export class SvvInspectionForm extends StoreElement {
           )}
         </div>
       </fieldset>
+
+      ${this.renderKonsekvens(u)}
 
       <label class="felt">
         <span class="felt__etikett">Kommentar</span>

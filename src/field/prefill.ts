@@ -4,6 +4,7 @@
  */
 import type { Fotovedlegg } from "../data/DataService.ts";
 import type { Inspeksjon, Objekt, Tilstandsgrad } from "../data/schema.ts";
+import { driftskrav } from "../handbok/r610.ts";
 
 export interface Posisjon {
   x: number;
@@ -35,6 +36,10 @@ export interface InspeksjonUtkast {
   posisjon: Posisjon | null;
   bilder: Fotovedlegg[];
   endret: string;
+  /** Konsekvensgrad etter R610:2025 (valgfri; eldre utkast mangler feltet) */
+  konsekvensgrad?: 0 | 1 | 2 | 3 | null;
+  /** Sjekkpunkt (indeks i håndbokens liste) → resultat */
+  sjekkliste?: Record<number, "ok" | "avvik">;
 }
 
 const MND = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
@@ -82,6 +87,8 @@ export function prefill(objekt: Objekt, tidligere: Inspeksjon[], ctx: PrefillCon
     posisjon: ctx.posisjon ?? null,
     bilder: [],
     endret: ctx.now.toISOString(),
+    konsekvensgrad: null,
+    sjekkliste: {},
   };
 }
 
@@ -140,6 +147,7 @@ export function validate(u: InspeksjonUtkast): string[] {
   if (u.tiltak_behov == null) e.push("Angi om det er behov for tiltak.");
   if (u.tilstandsgrad != null && u.tilstandsgrad >= 2 && !u.kommentar.trim()) e.push("Beskriv avviket i kommentarfeltet (TG 2–3).");
   if (!u.laast) e.push("Bekreft objektet før innsending.");
+  if (u.tilstandsgrad === 0 && Object.values(u.sjekkliste ?? {}).includes("avvik")) e.push("Et sjekkpunkt er markert med avvik – velg tilstandsgrad 1 eller høyere.");
   return e;
 }
 
@@ -167,5 +175,17 @@ export function toInspeksjon(u: InspeksjonUtkast, now: Date): Inspeksjon {
     obj_lengde_m: o.lengde_m,
     obj_kote_min: o.kote_min,
     obj_kote_max: o.kote_max,
+    konsekvensgrad: u.konsekvensgrad ?? null,
+    sjekkliste: sjekklisteTekst(u),
   };
+}
+
+/** Sjekklisten som tekst (én linje per kontrollert punkt), eller null hvis ingen er kontrollert. */
+export function sjekklisteTekst(u: Pick<InspeksjonUtkast, "objekt" | "sjekkliste">): string | null {
+  const punkter = driftskrav(u.objekt)?.sjekkpunkter ?? [];
+  const linjer = Object.entries(u.sjekkliste ?? {})
+    .map(([i, v]) => ({ p: punkter[Number(i)], v }))
+    .filter((x) => x.p)
+    .map((x) => `${x.v === "ok" ? "OK" : "AVVIK"}: ${x.p!.tekst}`);
+  return linjer.length ? linjer.join("\n") : null;
 }

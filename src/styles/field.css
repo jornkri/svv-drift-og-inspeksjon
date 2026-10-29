@@ -567,3 +567,64 @@
     min-height: 44px;
   }
 }
+
+/* Sjekkliste fra håndboken og konsekvensgrad */
+.sjekkliste {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.sjekkliste__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sjekkliste__punkt {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--svv-gray-regular-dark);
+  font-size: 14px;
+}
+.sjekkliste__tekst {
+  flex: 1;
+  min-width: 0;
+}
+.sjekkliste__valg {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.sjekkliste__knapp {
+  min-width: 56px;
+  min-height: 44px;
+  border: 1px solid var(--svv-grey-dark-65);
+  background: var(--svv-white);
+  font: inherit;
+  font-weight: 600;
+  color: var(--svv-gray-dark);
+  cursor: pointer;
+}
+.sjekkliste__knapp.is-ok {
+  background: #1d7721;
+  border-color: #1d7721;
+  color: #ffffff;
+}
+.sjekkliste__knapp.is-avvik {
+  background: #b63434;
+  border-color: #b63434;
+  color: #ffffff;
+}
+.konsekvens__valg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.konsekvens__rad {
+  align-items: flex-start;
+}
+.konsekvens__rad > span {
+  display: flex;
+  flex-direction: column;
+}

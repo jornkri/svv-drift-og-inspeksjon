@@ -2,7 +2,7 @@ import { html, nothing } from "lit";
 import type { ObjektStat, ObjektTreff } from "../data/DataService.ts";
 import { FAG, type Inspeksjon } from "../data/schema.ts";
 import { PHASES, phaseRange } from "../filters/mmi.ts";
-import { andelInspisertSiste12, avviksliste, latestPerObject, perMaaned, phasePerFag, statusPerFag, tgFordeling } from "../reports/stats.ts";
+import { andelInspisertSiste12, avviksliste, fristerPerFag, latestPerObject, perMaaned, phasePerFag, statusPerFag, tgFordeling } from "../reports/stats.ts";
 import { services } from "../services.ts";
 import { navigate } from "../state/router.ts";
 import { store } from "../state/store.ts";
@@ -76,6 +76,8 @@ export class SvvOverviewView extends StoreElement {
     const faser = phasePerFag(this.stats);
     const tg = tgFordeling(latest.values());
     const mnd = perMaaned(this.insp, today);
+    const frister = fristerPerFag(this.stats, latest, today);
+    const sumFrist = (g: "forfalt" | "snart") => FAG.reduce((a, f) => a + frister.perFag[f][g], 0);
     const apenOppgave = (gid: string) => s.oppgaver.find((o) => o.objekt_globalid === gid && isOpen(o));
 
     return html`<div class="oversikt">
@@ -94,6 +96,10 @@ export class SvvOverviewView extends StoreElement {
           <dd>${Math.round(andel * 100)} %</dd>
         </div>
         <div class="nokkelkort__kort nokkelkort__kort--rod"><dt>OBJEKTER MED AVVIK</dt><dd>${avvik.length}</dd></div>
+        <div class="nokkelkort__kort">
+          <dt>INSPEKSJON FORFALT (R610)</dt>
+          <dd>${sumFrist("forfalt")}${sumFrist("snart") ? html` <small>(+${sumFrist("snart")} innen 30 dager)</small>` : nothing}</dd>
+        </div>
         <div class="nokkelkort__kort nokkelkort__kort--oransje">
           <dt>ÅPNE OPPGAVER</dt>
           <dd>${ts.apne}${ts.overFrist ? html` <small>(${ts.overFrist} over frist)</small>` : nothing}</dd>
@@ -125,6 +131,23 @@ export class SvvOverviewView extends StoreElement {
             })),
             { title: "MMI-fremdrift per fag" },
           )}
+        </section>
+
+        <section class="kort" aria-labelledby="ov-frist">
+          <h2 id="ov-frist">Inspeksjonsfrist etter R610:2025</h2>
+          ${stackedBars(
+            FAG.map((f) => ({
+              label: f,
+              segments: [
+                { key: "ok", label: "I rute", value: frister.perFag[f].ok, color: "#1d7721" },
+                { key: "snart", label: "Forfaller innen 30 dager", value: frister.perFag[f].snart, color: "#e27500" },
+                { key: "aldri", label: "Aldri inspisert", value: frister.perFag[f].aldri, color: "#697277" },
+                { key: "forfalt", label: "Forfalt", value: frister.perFag[f].forfalt, color: "#b63434", hatch: true },
+              ],
+            })),
+            { title: "Inspeksjonsfrist etter R610:2025 per fag" },
+          )}
+          <p class="sekundar liten">Intervall per objekttype fra R610:2025 (f.eks. stikkrenne hvert 5. år, rekkverk og skilt hver 12. måned), regnet fra siste inspeksjon.</p>
         </section>
 
         <section class="kort" aria-labelledby="ov-tg">

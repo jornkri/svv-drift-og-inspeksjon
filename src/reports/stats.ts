@@ -1,6 +1,7 @@
 import type { ObjektStat } from "../data/DataService.ts";
 import { FAG, STATUS_INSPEKSJON, type Fag, type Inspeksjon, type StatusInspeksjon } from "../data/schema.ts";
 import { ALL_PHASES, phaseOf, type PhaseId } from "../filters/mmi.ts";
+import { driftskrav, nesteInspeksjon } from "../handbok/r610.ts";
 
 /** Siste inspeksjon per objekt (globalid). */
 export function latestPerObject(insp: Inspeksjon[]): Map<string, Inspeksjon> {
@@ -83,4 +84,29 @@ export function avviksliste(stats: ObjektStat[], latest: Map<string, Inspeksjon>
       (a, b) =>
         (b.siste?.tilstandsgrad ?? 0) - (a.siste?.tilstandsgrad ?? 0) || (b.siste?.tidspunkt ?? "").localeCompare(a.siste?.tidspunkt ?? ""),
     );
+}
+
+export type FristGruppe = "ok" | "snart" | "aldri" | "forfalt";
+
+/**
+ * Inspeksjonsfrist per objekt etter intervallene i R610:2025 (via handbok/r610.ts).
+ * Objekttyper uten fastsatt intervall telles ikke.
+ */
+export function fristerPerFag(
+  stats: ObjektStat[],
+  latest: Map<string, Inspeksjon>,
+  today: Date,
+): { perFag: Record<Fag, Record<FristGruppe, number>>; forfalt: { globalid: string; fag: Fag; frist: Date; siste: Inspeksjon }[] } {
+  const perFag = Object.fromEntries(FAG.map((f) => [f, { ok: 0, snart: 0, aldri: 0, forfalt: 0 }])) as Record<Fag, Record<FristGruppe, number>>;
+  const forfalt: { globalid: string; fag: Fag; frist: Date; siste: Inspeksjon }[] = [];
+  for (const s of stats) {
+    const siste = latest.get(s.globalid) ?? null;
+    const krav = driftskrav({ objekttype: s.objekttype, navn: siste?.obj_navn ?? "" });
+    const n = nesteInspeksjon(siste?.tidspunkt ?? null, krav?.intervallMnd ?? null, today);
+    if (n.status === "ukjent") continue;
+    perFag[s.fag][n.status]++;
+    if (n.status === "forfalt" && siste && n.frist) forfalt.push({ globalid: s.globalid, fag: s.fag, frist: n.frist, siste });
+  }
+  forfalt.sort((a, b) => a.frist.getTime() - b.frist.getTime());
+  return { perFag, forfalt };
 }

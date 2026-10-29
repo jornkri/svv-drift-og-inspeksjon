@@ -1,0 +1,568 @@
+{
+  "metadata": {
+    "beskrivelse": "Fagkunnskap fra Statens vegvesens håndbøker for drift og inspeksjon av VA-, elektro- og vegobjekter. «verifisert» = lest i PDF-en av kilden (tekst hentet ut med pdftotext). «usikker» = fra sekundærkilde eller ikke lest i primærkilden.",
+    "innsamlet": "2026-10-29",
+    "krav_nummerering": "Kravnumre følger håndbokas format, f.eks. «Krav 6.8.10—1» i R610:2025. «Tiltakstid» = tid fra avvik oppstår (eller burde vært kjent) til avviket er utbedret (R610:2025 pkt. 1.3)."
+  },
+  "kilder": [
+    {
+      "id": "R610",
+      "tittel": "R610 Standard for drift og vedlikehold av riksveger (retningslinje)",
+      "utgave": "R610:2025, gyldig fra 2025-06-16 (erstatter 2024-utgaven), ISBN 978-82-7207-810-1",
+      "url": "https://store.vegnorm.vegvesen.no/r610 (PDF-kopi: https://hdl.handle.net/11250/3219920)"
+    },
+    {
+      "id": "N200",
+      "tittel": "N200 Vegbygging (vegnormal)",
+      "utgave": "N200:2024, gyldig fra 2024-07-05",
+      "url": "https://store.vegnorm.vegvesen.no/n200 (PDF-kopi: https://hdl.handle.net/11250/3144673)"
+    },
+    {
+      "id": "N101",
+      "tittel": "N101 Trafikksikkert sideterreng og vegsikringsutstyr (vegnormal; tidligere «Rekkverk og vegens sideområder»)",
+      "utgave": "N101, gyldig fra 2025-11-18, ISBN 978-82-7207-826-2",
+      "url": "https://store.vegnorm.vegvesen.no/n101 (PDF-kopi: https://hdl.handle.net/11250/5482013)"
+    },
+    {
+      "id": "R761",
+      "tittel": "R761 Prosesskode 1 – Standard beskrivelse for vegkontrakter, hovedprosess 1–7 (retningslinje)",
+      "utgave": "Vegdirektoratet 2014, faglig innhold 2012. MERK: Gjeldende utgave er «R761 Prosesskoden:2025», som ikke er lest. Prosessnumre er hentet fra 2014-utgaven.",
+      "url": "https://hdl.handle.net/11250/2371328 (gjeldende utgave: https://store.vegnorm.vegvesen.no/r761)"
+    },
+    {
+      "id": "V441",
+      "tittel": "V441 Bruinspeksjon (veiledning)",
+      "utgave": "Vegdirektoratet 2019, ISBN 978-82-7207-752-4",
+      "url": "https://hdl.handle.net/11250/3057144"
+    },
+    {
+      "id": "V124",
+      "tittel": "V124 Teknisk planlegging av veg- og tunnelbelysning (veiledning)",
+      "utgave": "Vegdirektoratet april 2021",
+      "url": "https://hdl.handle.net/11250/3168529"
+    },
+    {
+      "id": "NS3424-sek",
+      "tittel": "NS 3424:2012 Tilstandsanalyse av byggverk – Innhold og gjennomføring (Standard Norge, betalt). Ikke lest. Betegnelsene for TG/KG er hentet fra en sekundærkilde: Ulstein kommune, «Tilstandsanalyse kommunale bygg» (2025)",
+      "utgave": "NS 3424:2012 (henvist til i N101 ref. [46]); sekundærkilde datert 31.10.2025",
+      "url": "https://www.ulstein.kommune.no/_f/p34/i7329db92-2a51-4e5b-850e-2dee4686baf8/tilstandsanalyse-kommunale-bygg-uk-2025.pdf"
+    }
+  ],
+  "tilstandsgrader": [
+    {
+      "tg": 0,
+      "navn": "Ingen avvik",
+      "beskrivelse": "Betegnelse for TG 0 etter NS 3424-metodikken, slik sekundærkilden bruker den. Den fullstendige definisjonsteksten i NS 3424 er ikke lest.",
+      "kilde": "NS3424-sek",
+      "status": "usikker"
+    },
+    {
+      "tg": 1,
+      "navn": "Mindre eller moderate avvik",
+      "beskrivelse": "Betegnelse for TG 1 etter NS 3424-metodikken, slik sekundærkilden bruker den. Den fullstendige definisjonsteksten i NS 3424 er ikke lest.",
+      "kilde": "NS3424-sek",
+      "status": "usikker"
+    },
+    {
+      "tg": 2,
+      "navn": "Vesentlige avvik",
+      "beskrivelse": "Betegnelse for TG 2 etter NS 3424-metodikken, slik sekundærkilden bruker den. Den fullstendige definisjonsteksten i NS 3424 er ikke lest.",
+      "kilde": "NS3424-sek",
+      "status": "usikker"
+    },
+    {
+      "tg": 3,
+      "navn": "Stort eller alvorlig avvik",
+      "beskrivelse": "Betegnelse for TG 3 etter NS 3424-metodikken, slik sekundærkilden bruker den. Den fullstendige definisjonsteksten i NS 3424 er ikke lest.",
+      "kilde": "NS3424-sek",
+      "status": "usikker"
+    }
+  ],
+  "konsekvensgrader": [
+    {
+      "kg": 0,
+      "navn": "Ingen konsekvenser",
+      "beskrivelse": "Ingen tiltakstid er angitt for denne graden. Definisjon av konsekvensgrad i R610: «Uttrykk for hvor alvorlige eller omfattende konsekvenser en observert tilstand vil kunne medføre.»",
+      "tiltakstid": {"aadt_0_3000": null, "aadt_over_3000": null},
+      "kilde": "R610:2025 pkt. 1.3, Krav 1.3—6, tabell 1.3—1; definisjon i begrepsliste (tabell 1)",
+      "status": "verifisert"
+    },
+    {
+      "kg": 1,
+      "navn": "Små og middels konsekvenser",
+      "beskrivelse": "Avvik som medfører forringet estetikk, men som ikke påvirker objektets funksjon.",
+      "tiltakstid": {"aadt_0_3000": "4 uker", "aadt_over_3000": "4 uker"},
+      "kilde": "R610:2025 pkt. 1.3, tabell 1.3—1",
+      "status": "verifisert"
+    },
+    {
+      "kg": 2,
+      "navn": "Vesentlige konsekvenser",
+      "beskrivelse": "Avvik som medfører at objektet får redusert levetid, økte kostnader for drift og vedlikehold og økte levetidskostnader. Raden «Avvik som medfører forringet estetikk når estetikk utgjør objektets funksjon» står mellom KG 1 og KG 2 i tabellen, og PDF-teksten viser ikke sikkert hvilken av dem den hører til. Den hører mest sannsynlig til KG 2.",
+      "tiltakstid": {"aadt_0_3000": "21 dager", "aadt_over_3000": "14 dager"},
+      "kilde": "R610:2025 pkt. 1.3, tabell 1.3—1",
+      "status": "verifisert"
+    },
+    {
+      "kg": 3,
+      "navn": "Store og alvorlige konsekvenser",
+      "beskrivelse": "Avvik som medfører at objektet ikke fyller sitt formål og funksjon med hensyn til trafikksikkerhet, fremkommelighet, miljø eller service til trafikantene. Ved farlige avvik skal sikring igangsettes etter krav til trafikkberedskap (R611 og kap. 2), og tiltakstiden settes etter konsekvensgrad etter sikring (Krav 1.3—7).",
+      "tiltakstid": {"aadt_0_3000": "14 dager", "aadt_over_3000": "7 dager"},
+      "kilde": "R610:2025 pkt. 1.3, tabell 1.3—1, Krav 1.3—7",
+      "status": "verifisert"
+    }
+  ],
+  "skala_bruinspeksjon_V441": {
+    "merknad": "SVV bruker en egen skala ved bruinspeksjon, og den gjelder også kulvert og rørelement med spennvidde/diameter ≥ 2,5 m («annen bærende konstruksjon», R610 7.4.1). V441 oppgir at metodikken er hentet fra NS 3424.",
+    "skadegrad": [
+      {"grad": 1, "navn": "Liten skade"},
+      {"grad": 2, "navn": "Middels skade"},
+      {"grad": 3, "navn": "Stor skade"},
+      {"grad": 4, "navn": "Svært stor skade"}
+    ],
+    "konsekvenstype": [
+      {"kode": "B", "navn": "Skade som kan påvirke bæreevnen (alvorligst)"},
+      {"kode": "T", "navn": "Skade som kan påvirke trafikksikkerheten"},
+      {"kode": "V", "navn": "Skade som kan øke vedlikeholdskostnadene"},
+      {"kode": "M", "navn": "Skade som kan påvirke miljø/estetikk"}
+    ],
+    "konsekvensgrad": [
+      {"grad": 1, "navn": "Liten konsekvens. Ikke behov for tiltak"},
+      {"grad": 2, "navn": "Middels konsekvens. Vurder om tiltak skal registreres i Brutus"},
+      {"grad": 3, "navn": "Vesentlig konsekvens. Forslag til tiltak registreres i Brutus. Inspeksjonsintervall må vurderes"},
+      {"grad": 4, "navn": "Stor konsekvens. Bruforvalter/oppdragsgiver kontaktes umiddelbart"}
+    ],
+    "kilde": "V441 (2019) kap. 3.4 Skadegrad og 3.5 Skadekonsekvens (3.5.1–3.5.6); forord om NS 3424",
+    "status": "verifisert"
+  },
+  "inspeksjonstyper_generelt": [
+    {"type": "Ettersyn", "tekst": "Gjelder alle objekter og aktiviteter. Metode: visuell kontroll fra bil i sakte fart, til fots ved utvalgte objekter, funksjonskontroll eller automatisk registrering. Intervall: ukentlig, med maks 9 dager mellom hvert ettersyn.", "maaneder": null, "kilde": "R610:2025", "punkt": "4.3.2, Krav 4.3.1—1", "status": "verifisert"},
+    {"type": "Normalinspeksjon", "tekst": "Visuell kontroll på stedet, målinger av omfang og alvorlighetsgrad, og funksjonskontroll. Standardintervall er 1 år. Utføres ikke det året det er hovedinspeksjon. Objektspesifikke krav kan gi andre intervaller.", "maaneder": 12, "kilde": "R610:2025", "punkt": "4.3.3", "status": "verifisert"},
+    {"type": "Hovedinspeksjon", "tekst": "Nær visuell kontroll, oppmålinger, materialundersøkelser og funksjonskontroll. Gir grunnlag for restlevetid, tiltak og kostnadsoverslag. Standardintervall er 5 år.", "maaneder": 60, "kilde": "R610:2025", "punkt": "4.3.4", "status": "verifisert"},
+    {"type": "Annen inspeksjon", "tekst": "Inspeksjon med egen utløsende årsak (f.eks. store nedbørsmengder), egen frekvens eller eget tidspunkt, forskriftskrav eller inspeksjon av elektriske anlegg. Intervallet er gitt per objekt.", "maaneder": null, "kilde": "R610:2025", "punkt": "4.3.5", "status": "verifisert"},
+    {"type": "Spesialinspeksjon", "tekst": "Utløses av funn fra andre inspeksjoner, trafikkhendelser (ulykke, påkjørsel, brann), naturfarehendelser (flom, skred, vind) eller erfaring fra tilsvarende objekter.", "maaneder": null, "kilde": "R610:2025", "punkt": "4.3.6", "status": "verifisert"},
+    {"type": "Dokumentasjon", "tekst": "Inspeksjon skal dokumenteres med type inspeksjon, objekt, lokalisering, tidspunkt, metode og resultat (Krav 4.5—1). Objekt/aktivitet skal ha inspeksjonsplan (Krav 4.2—1), og det skal finnes et årlig inspeksjonsprogram (Krav 4.2—2). Ved ettersyn skal et tidligere registrert etterslepsrelatert avvik ikke registreres på nytt (Krav 4.4—1).", "maaneder": null, "kilde": "R610:2025", "punkt": "4.2, 4.4, 4.5", "status": "verifisert"},
+    {"type": "Elektriske anlegg", "tekst": "Inspeksjon av elektriske anlegg, inkludert internkontroll, skal følge FEL, FEF og ekomforskriften.", "maaneder": null, "kilde": "R610:2025", "punkt": "Krav 8.1—1", "status": "verifisert"}
+  ],
+  "objekttyper": {
+    "Stikkrenne": {
+      "funksjonskrav": [
+        {"tekst": "Stikkrenne/kulvert omfatter selve røret/kulverten, innløpskonstruksjon med erosjonssikring og utløpskonstruksjon med erosjonssikring. Den skal føre vann gjennom vegen uten å skade vegoverbygning, grøft eller øvrig sideområde, og den skal ivareta fauna- og fiskevandring.", "kilde": "R610:2025", "punkt": "6.8.10 (innledning)", "status": "verifisert"},
+        {"tekst": "Definisjon: Stikkrenne har lysåpning ≤ 1 m. Kulvert har lysåpning > 1 m og opp mot 2,5 m. Kulvert med spennvidde ≥ 2,5 m regnes som bru (N400) og følger kap. 7.4 / R411.", "kilde": "R610:2025", "punkt": "Begrepsliste (tabell 1) og 7.4.1", "status": "verifisert"},
+        {"tekst": "Slam eller annet materiale skal ikke fylle mer enn 20 % av innvendig høyde.", "kilde": "R610:2025", "punkt": "Krav 6.8.10—1", "status": "verifisert"},
+        {"tekst": "Rørskjøter og koblinger skal være tette, uten lekkasje som gir graving eller utvasking rundt eller under røret. Røret skal ikke være sammenklemt eller deformert slik at funksjonen reduseres. Lengdefallet skal hindre at vann blir stående.", "kilde": "R610:2025", "punkt": "Krav 6.8.10—2", "status": "verifisert"},
+        {"tekst": "Inn- og utløpskonstruksjon skal ikke ha skader som gir vann på avveie, utvasking av løsmasser eller tap av demping/fordrøyning.", "kilde": "R610:2025", "punkt": "Krav 6.8.10—3", "status": "verifisert"},
+        {"tekst": "Erosjonssikringen ved inn- og utløp skal ikke ha skader som gir erosjon i skråningsoverflaten eller vann på avveie.", "kilde": "R610:2025", "punkt": "Krav 6.8.10—4", "status": "verifisert"},
+        {"tekst": "Stikkrenne/kulvert og sidegrøft skal være fri for is/iskjøving som hindrer avrenning eller drenering.", "kilde": "R610:2025", "punkt": "Krav 6.8.1—7", "status": "verifisert"},
+        {"tekst": "Prosjektering: minstedimensjon for gjennomløp av hensyn til drift og vedlikehold er 600 mm for veger og gater, 400 mm for adkomstveger og gang- og sykkelveger, og 300 mm for avkjørsler. Inntil 5 % mindre diameter godtas hvis hydraulisk kapasitet er oppfylt.", "kilde": "N200:2024", "punkt": "Krav 2.5.2.2—1_1, tabell 2.5.2.2—1", "status": "verifisert"},
+        {"tekst": "Prosjektering: stikkrenner skal ha pakning i skjøtene. Gjennomløp der manglende tetthet kan skade vegkonstruksjonen skal tetthetsprøves. Gamle renner kan bare skjøtes på hvis tilstand og anslått restlevetid er tilfredsstillende.", "kilde": "N200:2024", "punkt": "Krav 2.13.2.1—1, —2, —5", "status": "verifisert"},
+        {"tekst": "Alle hydrauliske tiltak skal dimensjoneres for enkel tilkomst for drift og vedlikehold.", "kilde": "N200:2024", "punkt": "Krav 2.5.1—4", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Hovedinspeksjon hvert 5. år. I tillegg kommer generelt ettersyn (ukentlig) og kontroll av utsatte deler av vannhåndteringen før, under og etter værhendelser med store vannmengder (etter lokal bestemmelse, 6.8.1). Kulvert ≥ 2,5 m: normalinspeksjon hver 12. måned etter R411 (Krav 7.4.5—1).", "maaneder": 60, "kilde": "R610:2025", "punkt": "Krav 6.8.10—5", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Oppslamming i % av innvendig høyde (grense 20 %)", "kilde": "R610:2025 Krav 6.8.10—1", "status": "verifisert"},
+        {"tekst": "Tette skjøter og koblinger, ingen lekkasje eller utvasking rundt eller under røret", "kilde": "R610:2025 Krav 6.8.10—2", "status": "verifisert"},
+        {"tekst": "Deformasjon eller sammenklemming av røret, og lengdefall (står vann i røret eller grøfta?)", "kilde": "R610:2025 Krav 6.8.10—2", "status": "verifisert"},
+        {"tekst": "Tilstand på innløps- og utløpskonstruksjon (utvasking, vann på avveie)", "kilde": "R610:2025 Krav 6.8.10—3", "status": "verifisert"},
+        {"tekst": "Erosjonssikring ved inn- og utløp, og erosjon i skråningen", "kilde": "R610:2025 Krav 6.8.10—4", "status": "verifisert"},
+        {"tekst": "Is eller iskjøving i innløp/løp (vinter)", "kilde": "R610:2025 Krav 6.8.1—7", "status": "verifisert"},
+        {"tekst": "Fauna- og fiskevandring (se 6.10 Faunapassasje)", "kilde": "R610:2025 6.8.10", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Oppslamming eller gjentetting over 20 % av høyden", "kilde": "R610:2025 Krav 6.8.10—1", "status": "verifisert"},
+        {"tekst": "Lekkasje i skjøt med utgraving/utvasking rundt røret", "kilde": "R610:2025 Krav 6.8.10—2", "status": "verifisert"},
+        {"tekst": "Sammenklemt eller deformert rør, eller motfall", "kilde": "R610:2025 Krav 6.8.10—2", "status": "verifisert"},
+        {"tekst": "Skadet innløp/utløp eller erosjonssikring, og erosjonsskader", "kilde": "R610:2025 Krav 6.8.10—3/—4", "status": "verifisert"},
+        {"tekst": "Is/iskjøving som hindrer drenering", "kilde": "R610:2025 Krav 6.8.1—7", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Ved avvik som gir lekkasje og utgraving eller redusert gjennomstrømningskapasitet skal feilretting starte innen 24 timer. Endelig utbedring og øvrige avvik følger lokal bestemmelse.", "kilde": "R610:2025 Krav 6.8.10—2", "status": "verifisert"},
+        {"tekst": "Skade på inn-/utløpskonstruksjon eller erosjonssikring: utbedres innen 14 dager", "kilde": "R610:2025 Krav 6.8.10—3/—4", "status": "verifisert"},
+        {"tekst": "Is/iskjøving som hindrer drenering: fjernes innen 7 dager. Ved fare for infrastruktur eller trafikanter: innen 24 timer.", "kilde": "R610:2025 Krav 6.8.1—7", "status": "verifisert"},
+        {"tekst": "Prosesskode: 45 Stikkrenner/kulverter inkl. inn- og utløpskonstruksjoner (45.1 graving/sprengning, 45.2 rør, 45.5 kulvert av spesialelement, 45.6 plasstøpt betongkulvert, 45.7 inn- og utløpskonstruksjoner)", "kilde": "R761 (2014/faglig 2012) prosess 45", "status": "verifisert"}
+      ]
+    },
+    "Kum": {
+      "funksjonskrav": [
+        {"tekst": "Overvannskum omfatter kum med kumring og kumlokk. Den skal samle og kanalisere overvann mot resipient.", "kilde": "R610:2025", "punkt": "6.8.15 (innledning)", "status": "verifisert"},
+        {"tekst": "Overvannskummen skal være fri for slam og andre fremmedlegemer.", "kilde": "R610:2025", "punkt": "Krav 6.8.15—1", "status": "verifisert"},
+        {"tekst": "Kum/kumring skal ikke ha sprekk eller lekkasje i skjøter, mellom ringer eller i gjennomføringer som reduserer funksjonen. Pakninger i rørgjennomføringer skal ikke lekke. Gummibelegg/plastring på toppring skal ikke ha slitasjeskade som reduserer dempingen.", "kilde": "R610:2025", "punkt": "Krav 6.8.15—2", "status": "verifisert"},
+        {"tekst": "Kumlokket skal ligge støtt og ikke «slå» når kjøretøy passerer.", "kilde": "R610:2025", "punkt": "Krav 6.8.15—3", "status": "verifisert"},
+        {"tekst": "Gategods (kum, rist, sluk) skal ikke stikke opp over dekket og ikke ligge mer enn 10 mm under dekkets overflate.", "kilde": "R610:2025", "punkt": "Krav 6.1—17, 6.1—18", "status": "verifisert"},
+        {"tekst": "Prosjektering: kummer skal fundamenteres frostfritt og ha tette skjøter. Tetthetskravet er det samme som for ledningene kummen knytter sammen. Det skal være pakning ved rørgjennomføringer. Rister eller lokk er påkrevd, og i fast dekke skal det brukes flytende ramme.", "kilde": "N200:2024", "punkt": "Krav 2.14.3.1—1 til —3, 2.14.3.2—1, —2", "status": "verifisert"},
+        {"tekst": "Prosjektering: kumlokk skal ikke plasseres i kantsteinslinjen. Kummer i kjørebanen skal ikke ha lokk i hjulspor.", "kilde": "N200:2024", "punkt": "Krav 2.14.1—6, 2.14.1—8", "status": "verifisert"},
+        {"tekst": "Trekkekum (elektro, utenfor tunnel): skal ikke ha feil, skade eller mangel som slipper inn fukt, støv eller skadedyr. Den skal være ren for trafikkstøv, med kumlokkramme fri for sand og lokk rengjort og smurt med fett.", "kilde": "R610:2025", "punkt": "Krav 8.3.3—2, 8.3.3—3", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Overvannskum: hovedinspeksjon hvert 5. år. Trekkekum (føringsveg utenfor tunnel): normalinspeksjon hver 24. måned.", "maaneder": 60, "kilde": "R610:2025", "punkt": "Krav 6.8.15—4 (trekkekum: Krav 8.3.3—5)", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Slam eller fremmedlegemer i kummen", "kilde": "R610:2025 Krav 6.8.15—1", "status": "verifisert"},
+        {"tekst": "Sprekker og lekkasje i skjøter, mellom ringer og i rørgjennomføringer, og tette pakninger", "kilde": "R610:2025 Krav 6.8.15—2", "status": "verifisert"},
+        {"tekst": "Slitasje på gummibelegg/plastring på toppring", "kilde": "R610:2025 Krav 6.8.15—2", "status": "verifisert"},
+        {"tekst": "Kumlokket ligger støtt og «slår» ikke", "kilde": "R610:2025 Krav 6.8.15—3", "status": "verifisert"},
+        {"tekst": "Høydeforskjell mellom lokk/ramme og dekke (ikke over dekket, maks 10 mm under)", "kilde": "R610:2025 Krav 6.1—17/—18", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Oppslammet kum", "kilde": "R610:2025 Krav 6.8.15—1", "status": "verifisert"},
+        {"tekst": "Lekkasje i kumskjøt eller gjennomføring", "kilde": "R610:2025 Krav 6.8.15—2", "status": "verifisert"},
+        {"tekst": "Kumlokk som slår", "kilde": "R610:2025 Krav 6.8.15—3", "status": "verifisert"},
+        {"tekst": "Lokk/ramme som stikker opp eller ligger for lavt i forhold til dekket", "kilde": "R610:2025 Krav 6.1—17/—18", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Slam/fremmedlegemer og lekkasjer: utbedres innen 4 uker", "kilde": "R610:2025 Krav 6.8.15—1/—2", "status": "verifisert"},
+        {"tekst": "Kumlokk som slår: utbedres innen 7 dager", "kilde": "R610:2025 Krav 6.8.15—3", "status": "verifisert"},
+        {"tekst": "Gategods i feil høyde: utbedres innen 7 dager ved ÅDT > 1500, ellers innen 14 dager", "kilde": "R610:2025 Krav 6.1—17/—18", "status": "verifisert"},
+        {"tekst": "Prosesskode: 46 Kummer (levering, montering): 46.1 sandfangskummer, 46.2 hjelpesluk, 46.3 inspeksjonskummer, 46.4 spillvannskummer, 46.5 vannkummer, 46.6 kombinerte kummer, 46.7 spesialkummer. Trekkekummer: 44.45/44.46.", "kilde": "R761 (2014/faglig 2012) prosess 44.4, 46", "status": "verifisert"}
+      ]
+    },
+    "Sandfang": {
+      "funksjonskrav": [
+        {"tekst": "Sandfangkum omfatter kum, kumring og dykker. Den skal samle og holde tilbake slam i overvannet ved sedimentering. Sluk og rist har egne krav (6.8.16 og 6.8.17).", "kilde": "R610:2025", "punkt": "6.8.14 (innledning)", "status": "verifisert"},
+        {"tekst": "Oppslammingen skal være under 50 % av kapasiteten til sandfanget, men maks opp til 200 mm under utløpet.", "kilde": "R610:2025", "punkt": "Krav 6.8.14—1", "status": "verifisert"},
+        {"tekst": "Kum/kumring skal ikke ha sprekk eller lekkasje som reduserer funksjonen. Pakninger skal ikke lekke. Toppringens belegg skal ikke ha slitasjeskade som reduserer dempingen. Dykkeren skal ikke ha feil, skade eller mangel som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 6.8.14—2", "status": "verifisert"},
+        {"tekst": "Kum/kumring skal ikke ha feil som gjør at sluk eller rist i kjørebanen «slår».", "kilde": "R610:2025", "punkt": "Krav 6.8.14—3", "status": "verifisert"},
+        {"tekst": "Sluk og rist skal holdes åpne og fri for fremmedlegemer, og skal ikke ha skade som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 6.8.16—1/—2, 6.8.17—1/—2/—3", "status": "verifisert"},
+        {"tekst": "Prosjektering: sandfangkum skal ha diameter på minst 1,0 m. Minste dybde under utløpet er 1,0 m for Ø1,0 m og 0,75 m for Ø1,2 m. Det skal være pakning mellom kumringene. Innløpet skal ligge minst 50 mm høyere enn utløpet, og grenrør til overvannsledning skal være minst ca. 150 mm.", "kilde": "N200:2024", "punkt": "Krav 2.14.3.3—1 til —3, tabell 2.14.3.3—1; Krav 2.12.2.2—2/—3", "status": "verifisert"},
+        {"tekst": "Prosjektering: på veg eller gate med kantstein skal sluk og sandfang plasseres inntil kantsteinen.", "kilde": "N200:2024", "punkt": "Krav 2.14.1—1", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Hovedinspeksjon hvert 5. år. Annen inspeksjon: funksjonen og tilstanden til dykkeren kontrolleres ved slamsuging. Sluk og rist: hovedinspeksjon hvert 5. år.", "maaneder": 60, "kilde": "R610:2025", "punkt": "Krav 6.8.14—4, 6.8.14—5, 6.8.16—3, 6.8.17—4", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Slamnivå i % av sandfangets kapasitet (grense 50 %) og avstand til utløpet (min. 200 mm)", "kilde": "R610:2025 Krav 6.8.14—1", "status": "verifisert"},
+        {"tekst": "Sprekk/lekkasje i kum og kumringer, og pakninger", "kilde": "R610:2025 Krav 6.8.14—2", "status": "verifisert"},
+        {"tekst": "Dykkerens tilstand og funksjon (kontrolleres ved slamsuging)", "kilde": "R610:2025 Krav 6.8.14—2/—5", "status": "verifisert"},
+        {"tekst": "Sluk/rist åpen og fri for fremmedlegemer, uskadet, og slår ikke", "kilde": "R610:2025 Krav 6.8.14—3, 6.8.16, 6.8.17", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Full eller nesten full slamlomme", "kilde": "R610:2025 Krav 6.8.14—1", "status": "verifisert"},
+        {"tekst": "Defekt eller manglende dykker", "kilde": "R610:2025 Krav 6.8.14—2", "status": "verifisert"},
+        {"tekst": "Rist eller sluk som er tett eller slår", "kilde": "R610:2025 Krav 6.8.14—3, 6.8.17—1/—3", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Slamsuging/tømming når krav 6.8.14—1 overskrides. Ingen egen tiltakstid er angitt i 6.8.14—1, så standard tiltakstid etter konsekvensgrad (tabell 1.3—1) gjelder.", "kilde": "R610:2025 Krav 6.8.14—1, Krav 1.3—6", "status": "verifisert"},
+        {"tekst": "Lekkasje, skadet dykker eller slitt toppring: utbedres innen 4 uker", "kilde": "R610:2025 Krav 6.8.14—2", "status": "verifisert"},
+        {"tekst": "Sluk/rist som slår, eller tett sluk/rist: utbedres innen 7 dager. Skadet sluk/rist: innen 4 uker.", "kilde": "R610:2025 Krav 6.8.14—3, 6.8.16—1/—2, 6.8.17—1/—2/—3", "status": "verifisert"},
+        {"tekst": "Prosesskode: 46.1 Sandfangskummer, 46.2 Hjelpesluk", "kilde": "R761 (2014/faglig 2012) prosess 46", "status": "verifisert"}
+      ]
+    },
+    "Overvannsledning": {
+      "funksjonskrav": [
+        {"tekst": "«Rørledning i lukket rørgrøft» omfatter overvannsledning og drensledning, og rør- og pumpeledninger ved pumpestasjoner. Ledningen skal sikre uhindret transport av overvann og/eller drensvann til eller fra pumpestasjon eller til resipient.", "kilde": "R610:2025", "punkt": "6.8.4 (innledning)", "status": "verifisert"},
+        {"tekst": "Rørledningen skal ha fritt vannløp.", "kilde": "R610:2025", "punkt": "Krav 6.8.4—1", "status": "verifisert"},
+        {"tekst": "Rørledningen skal ikke ha brudd, deformasjon eller annen skade som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 6.8.4—2", "status": "verifisert"},
+        {"tekst": "Vann skal til enhver tid ha fritt utløp. Overvann skal renne uhindret bort fra trafikkerte arealer og sideområdet.", "kilde": "R610:2025", "punkt": "6.8.1 (innledning)", "status": "verifisert"},
+        {"tekst": "Prosjektering: overvannsledninger skal legges frostfritt. Tetthetskravet gjelder ledningsnettet som et komplett system, med kummer og ledninger likt. Ved tilknytning til kommunalt nett skal tetthetskravet være som for ledningen det kobles til.", "kilde": "N200:2024", "punkt": "Krav 2.12.2.2—1, 2.12.2.3—1, 2.12.2.3—2", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Hovedinspeksjon hvert 5. år. Spyling etter lokal bestemmelse.", "maaneder": 60, "kilde": "R610:2025", "punkt": "Krav 6.8.4—3", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Fritt vannløp (tilstopping, sedimenter, røtter)", "kilde": "R610:2025 Krav 6.8.4—1", "status": "verifisert"},
+        {"tekst": "Brudd, deformasjon eller annen skade som reduserer funksjonen", "kilde": "R610:2025 Krav 6.8.4—2", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Tilstoppet ledning (ikke fritt vannløp)", "kilde": "R610:2025 Krav 6.8.4—1", "status": "verifisert"},
+        {"tekst": "Rørbrudd eller deformert rør", "kilde": "R610:2025 Krav 6.8.4—2", "status": "verifisert"},
+        {"tekst": "Konkrete skadekategorier for rørinspeksjon (f.eks. forskjøvet skjøt, rotinntrengning) er ikke funnet i SVV-håndbøkene som er lest. Klassifisering etter NS-EN 13508-2 / VA-praksis er ikke verifisert fra SVV-kilde.", "kilde": "—", "status": "usikker"}
+      ],
+      "tiltak": [
+        {"tekst": "Ikke fritt vannløp: utbedres innen 4 uker", "kilde": "R610:2025 Krav 6.8.4—1", "status": "verifisert"},
+        {"tekst": "Brudd/deformasjon/skade: utbedres innen 14 dager", "kilde": "R610:2025 Krav 6.8.4—2", "status": "verifisert"},
+        {"tekst": "Spyling etter lokal bestemmelse", "kilde": "R610:2025 6.8.4", "status": "verifisert"},
+        {"tekst": "Prosesskode: 42 Lukkede rørgrøfter, 43.2 Overvannsledning", "kilde": "R761 (2014/faglig 2012) prosess 42, 43.2", "status": "verifisert"}
+      ]
+    },
+    "Drensledning": {
+      "funksjonskrav": [
+        {"tekst": "Drensledning inngår i «Rørledning i lukket rørgrøft» og skal drenere vegoverbygningen og sikre uhindret transport av drensvann til resipient.", "kilde": "R610:2025", "punkt": "6.8.4 (innledning)", "status": "verifisert"},
+        {"tekst": "Drensvann skal renne ut av og bort fra vegkroppen og konstruksjonene.", "kilde": "R610:2025", "punkt": "6.8.1 (innledning)", "status": "verifisert"},
+        {"tekst": "Rørledningen skal ha fritt vannløp, og skal ikke ha brudd, deformasjon eller annen skade som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 6.8.4—1, 6.8.4—2", "status": "verifisert"},
+        {"tekst": "Prosjektering: ved redusert tetthetskrav kan det bygges kombinert drens- og overvannsledning.", "kilde": "N200:2024", "punkt": "2.12.2.3 (tekst)", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Hovedinspeksjon hvert 5. år (samme krav som overvannsledning)", "maaneder": 60, "kilde": "R610:2025", "punkt": "Krav 6.8.4—3", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Fritt vannløp og drensutløp (er utløpet åpent, renner det vann?)", "kilde": "R610:2025 Krav 6.8.4—1, 6.8.1", "status": "verifisert"},
+        {"tekst": "Brudd eller deformasjon", "kilde": "R610:2025 Krav 6.8.4—2", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Tett drensledning eller tett utløp", "kilde": "R610:2025 Krav 6.8.4—1", "status": "verifisert"},
+        {"tekst": "Brudd eller deformert drensrør", "kilde": "R610:2025 Krav 6.8.4—2", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Ikke fritt vannløp: utbedres innen 4 uker. Brudd/skade: innen 14 dager.", "kilde": "R610:2025 Krav 6.8.4—1/—2", "status": "verifisert"},
+        {"tekst": "Prosesskode: 43.1 Drensledning (43.11 Ø ≤ 120 mm, 43.12 Ø > 120 mm, 43.13 drensmatter)", "kilde": "R761 (2014/faglig 2012) prosess 43.1", "status": "verifisert"}
+      ]
+    },
+    "Grøft": {
+      "funksjonskrav": [
+        {"tekst": "Dyp sidegrøft skal fjerne overvann fra vegdekket og sideområdet, drenere vegoverbygningen og sikre uhindret transport av vann mot resipient.", "kilde": "R610:2025", "punkt": "6.8.2 (innledning)", "status": "verifisert"},
+        {"tekst": "Dyp sidegrøft: grøftebunnen skal ligge i nivå med underkant forsterkningslag eller lavere.", "kilde": "R610:2025", "punkt": "Krav 6.8.2—1", "status": "verifisert"},
+        {"tekst": "Grunn sidegrøft: oppslammingen skal være under 20 % av opprinnelig grøftedybde. Tettelag/tetningsmasse skal ikke ha feil som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 6.8.3—1, 6.8.3—2", "status": "verifisert"},
+        {"tekst": "Grøfteskråningen skal ha samme helning og jevnhet som opprinnelig bygget, uten sig eller utglidning.", "kilde": "R610:2025", "punkt": "Krav 6.8.2—2, 6.8.3—3", "status": "verifisert"},
+        {"tekst": "Grøfta skal ha kontinuerlig fall, uten terskler der vann blir stående lenge.", "kilde": "R610:2025", "punkt": "Krav 6.8.2—3, 6.8.3—4", "status": "verifisert"},
+        {"tekst": "Erosjonsbeskyttelse og energidrepere/fartsdempere skal ikke ha skader som kan gi utgraving, udempet vannhastighet eller vann på avveie.", "kilde": "R610:2025", "punkt": "Krav 6.8.2—4/—5, 6.8.3—5/—6", "status": "verifisert"},
+        {"tekst": "Grøfta skal være fri for nedfall fra bergskjæring og skråning som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 6.8.1—1", "status": "verifisert"},
+        {"tekst": "Torvkant eller annet som hindrer vannavrenning over vegkanten skal ikke finnes. Vannansamling > 0,7 m utstrekning 3 timer etter avsluttet nedbør regnes som avvik.", "kilde": "R610:2025", "punkt": "Krav 6.8.1—2, 6.8.1—3, 6.8.1—4", "status": "verifisert"},
+        {"tekst": "Grunn infiltrasjonsgrøft: synlig vannspeil 48 timer etter avsluttet nedbør utløser tiltak for å gjenopprette infiltrasjonskapasiteten.", "kilde": "R610:2025", "punkt": "Krav 6.8.5—4", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Hovedinspeksjon hvert 5. år for dyp og grunn sidegrøft (og grunn infiltrasjonsgrøft, med kapasitetskontroll). Normalinspeksjon av avrenning over vegkant (torvkant) hver 12. måned. Kontroll før, under og etter store nedbørshendelser etter lokal bestemmelse.", "maaneder": 60, "kilde": "R610:2025", "punkt": "Krav 6.8.2—6, 6.8.3—7, 6.8.5—7, 6.8.1—8", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Grøftedybde i forhold til forsterkningslaget (dyp grøft) og oppslamming i % av opprinnelig dybde (grunn grøft, grense 20 %)", "kilde": "R610:2025 Krav 6.8.2—1, 6.8.3—1", "status": "verifisert"},
+        {"tekst": "Sig eller utglidning i grøfteskråningen", "kilde": "R610:2025 Krav 6.8.2—2, 6.8.3—3", "status": "verifisert"},
+        {"tekst": "Terskler eller stående vann (kontinuerlig fall)", "kilde": "R610:2025 Krav 6.8.2—3, 6.8.3—4", "status": "verifisert"},
+        {"tekst": "Erosjonsbeskyttelse og energidrepere", "kilde": "R610:2025 Krav 6.8.2—4/—5", "status": "verifisert"},
+        {"tekst": "Nedfall i grøfta", "kilde": "R610:2025 Krav 6.8.1—1", "status": "verifisert"},
+        {"tekst": "Torvkant eller hindringer for avrenning over vegkanten, og vannansamling på vegbanen", "kilde": "R610:2025 Krav 6.8.1—2/—3", "status": "verifisert"},
+        {"tekst": "Is/iskjøving i sidegrøft (vinter)", "kilde": "R610:2025 Krav 6.8.1—7", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Gjengrodd eller oppslammet grøft", "kilde": "R610:2025 Krav 6.8.3—1", "status": "verifisert"},
+        {"tekst": "Utglidning i skråningen", "kilde": "R610:2025 Krav 6.8.2—2", "status": "verifisert"},
+        {"tekst": "Motfall eller terskler med stående vann", "kilde": "R610:2025 Krav 6.8.2—3", "status": "verifisert"},
+        {"tekst": "Torvkant som hindrer avrenning fra vegbanen", "kilde": "R610:2025 Krav 6.8.1—3/—4", "status": "verifisert"},
+        {"tekst": "Nedfall fra bergskjæring", "kilde": "R610:2025 Krav 6.8.1—1", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Nedfall som reduserer funksjonen: fjernes innen 14 dager. Annet nedfall fjernes i løpet av sommersesongen.", "kilde": "R610:2025 Krav 6.8.1—1", "status": "verifisert"},
+        {"tekst": "Hinder som gir vannansamling på vegbanen: fjernes innen 7 dager. Torvkant åpnes innen 4 uker, og avrenningshindrende torvkant fjernes innen 1. oktober.", "kilde": "R610:2025 Krav 6.8.1—2/—3/—4", "status": "verifisert"},
+        {"tekst": "Sig/utglidning, erosjonsbeskyttelse og energidreper: utbedres innen 4 uker. Terskler/fall: ved grøfterensk eller i løpet av sommersesongen.", "kilde": "R610:2025 Krav 6.8.2—2 til —5, 6.8.3", "status": "verifisert"},
+        {"tekst": "Is som hindrer drenering: fjernes innen 7 dager (innen 24 timer ved fare)", "kilde": "R610:2025 Krav 6.8.1—7", "status": "verifisert"},
+        {"tekst": "Prosesskode: 41 Åpne grøfter (41.1 løsmasse, 41.2 kombinert, 41.3 berg, 41.4 sprengt stein, 41.5 myr). 47 Forsterkning av grøfter og elve- og bekkereguleringer (47.7 erosjonsforebyggende tiltak, terskler).", "kilde": "R761 (2014/faglig 2012) prosess 41, 47", "status": "verifisert"}
+      ]
+    },
+    "Belysningsmast": {
+      "funksjonskrav": [
+        {"tekst": "Vegbelysning omfatter lysarmatur, stolpe/mast, kabler, sensor, styring og overvåkning, og tilhørende elektrisk anlegg. Den skal bidra til kjørekomfort, fremkommelighet og trafikksikkerhet.", "kilde": "R610:2025", "punkt": "10.14 (innledning)", "status": "verifisert"},
+        {"tekst": "Belysningsstyrken skal være over 80 % av nyverdi (driftsverdi i N100:2023).", "kilde": "R610:2025", "punkt": "Krav 10.14—1", "status": "verifisert"},
+        {"tekst": "Skjevheten på stolpe/mast skal være under 3 cm per meter i forhold til opprinnelig oppsetting.", "kilde": "R610:2025", "punkt": "Krav 10.14—7", "status": "verifisert"},
+        {"tekst": "Stolpeluke/masteluke skal være på plass og uskadet.", "kilde": "R610:2025", "punkt": "Krav 10.14—8", "status": "verifisert"},
+        {"tekst": "Lysarmaturen skal være fast innfestet, med tilskrudde bolter og uten feil i innfestingen. Armaturen skal ikke være ute av stilling.", "kilde": "R610:2025", "punkt": "Krav 10.14—9, 10.14—5", "status": "verifisert"},
+        {"tekst": "Vegetasjon skal ikke hindre eller redusere funksjonen til vegbelysningen.", "kilde": "R610:2025", "punkt": "Krav 10.14—10", "status": "verifisert"},
+        {"tekst": "Master/stolper kontrolleres regelmessig for skader fra påkjørsel, og for korrosjon eller råte.", "kilde": "V124 (2021)", "punkt": "4.3.1 Master", "status": "verifisert"},
+        {"tekst": "NE-master (ettergivende): avskjæringsleddet forutsettes å ligge åpent hele året, ikke dekket av snø eller is. Det monteres ikke skilt eller annet utstyr på HE-master.", "kilde": "V124 (2021)", "punkt": "4.3.2 Krav til ettergivenhet", "status": "verifisert"},
+        {"tekst": "Ettergivende master plasseres minst 3 m fra kantlinja. Ikke-ettergivende master plasseres utenfor sikkerhetssonen, eventuelt bak rekkverk og utenfor rekkverkets arbeidsbredde.", "kilde": "V124 (2021)", "punkt": "4.3.2/4.3.3", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Annen inspeksjon: kontroll og funksjonskontroll av vegbelysningen hver 12. måned. Overvåkningssystemet kontrolleres hver dag innen kl. 10:00. Fotocelle rengjøres hver 12. måned.", "maaneder": 12, "kilde": "R610:2025", "punkt": "Krav 10.14—12, 10.14—11, 10.14—6", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Skjevhet på mast (cm per meter, grense 3 cm/m)", "kilde": "R610:2025 Krav 10.14—7", "status": "verifisert"},
+        {"tekst": "Masteluke på plass og uskadet", "kilde": "R610:2025 Krav 10.14—8", "status": "verifisert"},
+        {"tekst": "Armatur fast og i riktig stilling, og innfesting/bolter", "kilde": "R610:2025 Krav 10.14—5/—9", "status": "verifisert"},
+        {"tekst": "Lyskilde fungerer, og lyset står ikke på om dagen", "kilde": "R610:2025 Krav 10.14—2/—3", "status": "verifisert"},
+        {"tekst": "Påkjørselsskader, korrosjon eller råte på mast/stolpe", "kilde": "V124 (2021) 4.3.1", "status": "verifisert"},
+        {"tekst": "Vegetasjon som skjermer for lyset", "kilde": "R610:2025 Krav 10.14—10", "status": "verifisert"},
+        {"tekst": "Avskjæringsledd på NE-mast fritt for snø/is", "kilde": "V124 (2021) 4.3.2", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Defekt lyskilde, eller utfall av hel kurs", "kilde": "R610:2025 Krav 10.14—3", "status": "verifisert"},
+        {"tekst": "Lys som står på om dagen", "kilde": "R610:2025 Krav 10.14—2", "status": "verifisert"},
+        {"tekst": "Skjev mast", "kilde": "R610:2025 Krav 10.14—7", "status": "verifisert"},
+        {"tekst": "Manglende eller skadet masteluke", "kilde": "R610:2025 Krav 10.14—8", "status": "verifisert"},
+        {"tekst": "Påkjørt mast, korrosjon eller råte", "kilde": "V124 (2021) 4.3.1", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Enkeltstående defekt lyskilde: utbedres innen 7 dager. Utfall av kurs: innen 24 timer. Defekt belysning ved gangfelt, plankryss eller busstopp: innen 24 timer.", "kilde": "R610:2025 Krav 10.14—3", "status": "verifisert"},
+        {"tekst": "Lys som står på om dagen: utbedres innen 72 timer", "kilde": "R610:2025 Krav 10.14—2", "status": "verifisert"},
+        {"tekst": "Manglende eller skadet masteluke: erstattes innen 24 timer", "kilde": "R610:2025 Krav 10.14—8", "status": "verifisert"},
+        {"tekst": "Skjev mast, armatur ute av stilling, feil i innfesting eller vegetasjon: utbedres innen 4 uker", "kilde": "R610:2025 Krav 10.14—5/—7/—9/—10", "status": "verifisert"},
+        {"tekst": "Ved skifte av lyskilde rengjøres armaturen: reflektoren vaskes, glasset vaskes inn- og utvendig, og pakninger smøres.", "kilde": "R610:2025 Krav 10.14—4", "status": "verifisert"},
+        {"tekst": "Prosesskode: 76.3 Belysningsanlegg for gater og veger (76.34 stolper og master, 76.35 nettstasjon/kiosker/skap, 76.37 armatur/lamper)", "kilde": "R761 (2014/faglig 2012) prosess 76.3", "status": "verifisert"}
+      ]
+    },
+    "Kabelgrøft": {
+      "funksjonskrav": [
+        {"tekst": "Føringsveg omfatter blant annet kabelkanal, wire og kabelrør/trekkerør med kum. Den skal sikre trygg og beskyttet forankring og plassering av kabler, og god tilgjengelighet for drifts- og vedlikeholdspersonell.", "kilde": "R610:2025", "punkt": "8.3.1", "status": "verifisert"},
+        {"tekst": "Utenfor tunnel: kabelrør/trekkerør skal ikke være deformert eller ha UV-skade. De skal være tette mot skadedyr og vann, og skal ikke ha feil som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 8.3.3—1", "status": "verifisert"},
+        {"tekst": "Kummen skal ikke slippe inn fukt, støv eller skadedyr. Den skal være ren for trafikkstøv, med kumlokkramme fri for sand og lokk smurt med fett.", "kilde": "R610:2025", "punkt": "Krav 8.3.3—2, 8.3.3—3", "status": "verifisert"},
+        {"tekst": "Kabelkanalen skal ikke ha feil, skade eller mangel som reduserer funksjonen.", "kilde": "R610:2025", "punkt": "Krav 8.3.3—4", "status": "verifisert"},
+        {"tekst": "Bæresystem i metall skal ha god elektrisk forbindelse i hele sin utstrekning.", "kilde": "R610:2025", "punkt": "Krav 8.3.1—1", "status": "verifisert"},
+        {"tekst": "Prosjektering: grunnen under kjørebanen holdes som hovedregel fri for trekkerør. Trekkerør legges slik at vann ikke blir stående i røret. Rørene skal ha pakning i skjøtene, og nedgravde trekkerør skal ha ringstivhet SN8. Trekkerør > 40 mm skal ha trekketråd.", "kilde": "N200:2024", "punkt": "5.6, Krav 5.6.2—2, 5.6.2—4, 5.6.2—5", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Normalinspeksjon av føringsveg utenfor tunnel hver 24. måned. Renhold av kum hver 24. måned. I tunnel: normalinspeksjon hver 24. måned, og kontroll hver måned (ÅDT > 4000 per løp) eller hver 2. måned.", "maaneder": 24, "kilde": "R610:2025", "punkt": "Krav 8.3.3—5, 8.3.3—3 (tunnel: 8.3.2—12/—13)", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Deformasjon eller UV-skade på synlige kabelrør/trekkerør, og tette rørender", "kilde": "R610:2025 Krav 8.3.3—1", "status": "verifisert"},
+        {"tekst": "Trekkekum: tett mot fukt, støv og skadedyr, ren, og smurt lokk", "kilde": "R610:2025 Krav 8.3.3—2/—3", "status": "verifisert"},
+        {"tekst": "Skader på kabelkanal", "kilde": "R610:2025 Krav 8.3.3—4", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Deformert eller UV-skadet trekkerør, eller åpne rørender", "kilde": "R610:2025 Krav 8.3.3—1", "status": "verifisert"},
+        {"tekst": "Vann, fukt eller skadedyr i trekkekum, eller tilsmusset kum", "kilde": "R610:2025 Krav 8.3.3—2/—3", "status": "verifisert"},
+        {"tekst": "Avvik som gjelder selve grøfta (f.eks. setninger over kabelgrøft) er ikke funnet som eget krav i R610.", "kilde": "—", "status": "usikker"}
+      ],
+      "tiltak": [
+        {"tekst": "Avvik på kabelrør/trekkerør, kum og kabelkanal utenfor tunnel: utbedres innen 4 uker", "kilde": "R610:2025 Krav 8.3.3—1/—2/—4", "status": "verifisert"},
+        {"tekst": "Renhold av kum og smøring av lokk hver 24. måned", "kilde": "R610:2025 Krav 8.3.3—3", "status": "verifisert"},
+        {"tekst": "Prosesskode: 44 Kabler og ledninger (44.1 kabelgrøfter, 44.2 kabler, 44.31/44.32 trekkerør Ø40/Ø110, 44.4 kabelkanaler og trekkekummer)", "kilde": "R761 (2014/faglig 2012) prosess 44", "status": "verifisert"}
+      ]
+    },
+    "Teknisk skap": {
+      "funksjonskrav": [
+        {"tekst": "Skap omfatter styreskap, fordelingsskap m.fl. tilknyttet elektriske anlegg. Det skal beskytte utstyr og koblinger mot ytre påvirkning og hindre adgang for uvedkommende.", "kilde": "R610:2025", "punkt": "8.7 (innledning)", "status": "verifisert"},
+        {"tekst": "Skapet skal være tett, uten feil som slipper inn fukt eller skadedyr.", "kilde": "R610:2025", "punkt": "Krav 8.7—1", "status": "verifisert"},
+        {"tekst": "Skapet skal ikke ha overflateskade som reduserer levetiden, og skal stå rett (maks avvik 3 cm per meter).", "kilde": "R610:2025", "punkt": "Krav 8.7—2", "status": "verifisert"},
+        {"tekst": "Termostatstyrt varmeelement, dørstopper (også ved sterk vind) og tilkoblingssplint (uten korrosjon) skal fungere.", "kilde": "R610:2025", "punkt": "Krav 8.7—3, 8.7—4, 8.7—5", "status": "verifisert"},
+        {"tekst": "Innvendig belysning skal tenne og slukke når døren åpnes og lukkes.", "kilde": "R610:2025", "punkt": "Krav 8.7—9", "status": "verifisert"},
+        {"tekst": "Stolpe for skap: skjevheten skal være under 3 cm per meter.", "kilde": "R610:2025", "punkt": "Krav 8.7—10", "status": "verifisert"},
+        {"tekst": "Skapet skal være fast fundamentert eller innfestet, med tilskrudde bolter, og uten skade eller korrosjon på fundament eller innfesting.", "kilde": "R610:2025", "punkt": "Krav 8.7—11", "status": "verifisert"},
+        {"tekst": "Ved utskifting skal nytt skap ha IP65. Fordelingstavle i tunnel skal ha minst IP2X/IP2XC, og bomstyrehus IP67.", "kilde": "R610:2025", "punkt": "Krav 8.7—8", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Normalinspeksjon hver 12. måned. Innvendig rengjøring og smøring av hengsler og lås hver 12. måned.", "maaneder": 12, "kilde": "R610:2025", "punkt": "Krav 8.7—12, 8.7—6, 8.7—7", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Tetthet (fukt, skadedyr), pakninger og dør", "kilde": "R610:2025 Krav 8.7—1", "status": "verifisert"},
+        {"tekst": "Overflateskader og korrosjon, og om skapet står rett (3 cm/m)", "kilde": "R610:2025 Krav 8.7—2", "status": "verifisert"},
+        {"tekst": "Varmeelement/termostat fungerer", "kilde": "R610:2025 Krav 8.7—3", "status": "verifisert"},
+        {"tekst": "Dørstopper, hengsler og lås", "kilde": "R610:2025 Krav 8.7—4/—7", "status": "verifisert"},
+        {"tekst": "Korrosjon på tilkoblingssplint", "kilde": "R610:2025 Krav 8.7—5", "status": "verifisert"},
+        {"tekst": "Innvendig belysning", "kilde": "R610:2025 Krav 8.7—9", "status": "verifisert"},
+        {"tekst": "Fundament, innfesting og stolpe", "kilde": "R610:2025 Krav 8.7—10/—11", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Utett skap med fukt eller skadedyr", "kilde": "R610:2025 Krav 8.7—1", "status": "verifisert"},
+        {"tekst": "Skjevt skap eller stolpe (f.eks. etter vinteren)", "kilde": "R610:2025 Krav 8.7—2/—10", "status": "verifisert"},
+        {"tekst": "Defekt varmeelement eller dørstopper", "kilde": "R610:2025 Krav 8.7—3/—4", "status": "verifisert"},
+        {"tekst": "Korroderte koblinger, eller korrodert fundament/innfesting", "kilde": "R610:2025 Krav 8.7—5/—11", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Utetthet, varmeelement, dørstopper eller tilkoblingssplint: utbedres innen 7 dager", "kilde": "R610:2025 Krav 8.7—1/—3/—4/—5", "status": "verifisert"},
+        {"tekst": "Overflateskade, skjevt skap, innvendig belysning eller fundament/innfesting: utbedres innen 4 uker", "kilde": "R610:2025 Krav 8.7—2/—9/—11", "status": "verifisert"},
+        {"tekst": "Skjev stolpe: blir den skjev gjennom vinteren, utbedres den innen 1. juni. Blir den skjev om sommeren, innen 4 uker.", "kilde": "R610:2025 Krav 8.7—10", "status": "verifisert"},
+        {"tekst": "Prosesskode: 76.35 Nettstasjon, kiosker, skap m.v.", "kilde": "R761 (2014/faglig 2012) prosess 76.3", "status": "verifisert"}
+      ]
+    },
+    "Rekkverk": {
+      "funksjonskrav": [
+        {"tekst": "Rekkverk skal hindre utforkjøring og påkjørsel av trafikkfarlige objekter, hindre myke trafikanter i å falle utfor, redusere skadeomfang, lede kjøretøy tilbake til kjørebanen og skille trafikantgrupper.", "kilde": "R610:2025", "punkt": "10.15 (innledning)", "status": "verifisert"},
+        {"tekst": "Skinne-, rør- og betongrekkverk: skjevheten skal være under 10 cm i forhold til opprinnelig rekkverkslinje.", "kilde": "R610:2025", "punkt": "Krav 10.15—1", "status": "verifisert"},
+        {"tekst": "Rekkverkshøyden skal ikke være mer enn 10 cm lavere eller 5 cm høyere enn opprinnelig monteringshøyde.", "kilde": "R610:2025", "punkt": "Krav 10.15—2", "status": "verifisert"},
+        {"tekst": "Rekkverket skal ikke ha feil, skade eller mangel som reduserer styrke, egenskaper eller funksjon. Bolter og muttere skal være trukket til med riktig moment etter FDV.", "kilde": "R610:2025", "punkt": "Krav 10.15—3, 10.15—6", "status": "verifisert"},
+        {"tekst": "Det skal ikke være trafikkfarlige objekter i rekkverkets arbeidsbredde. Vegetasjon skal ikke vokse inn i rekkverket.", "kilde": "R610:2025", "punkt": "Krav 10.15—7, 10.15—9", "status": "verifisert"},
+        {"tekst": "Wirerekkverk: oppstramming og forankring skal være etter FDV. Wire og stolper skal være uten skade, og topphetter skal være på plass.", "kilde": "R610:2025", "punkt": "Krav 10.15—11 til —14", "status": "verifisert"},
+        {"tekst": "Energiabsorberende rekkverksende: skjevhet < 5 cm, høydeavvik maks ±5 cm, og låsepinne intakt.", "kilde": "R610:2025", "punkt": "Krav 10.16—1, 10.16—2, 10.16—6", "status": "verifisert"},
+        {"tekst": "Vedlikehold og reparasjoner skal følge monteringsbeskrivelsen. Utskiftede deler skal ha tilsvarende egenskaper, og vesentlige deler skal erstattes med identiske deler.", "kilde": "N101 (2025)", "punkt": "Krav 5.3—2, 5.3—5", "status": "verifisert"},
+        {"tekst": "Skadet vegsikringsutstyr som kan gi trafikkfare eller redusert funksjon skal repareres snarest mulig. Avbøtende tiltak skal settes i verk inntil reparasjonen er utført.", "kilde": "N101 (2025)", "punkt": "Krav 5.3—4", "status": "verifisert"},
+        {"tekst": "Rekkverksrom skal være ≥ 0,75 m og innfestingsbredde ≥ 0,4 m (prosjektering; kan avvikes ved utskifting etter trafikksikkerhetsvurdering).", "kilde": "N101 (2025)", "punkt": "4.2.2", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Normalinspeksjon hver 12. måned, etter vintersesongen og innen 1. juli. Det samme gjelder energiabsorberende rekkverksende. N101 krever at det planlegges regelmessig inspeksjon (Krav 5.3.1—1) og viser til R610.", "maaneder": 12, "kilde": "R610:2025", "punkt": "Krav 10.15—15, 10.16—11", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Skjevhet fra opprinnelig linje (grense 10 cm; ende 5 cm)", "kilde": "R610:2025 Krav 10.15—1, 10.16—1", "status": "verifisert"},
+        {"tekst": "Høyde over skulder i forhold til monteringshøyde (−10/+5 cm)", "kilde": "R610:2025 Krav 10.15—2", "status": "verifisert"},
+        {"tekst": "Skadde stolper (enkelt eller flere på rad), og skader på skinne eller rør", "kilde": "R610:2025 Krav 10.15—4/—5", "status": "verifisert"},
+        {"tekst": "Manglende eller løse bolter/muttere", "kilde": "R610:2025 Krav 10.15—6", "status": "verifisert"},
+        {"tekst": "Underskinne", "kilde": "R610:2025 Krav 10.15—8", "status": "verifisert"},
+        {"tekst": "Trafikkfarlige objekter i arbeidsbredden, og vegetasjon i rekkverket", "kilde": "R610:2025 Krav 10.15—7/—9", "status": "verifisert"},
+        {"tekst": "Wire: stramming, forankring og topphetter", "kilde": "R610:2025 Krav 10.15—11/—14", "status": "verifisert"},
+        {"tekst": "Brøytekant som hindrer funksjonen", "kilde": "R610:2025 Krav 10.15—10", "status": "verifisert"},
+        {"tekst": "Skade i galvanisering eller overflatebehandling (ende)", "kilde": "R610:2025 Krav 10.16—5", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Påkjørt eller deformert rekkverk", "kilde": "R610:2025 Krav 10.15—3/—5", "status": "verifisert"},
+        {"tekst": "For lav rekkverkshøyde (f.eks. etter reasfaltering)", "kilde": "R610:2025 Krav 10.15—2", "status": "verifisert"},
+        {"tekst": "Løse eller manglende bolter", "kilde": "R610:2025 Krav 10.15—6", "status": "verifisert"},
+        {"tekst": "Slakk wire eller manglende topphette", "kilde": "R610:2025 Krav 10.15—11/—14", "status": "verifisert"},
+        {"tekst": "Vegetasjon i rekkverket", "kilde": "R610:2025 Krav 10.15—9", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Skjevhet, store skader på skinne/rør, flere skadde stolper på rad, bolter, objekter i arbeidsbredden, underskinne, vegetasjon eller wirefeil: utbedres innen 7 dager", "kilde": "R610:2025 Krav 10.15—1/—4/—5/—6/—7/—8/—9/—11/—12/—13", "status": "verifisert"},
+        {"tekst": "Høydeavvik: utbedres innen 14 dager. Manglende topphette: innen 14 dager.", "kilde": "R610:2025 Krav 10.15—2/—14", "status": "verifisert"},
+        {"tekst": "Enkeltstolpe med skade: skiftes innen 4 uker", "kilde": "R610:2025 Krav 10.15—4/—13", "status": "verifisert"},
+        {"tekst": "Brøytekant som hindrer funksjonen: fjernes innen 48 timer", "kilde": "R610:2025 Krav 10.15—10", "status": "verifisert"},
+        {"tekst": "Alle reparasjoner skal dokumenteres med minst sted, dato og type reparasjon, og hvilke komponenter som er brukt.", "kilde": "N101 (2025) Krav 5.3—6, 5.3—5", "status": "verifisert"},
+        {"tekst": "Prosesskode: 75.2 Rekkverk (75.21 tre, 75.22 betong, 75.23 metallskinner, 75.24 wire, 75.25 støtputer)", "kilde": "R761 (2014/faglig 2012) prosess 75.2", "status": "verifisert"}
+      ]
+    },
+    "Kantstein": {
+      "funksjonskrav": [
+        {"tekst": "Kantstein skal lede og skille trafikantgrupper, gi informasjon til blinde og svaksynte, bidra til å lede bort overvann og forenkle gaterenhold. Den skal gi en jevn og definert avgrensning eller høydeforskjell mellom arealer.", "kilde": "R610:2025", "punkt": "6.7 (innledning)", "status": "verifisert"},
+        {"tekst": "Avviket i høyde- og sideretning mellom kantsteiner skal være under 1 cm.", "kilde": "R610:2025", "punkt": "Krav 6.7—1", "status": "verifisert"},
+        {"tekst": "Kantsteinen skal sitte fast.", "kilde": "R610:2025", "punkt": "Krav 6.7—2", "status": "verifisert"},
+        {"tekst": "Kantsteinsvis: minst 9 cm for avvisende kantstein, minst 4 cm for ikke-avvisende og 1–2 cm for nedsenket. Ved reasfaltering skal 18 cm vis ved bussoppstilling på rettlinje opprettholdes.", "kilde": "R610:2025", "punkt": "Krav 6.7—5, 6.7—6", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Normalinspeksjon hver 12. måned", "maaneder": 12, "kilde": "R610:2025", "punkt": "Krav 6.7—7", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Forskyvning i høyde eller side mellom steiner (grense 1 cm)", "kilde": "R610:2025 Krav 6.7—1", "status": "verifisert"},
+        {"tekst": "Løs, skadet eller manglende kantstein", "kilde": "R610:2025 Krav 6.7—2/—3", "status": "verifisert"},
+        {"tekst": "Kantsteinsvis målt fra dekket til topp kantstein (9 / 4 / 1–2 cm; 18 cm ved buss)", "kilde": "R610:2025 Krav 6.7—5/—6", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Løs kantstein (ofte etter vinter og brøyting)", "kilde": "R610:2025 Krav 6.7—2/—4", "status": "verifisert"},
+        {"tekst": "Skadet eller manglende kantstein", "kilde": "R610:2025 Krav 6.7—3", "status": "verifisert"},
+        {"tekst": "For lavt kantsteinsvis etter reasfaltering", "kilde": "R610:2025 Krav 6.7—5/—6", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Løs kantstein: fjernes innen 24 timer", "kilde": "R610:2025 Krav 6.7—2", "status": "verifisert"},
+        {"tekst": "Skadet, løs eller manglende kantstein: erstattes innen 14 dager. Vinterskader: fjernes innen 24 timer og erstattes innen 1. juni.", "kilde": "R610:2025 Krav 6.7—3/—4", "status": "verifisert"},
+        {"tekst": "Høyde-/sideavvik og for lavt vis: utbedres i løpet av sommersesongen", "kilde": "R610:2025 Krav 6.7—1/—5", "status": "verifisert"},
+        {"tekst": "Prosesskode: 75.1 Kantstein (75.11 naturstein, 75.12 betong, 75.13 asfalt)", "kilde": "R761 (2014/faglig 2012) prosess 75.1", "status": "verifisert"}
+      ]
+    },
+    "Vegoverbygning": {
+      "funksjonskrav": [
+        {"tekst": "Vegdekket skal gi god fremkommelighet og sikker, komfortabel ferdsel, og redusere nedbrytning av vegkroppen. Det skal ha jevn overflate, god friksjon, slitasjemotstand, lastfordeling og vanntetting, og være frostsikkert.", "kilde": "R610:2025", "punkt": "6.1 (innledning)", "status": "verifisert"},
+        {"tekst": "Spordybde (90-persentil av 20 m-verdier på 1000 m parsell) skal være under 25 mm ved ÅDT 0–5000 og under 20 mm ved ÅDT > 5000. Ingen 20 m-verdi skal være over 40 mm.", "kilde": "R610:2025", "punkt": "Krav 6.1—1, 6.1—2, tabell 6.1—1", "status": "verifisert"},
+        {"tekst": "IRI (90-persentil) skal være under 5,0 / 4,5 / 4,0 / 3,5 mm/m for ÅDT 0–1500 / 1501–5000 / 5001–10000 / > 10000. Ingen 20 m-verdi skal overskride kravet med mer enn 3 mm/m.", "kilde": "R610:2025", "punkt": "Krav 6.1—3, 6.1—4, tabell 6.1—2", "status": "verifisert"},
+        {"tekst": "Friksjonskoeffisienten skal være over 0,40 ved fartsgrense ≤ 80 km/t og over 0,50 ved ≥ 90 km/t. Tiltak innen 6 uker.", "kilde": "R610:2025", "punkt": "Krav 6.1—5, tabell 6.1—3", "status": "verifisert"},
+        {"tekst": "Krakelering skal ikke dekke mer enn 30 % av arealet på en vilkårlig 100 m strekning per kjøreretning.", "kilde": "R610:2025", "punkt": "Krav 6.1—8", "status": "verifisert"},
+        {"tekst": "Tverrfallet skal sikre at vann ledes bort fra vegbanen.", "kilde": "R610:2025", "punkt": "Krav 6.1—10", "status": "verifisert"},
+        {"tekst": "Nivåforskjell fra telehiv/setninger (2 m rettholt): 1. juni–30. september maks 25 mm på langs og 20 mm på tvers. 1. oktober–31. mai maks 40 mm på langs og 25 mm på tvers.", "kilde": "R610:2025", "punkt": "Krav 6.1—19, tabell 6.1—4", "status": "verifisert"},
+        {"tekst": "Høydeforskjell over langsgående og tversgående kanter skal være under 10 mm. Høydeforskjell mellom skulder og kjørebane skal være under 30 mm.", "kilde": "R610:2025", "punkt": "Krav 6.1—16, 6.1—20", "status": "verifisert"},
+        {"tekst": "Dyp sidegrøft: bunnen skal ligge i nivå med underkant forsterkningslag eller lavere (drenering av overbygningen).", "kilde": "R610:2025", "punkt": "Krav 6.8.2—1", "status": "verifisert"},
+        {"tekst": "Forsterkning av veg er omtalt i N200:2024 kap. 3.9, og utbedringsstandard i N100:2023.", "kilde": "R610:2025", "punkt": "6.1 (innledning)", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Normalinspeksjon hver 12. måned. Hovedinspeksjon etter lokal bestemmelse. Gang- og sykkelareal og sideanlegg har egne inspeksjonspunkter (6.2.4, 6.4.5).", "maaneder": 12, "kilde": "R610:2025", "punkt": "Krav 6.1—34", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Spordybde og IRI (måles, 90-persentil per 1000 m)", "kilde": "R610:2025 Krav 6.1—1 til —4", "status": "verifisert"},
+        {"tekst": "Friksjon", "kilde": "R610:2025 Krav 6.1—5", "status": "verifisert"},
+        {"tekst": "Sprekkbredde (> 10 mm og > 20 mm)", "kilde": "R610:2025 Krav 6.1—6/—7", "status": "verifisert"},
+        {"tekst": "Krakelering i % av arealet", "kilde": "R610:2025 Krav 6.1—8/—9", "status": "verifisert"},
+        {"tekst": "Hull (tverrmål > 10 cm; i sykkelfelt > 3 cm)", "kilde": "R610:2025 Krav 6.1—13/—14", "status": "verifisert"},
+        {"tekst": "Kanter/skjøter og gategods i forhold til dekket", "kilde": "R610:2025 Krav 6.1—16 til —18", "status": "verifisert"},
+        {"tekst": "Telehiv og setninger (2 m rettholt)", "kilde": "R610:2025 Krav 6.1—19", "status": "verifisert"},
+        {"tekst": "Kant mellom skulder og kjørebane", "kilde": "R610:2025 Krav 6.1—20", "status": "verifisert"},
+        {"tekst": "Tverrfall og vannansamling", "kilde": "R610:2025 Krav 6.1—10/—11", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Spor, ujevnhet og lav friksjon", "kilde": "R610:2025 Krav 6.1—1 til —5", "status": "verifisert"},
+        {"tekst": "Sprekker, krakelering og hull", "kilde": "R610:2025 Krav 6.1—6 til —14", "status": "verifisert"},
+        {"tekst": "Telehiv, setninger og deformasjoner", "kilde": "R610:2025 Krav 6.1—19", "status": "verifisert"},
+        {"tekst": "Kantsprang ved fresekant eller skulder", "kilde": "R610:2025 Krav 6.1—16/—20", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Hull > 10 cm (sykkelfelt > 3 cm): utbedres innen 7 dager", "kilde": "R610:2025 Krav 6.1—13/—14", "status": "verifisert"},
+        {"tekst": "Sprekker > 10 mm: tettes før 1. juni hvis de registreres 1. oktober–1. mai, ellers innen 4 uker. Sprekker > 20 mm: innen 7 dager.", "kilde": "R610:2025 Krav 6.1—6/—7", "status": "verifisert"},
+        {"tekst": "Kantsprang > 10 mm, gategods i feil høyde eller skulderkant > 30 mm: utbedres innen 7 dager ved ÅDT > 1500, ellers innen 14 dager", "kilde": "R610:2025 Krav 6.1—16/—17/—18/—20", "status": "verifisert"},
+        {"tekst": "Nivåforskjeller (telehiv/setninger): utbedres innen 4 uker. Friksjon: tiltak innen 6 uker.", "kilde": "R610:2025 Krav 6.1—19, 6.1—5", "status": "verifisert"},
+        {"tekst": "Krakelering: tiltakstiden settes etter trafikksikkerhetsvurdering", "kilde": "R610:2025 Krav 6.1—8", "status": "verifisert"},
+        {"tekst": "Prosesskode: 5 Vegfundament (51 planum, 52 filterlag/frostsikring, 53 forsterkningslag, 54–56 bærelag, 58 til bruk for drift og vedlikehold) og 6 Vegdekke (61 grusdekke, 63 riving/fresing/oppretting, 64 overflatebehandling, 65 asfaltdekker, 66 betongdekker/belegningsstein)", "kilde": "R761 (2014/faglig 2012) hovedprosess 5 og 6", "status": "verifisert"}
+      ]
+    },
+    "Skilt": {
+      "funksjonskrav": [
+        {"tekst": "Skilt omfatter skiltplate (med refleksfolie og lakk), klammer/fester, stolpe/mast/portal og fundament, samt variable og belyste skilt med tilhørende elektrisk anlegg. Skilt skal informere, varsle, lede og styre trafikantene.", "kilde": "R610:2025", "punkt": "10.2 (innledning)", "status": "verifisert"},
+        {"tekst": "Skiltplaten skal være lesbar for de trafikantene den gjelder for. Kravet til fri sikt foran skiltet avhenger av fartsgrensen, f.eks. 50 km/t: 100 m (vegvisning) og 70 m (andre skilt); 80 km/t: 140 m og 110 m.", "kilde": "R610:2025", "punkt": "Krav 10.2—1, tabell 10.2—1", "status": "verifisert"},
+        {"tekst": "Minste lesbarhetsavstand per fartsgrense: 30→40 m, 40→60 m, 50→70 m, 60→80 m, 70→100 m, 80→110 m, 90→130 m, 100→140 m, 110→150 m, sykkel 40 m. Gjelder både i dagslys og i mørke.", "kilde": "R610:2025", "punkt": "Krav 10.2—2, tabell 10.2—2", "status": "verifisert"},
+        {"tekst": "Skiltplate med folie skal skiftes når kravet til lesbarhet ikke er oppfylt, eller når fargene er vesentlig falmet.", "kilde": "R610:2025", "punkt": "Krav 10.2—3", "status": "verifisert"},
+        {"tekst": "Stolpe/mast/portal skal være fast fundamentert, uten feil eller skade. Skjevheten skal være under 3 cm per meter.", "kilde": "R610:2025", "punkt": "Krav 10.2—10, 10.2—11", "status": "verifisert"},
+        {"tekst": "Skiltet skal være fast innfestet, med tilskrudde bolter.", "kilde": "R610:2025", "punkt": "Krav 10.2—12", "status": "verifisert"}
+      ],
+      "inspeksjonsintervall": {"tekst": "Normalinspeksjon hver 12. måned, etter vintersesongen. Mekanisk variable skilt og LED-/fiberoptiske skilt: kontroll og funksjonskontroll hver 6. måned (vår og høst).", "maaneder": 12, "kilde": "R610:2025", "punkt": "Krav 10.2—13, 10.2—14, 10.2—15", "status": "verifisert"},
+      "sjekkpunkter": [
+        {"tekst": "Lesbarhet og fri sikt foran skiltet (vegetasjon, snø)", "kilde": "R610:2025 Krav 10.2—1/—2", "status": "verifisert"},
+        {"tekst": "Falmet folie eller redusert refleks", "kilde": "R610:2025 Krav 10.2—3", "status": "verifisert"},
+        {"tekst": "Tagging, smuss, rim eller snø på skiltplaten", "kilde": "R610:2025 Krav 10.2—4", "status": "verifisert"},
+        {"tekst": "Skjevhet på stolpe (3 cm/m) og fundament", "kilde": "R610:2025 Krav 10.2—10/—11", "status": "verifisert"},
+        {"tekst": "Innfesting, klammer og bolter", "kilde": "R610:2025 Krav 10.2—12", "status": "verifisert"},
+        {"tekst": "Lyskilde i belyste skilt", "kilde": "R610:2025 Krav 10.2—8", "status": "verifisert"}
+      ],
+      "typiske_avvik": [
+        {"tekst": "Uleselig skilt (skitt, tagging, snø eller vegetasjon)", "kilde": "R610:2025 Krav 10.2—4", "status": "verifisert"},
+        {"tekst": "Falmet skiltplate", "kilde": "R610:2025 Krav 10.2—3", "status": "verifisert"},
+        {"tekst": "Skjev stolpe (ofte etter vinteren)", "kilde": "R610:2025 Krav 10.2—11", "status": "verifisert"},
+        {"tekst": "Løs innfesting", "kilde": "R610:2025 Krav 10.2—12", "status": "verifisert"},
+        {"tekst": "Utfall av lys i belyst skilt", "kilde": "R610:2025 Krav 10.2—8", "status": "verifisert"}
+      ],
+      "tiltak": [
+        {"tekst": "Uleselig skilt på grunn av tagging, smuss, rim, snø eller sikthinder: gjøres lesbart innen 24 timer", "kilde": "R610:2025 Krav 10.2—4", "status": "verifisert"},
+        {"tekst": "Utfall av lyskilde i belyst skilt: utbedres innen 7 dager", "kilde": "R610:2025 Krav 10.2—8", "status": "verifisert"},
+        {"tekst": "Stolpe/mast/portal og innfesting: utbedres innen 4 uker. Blir stolpen skjev gjennom vinteren, rettes den senest innen 1. juni.", "kilde": "R610:2025 Krav 10.2—10/—11/—12", "status": "verifisert"},
+        {"tekst": "Variable skilt i tunnel: tiltakstid 24 timer ved ÅDT ≤ 20 000 og 12 timer ved ÅDT > 20 000. Utenfor tunnel skal feilretting starte etter krav til utrykningstid i kap. 2.", "kilde": "R610:2025 Krav 10.2—5, tabell 10.2—3", "status": "verifisert"},
+        {"tekst": "Prosesskode: 77.1 Oppsetting av skilt (77.11 fundament, 77.12 stolper, 77.13 portaler, 77.14 skilt inkl. fester, 77.15 belyste skilt, 77.16 variable skilt)", "kilde": "R761 (2014/faglig 2012) prosess 77.1", "status": "verifisert"}
+      ]
+    }
+  },
+  "merknader": "1) TILSTANDSGRAD 0–3: Ingen av SVV-håndbøkene som er lest (R610:2025, N200:2024, N101:2025, V441:2019, V124:2021, R761) definerer tilstandsgrad TG 0–3. R610 bruker avvik fra standardkrav og konsekvensgrad 0–3 med tiltakstid (tabell 1.3—1, verifisert). N101 Krav 5.3.1 viser til NS 3424:2012 for generelle krav til tilstandsanalyse. V441 (bru) bruker skadegrad 1–4 og konsekvensgrad 1–4 med konsekvenstype B/T/V/M (verifisert) og oppgir at metodikken er hentet fra NS 3424. Selve NS 3424 er betalt og ikke lest. TG-betegnelsene er derfor merket «usikker» (fra en kommunal tilstandsrapport). Hvis appen skal bruke TG 0–3, bør teksten kontrolleres mot NS 3424:2012. 2) KONSEKVENSGRAD 0–3: Betegnelsene og tiltakstidene er verifisert i R610:2025 tabell 1.3—1. PDF-teksten viser ikke sikkert hvilken rad «forringet estetikk når estetikk utgjør objektets funksjon» hører til (KG 1 eller KG 2). 3) R761: Prosessnumrene er hentet fra 2014-utgaven (faglig innhold 2012). Gjeldende utgave er «R761 Prosesskoden:2025» på store.vegnorm.vegvesen.no, og den er ikke lest, så numrene kan ha endret seg. 4) R762 Prosesskode 2 (bruer og kaier) er ikke lest. Den er bare relevant for kulvert ≥ 2,5 m, som etter R610 7.4 følger R411 Bruforvaltning (normalinspeksjon hver 12. måned = «enkel inspeksjon» i R411). R411 er heller ikke lest. 5) Vegbelysning: R610 10.14 og V124 (2021) er lest. N100:2023 (driftsverdier for belysning, som R610 Krav 10.14—1 viser til) og N601 (elektriske anlegg langs veg) er ikke lest. 6) Ikke funnet i SVV-kildene: skadekoder for rørinspeksjon (f.eks. NS-EN 13508-2) for overvanns- og drensledninger, og egne drifts- og inspeksjonskrav til selve kabelgrøfta (setninger m.m.). R610 dekker bare føringsveien (trekkerør, kum, kabelkanal). 7) Vegoverbygning: R610 6.1 stiller drifts- og tilstandskrav til vegdekket. Krav til overbygningen under dekket (bærelag, forsterkningslag) finnes i N200 kap. 3 som dimensjoneringskrav og er ikke hentet ut. Det finnes ikke inspeksjonskrav for overbygningen utover dekket og dreneringen. 8) Alle R610-krav gjelder riksveger der SVV er byggherre. Fylkes- og kommuneveger kan ha egne standarder. Mange tiltakstider kan endres etter dokumentert risikovurdering (R610 Krav 1.3—8). 9) Ettersyn (ukentlig, maks 9 dager) gjelder alle objekter (R610 4.3.2) og er ikke gjentatt for hver objekttype. 10) PDF-ene ble hentet fra NVA (nva.sikt.no, Statens vegvesens arkiv) fordi store.vegnorm.vegvesen.no bare viser dokumentene i en nettleser-viewer."
+}
