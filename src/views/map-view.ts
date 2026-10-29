@@ -10,6 +10,7 @@ import "../ui/map-controls.ts";
 import "../ui/coord-bar.ts";
 import "../ui/mmi-legend.ts";
 import "../ui/object-panel.ts";
+import "../ui/nvdb-panel.ts";
 
 export const MAP_ID = "kart-2d";
 
@@ -44,7 +45,11 @@ export class SvvMapView extends StoreElement {
           ${s.colorByMmi ? html`<svv-mmi-legend></svv-mmi-legend>` : nothing}
           <svv-coord-bar dim="2d"></svv-coord-bar>
         </div>
-        ${s.selection ? html`<svv-object-panel dim="2d"></svv-object-panel>` : nothing}
+        ${s.selection
+          ? html`<svv-object-panel dim="2d"></svv-object-panel>`
+          : s.nvdbValgt
+            ? html`<svv-nvdb-panel></svv-nvdb-panel>`
+            : nothing}
       </div>
     `;
   }

@@ -67,6 +67,12 @@ export interface AppState {
   folg: boolean;
   /** Simulert frakoblet modus (test av køen) */
   simFrakoblet: boolean;
+  /** Valgt vegobjekt fra NVDB (ekte driftsdata) */
+  nvdbValgt: { typeId: number; id: number } | null;
+  /** Antall NVDB-objekter i kartutsnittet per type */
+  nvdbAntall: Record<number, number>;
+  /** Skjulte NVDB-typer (overstyrer standardvalget) */
+  nvdbTyper: Record<number, boolean>;
 }
 
 export const initialState: AppState = {
@@ -95,6 +101,9 @@ export const initialState: AppState = {
   valgtNaer: null,
   folg: true,
   simFrakoblet: false,
+  nvdbValgt: null,
+  nvdbAntall: {},
+  nvdbTyper: {},
 };
 
 type Listener = (s: AppState, prev: AppState) => void;

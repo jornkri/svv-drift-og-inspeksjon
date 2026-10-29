@@ -1,0 +1,2049 @@
+{
+  "generert": "2026-10-29",
+  "omraade": {
+    "navn": "Kløfta, Alta (testområde)",
+    "kartutsnitt": "816000,7762500,818500,7765500",
+    "srid": 5973,
+    "kommune": 5601,
+    "vegnett_i_omraadet": "E45 S3D1 (9 segmenter, EV45) + 3 private veger (P98075, P98076, P98077). Kontraktsområde DK 9505 Nord-Troms 2022-2027. Merk: E45, ikke E6."
+  },
+  "headere": {
+    "Accept": "application/json",
+    "X-Client": "svv-drift-og-inspeksjon-dev"
+  },
+  "endepunkter": {
+    "vegobjekttyper_alle": "https://nvdbapiles.atlas.vegvesen.no/datakatalog/api/v1/vegobjekttyper",
+    "vegobjekttyper_alle_alias": "https://nvdbapiles.atlas.vegvesen.no/vegobjekttyper",
+    "vegobjekttype_en": "https://nvdbapiles.atlas.vegvesen.no/datakatalog/api/v1/vegobjekttyper/{typeId}",
+    "vegobjekter_liste": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/{typeId}?kartutsnitt={xmin},{ymin},{xmax},{ymax}&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall={antall}",
+    "vegobjekter_liste_neste_side": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/{typeId}?{samme parametre}&start={metadata.neste.start}",
+    "vegobjekt_ett": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/{typeId}/{objektId}?inkluder=alle&srid=5973",
+    "statistikk": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/{typeId}/statistikk?kartutsnitt={xmin},{ymin},{xmax},{ymax}&srid=5973",
+    "statistikk_kommune": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/{typeId}/statistikk?kommune=5601",
+    "egenskapsfilter_eksempel": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/83?kommune=5601&egenskap=1141=4146",
+    "relasjoner": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/{typeId}?{...}&inkluder=relasjoner",
+    "vegnett_segmentert": "https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser/segmentert?kartutsnitt={xmin},{ymin},{xmax},{ymax}&srid=5973&antall=1000",
+    "kommuner": "https://nvdbapiles.atlas.vegvesen.no/omrader/api/v4/kommuner",
+    "inkluder_verdier": "metadata, egenskaper, relasjoner, lokasjon, vegsegmenter, geometri, alle",
+    "merknad": "egenskapsfilter: enum-egenskaper filtreres på enum-id (1141=4146 = sandfangkummer). relasjoner gir relasjoner.foreldre/barn, f.eks. Skiltpunkt 95 -> Skiltplate 96 + Tilstand/skade 276."
+  },
+  "paginering": {
+    "mekanisme": "Cursor-basert. Svar har metadata {returnert, sidestørrelse, neste:{start, href}}. Send neste.start som &start= i neste kall.",
+    "maks_per_side": "antall over grensen klippes stille: antall=100000 ga sidestørrelse=800 for vegobjekter. Vegnett godtok antall=1000.",
+    "stoppkriterium": "metadata.neste returneres ALLTID (også ved 0 treff). Stopp når returnert < sidestørrelse (eller returnert == 0).",
+    "neste_href": "neste.href mangler /api/v4 (f.eks. https://nvdbapiles.atlas.vegvesen.no/vegobjekter/96?...&start=...) men virker (200). Bygg heller URL selv med start-verdien.",
+    "ugyldig_start": "Ugyldig start-verdi gir HTTP 400."
+  },
+  "cors": "Tillatt. GET med Origin: http://localhost:5180 gir access-control-allow-origin: http://localhost:5180 (speiler Origin), access-control-allow-credentials: true, access-control-expose-headers: ETag, etag, X-RateLimit-Remaining, vary: Origin. Preflight OPTIONS med Access-Control-Request-Headers: x-client,accept gir 200 med access-control-allow-methods: GET og access-control-allow-headers: x-client, accept. Direkte kall fra nettleser fungerer.",
+  "rate_limit": "Respons-header X-RateLimit-Remaining (var 197 ved test) - eksponert til nettleser via CORS.",
+  "responsformat": {
+    "egenskap": "egenskaper[] = {id, navn, verdi, egenskapstype (Heltall|Flyttall|Tekst|Tekstenum|Dato|Geometri|...), enum_id (for Tekstenum), enhet{id,navn,kortnavn} (for tall)}",
+    "geometri": "geometri = {wkt (3D, f.eks. \"LINESTRING Z (...)\"), srid: 5973, egengeometri: true|false (false = avledet fra vegnettet), lengde (linjer)}. Egengeometri finnes også som egenskap \"Geometri, punkt/linje/flate\".",
+    "metadata": "metadata = {type{id,navn}, versjon, startdato, startdato_vegobjekt, sist_modifisert}",
+    "vegsystemreferanse": "lokasjon.vegsystemreferanser[] = {vegsystem{vegkategori:\"E\",fase:\"V\",nummer:45}, strekning{strekning:3, delstrekning:1, arm, adskilte_løp, trafikantgruppe:\"K\", retning:\"MED\", meter:483.618 (punkt) eller fra_meter/til_meter (linje)}, metrertLokasjon{retning, sideposisjon}, kortform:\"EV45 S3D1 m484\"}",
+    "stedfesting": "lokasjon.stedfestinger[] = Punkt: {type:\"Punkt\", veglenkesekvensid:930625, relativPosisjon:0.0404, retning:\"MED\", kjørefelt:[], sideposisjon:\"M\", kortform:\"0.04044768@930625\"}; Linje: {type:\"Linje\", ..., kortform:\"0.70683178-0.8744978@2354163\"}",
+    "lokasjon_ovrig": "lokasjon = {kommuner:[5601], fylker:[56], kontraktsområder:[{id,nummer,navn}], riksvegruter, vegforvaltere, adresser:[{navn,adressekode}], vegsystemreferanser, stedfestinger, geometri{wkt: punkt/linje på vegnettet, srid}}",
+    "eksempel_stikkrenne": {
+      "id": 92835058,
+      "href": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/79/92835058",
+      "metadata": {
+        "type": {
+          "id": 79,
+          "navn": "Stikkrenne/Kulvert"
+        },
+        "versjon": 5,
+        "startdato": "2021-07-20",
+        "startdato_vegobjekt": "1997-05-21",
+        "sist_modifisert": "2025-11-22T10:36:09Z"
+      },
+      "egenskaper": [
+        {
+          "id": 3113,
+          "navn": "Diameter, innvendig",
+          "verdi": 450,
+          "enhet": {
+            "id": 4,
+            "navn": "Millimeter",
+            "kortnavn": "mm"
+          },
+          "egenskapstype": "Heltall"
+        },
+        {
+          "id": 1942,
+          "navn": "Antall tininger",
+          "verdi": 3,
+          "enhet": {
+            "id": 12,
+            "navn": "Stykker",
+            "kortnavn": "stk"
+          },
+          "egenskapstype": "Heltall"
+        },
+        {
+          "id": 1323,
+          "navn": "Lengde",
+          "verdi": 10.42,
+          "enhet": {
+            "id": 1,
+            "navn": "Meter",
+            "kortnavn": "m"
+          },
+          "egenskapstype": "Flyttall"
+        },
+        {
+          "id": 5899,
+          "navn": "Geometri, linje",
+          "verdi": "LINESTRING Z (817832.4 7763631.09 137.988,817827.97 7763621.66 137.678)",
+          "kvalitet": {
+            "datafangstmetode": "sat",
+            "nøyaktighet": 2,
+            "synbarhet": 99,
+            "datafangstmetodeHøyde": "sat",
+            "nøyaktighetHøyde": 4,
+            "maksimaltAvvik": -1
+          },
+          "datafangstdato": "2016-06-16",
+          "høydereferanse": 99,
+          "egenskapstype": "Geometri"
+        },
+        {
+          "id": 4780,
+          "navn": "Geometri, punkt",
+          "verdi": "POINT Z (817827.97 7763621.66 137.658)",
+          "kvalitet": {
+            "datafangstmetode": "sat",
+            "nøyaktighet": 1,
+            "synbarhet": 99,
+            "datafangstmetodeHøyde": "sat",
+            "nøyaktighetHøyde": 3,
+            "maksimaltAvvik": -1
+          },
+          "datafangstdato": "2016-06-16",
+          "høydereferanse": 99,
+          "egenskapstype": "Geometri"
+        },
+        {
+          "id": 8060,
+          "navn": "Vedlikeholdsansvarlig",
+          "verdi": "Statens vegvesen",
+          "enum_id": 10454,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 6983,
+          "navn": "Materialtype",
+          "verdi": "Betong",
+          "enum_id": 9125,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 6982,
+          "navn": "Fundamentering",
+          "verdi": "Grus",
+          "enum_id": 9120,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 6981,
+          "navn": "Bruksområde",
+          "verdi": "Vann",
+          "enum_id": 9114,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 1940,
+          "navn": "Type utløp",
+          "verdi": "I bekk/elv",
+          "enum_id": 2929,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 10771,
+          "navn": "Tilleggsinformasjon",
+          "verdi": "Kombinasjon mellom 450mm betong og murt stikkrenne",
+          "egenskapstype": "Tekst"
+        },
+        {
+          "id": 6984,
+          "navn": "Tverrsnittsform",
+          "verdi": "Sirkulær",
+          "enum_id": 9130,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 1939,
+          "navn": "Type innløp",
+          "verdi": "Åpent i grøft",
+          "enum_id": 11744,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 6985,
+          "navn": "Prefabrikkert",
+          "verdi": "Prefabrikkert",
+          "enum_id": 9135,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 2123,
+          "navn": "Vinkel",
+          "verdi": "Rett",
+          "enum_id": 2465,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 7996,
+          "navn": "Eier",
+          "verdi": "Stat, Statens vegvesen",
+          "enum_id": 10262,
+          "egenskapstype": "Tekstenum"
+        },
+        {
+          "id": 1832,
+          "navn": "Varmekabler",
+          "verdi": "Nei",
+          "enum_id": 3562,
+          "egenskapstype": "Tekstenum"
+        }
+      ],
+      "geometri": {
+        "wkt": "LINESTRING Z (817832.4 7763631.09 137.988,817827.97 7763621.66 137.678)",
+        "srid": 5973,
+        "egengeometri": true,
+        "lengde": 10.423
+      },
+      "lokasjon": {
+        "kommuner": [
+          5601
+        ],
+        "fylker": [
+          56
+        ],
+        "kontraktsområder": [
+          {
+            "id": 937097894,
+            "nummer": 9505,
+            "navn": "DK 9505 Nord-Troms 2022-2027"
+          },
+          {
+            "id": 1010927232,
+            "nummer": 9553,
+            "navn": "E9553 Troms 2022-2027"
+          },
+          {
+            "id": 1025934962,
+            "nummer": 9505,
+            "navn": "DK 9505 Nord-Troms 2027-2032"
+          }
+        ],
+        "riksvegruter": [
+          {
+            "enumid": 20303,
+            "riksvegrute": "Rute 8b: E6 Nordkjosbotn - Kirkenes"
+          }
+        ],
+        "vegforvaltere": [
+          {
+            "enumid": 21771,
+            "vegforvalter": "Statens vegvesen"
+          }
+        ],
+        "adresser": [
+          {
+            "navn": "Eibyveien",
+            "adressekode": 5401
+          }
+        ],
+        "vegsystemreferanser": [
+          {
+            "vegsystem": {
+              "vegkategori": "E",
+              "fase": "V",
+              "nummer": 45
+            },
+            "strekning": {
+              "strekning": 3,
+              "delstrekning": 1,
+              "arm": false,
+              "adskilte_løp": "Nei",
+              "trafikantgruppe": "K",
+              "retning": "MED",
+              "meter": 483.618
+            },
+            "metrertLokasjon": {
+              "retning": "MED",
+              "sideposisjon": "M"
+            },
+            "kortform": "EV45 S3D1 m484"
+          }
+        ],
+        "stedfestinger": [
+          {
+            "type": "Punkt",
+            "veglenkesekvensid": 930625,
+            "relativPosisjon": 0.04044768,
+            "retning": "MED",
+            "kjørefelt": [],
+            "sideposisjon": "M",
+            "kortform": "0.04044768@930625"
+          }
+        ],
+        "geometri": {
+          "wkt": "POINT Z (817830.426 7763626.888 139.077)",
+          "srid": 5973
+        }
+      }
+    }
+  },
+  "typer": [
+    {
+      "id": 79,
+      "navn": "Stikkrenne/Kulvert",
+      "beskrivelse_kort": "Stikkrenne/Kulvert",
+      "fag": "VA",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 8,
+      "antall_i_alta_kommune_5601": 2757,
+      "egenskaper": [
+        {
+          "id": 3113,
+          "navn": "Diameter, innvendig",
+          "eksempel": "450 mm"
+        },
+        {
+          "id": 1942,
+          "navn": "Antall tininger",
+          "eksempel": "3 stk"
+        },
+        {
+          "id": 1323,
+          "navn": "Lengde",
+          "eksempel": "10.42 m"
+        },
+        {
+          "id": 8060,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 6983,
+          "navn": "Materialtype",
+          "eksempel": "Betong"
+        },
+        {
+          "id": 6982,
+          "navn": "Fundamentering",
+          "eksempel": "Grus"
+        },
+        {
+          "id": 6981,
+          "navn": "Bruksområde",
+          "eksempel": "Vann"
+        },
+        {
+          "id": 1940,
+          "navn": "Type utløp",
+          "eksempel": "I bekk/elv"
+        },
+        {
+          "id": 10771,
+          "navn": "Tilleggsinformasjon",
+          "eksempel": "Kombinasjon mellom 450mm betong og murt stikkrenne"
+        },
+        {
+          "id": 6984,
+          "navn": "Tverrsnittsform",
+          "eksempel": "Sirkulær"
+        },
+        {
+          "id": 1939,
+          "navn": "Type innløp",
+          "eksempel": "Åpent i grøft"
+        },
+        {
+          "id": 6985,
+          "navn": "Prefabrikkert",
+          "eksempel": "Prefabrikkert"
+        },
+        {
+          "id": 2123,
+          "navn": "Vinkel",
+          "eksempel": "Rett"
+        },
+        {
+          "id": 7996,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        },
+        {
+          "id": 1832,
+          "navn": "Varmekabler",
+          "eksempel": "Nei"
+        },
+        {
+          "id": 4556,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/79?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92835058,
+        92835055,
+        92835103
+      ]
+    },
+    {
+      "id": 83,
+      "navn": "Kum",
+      "beskrivelse_kort": "Kum (også Sandfang: Type 1141 = \"Standard kum m sandfang\" enum 4146 / \"Infiltrasjonskum med sandfang\" enum 23576)",
+      "fag": "VA",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          false,
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 1757,
+      "egenskaper": [
+        {
+          "id": 1411,
+          "navn": "Materialtype",
+          "eksempel": "Betong"
+        },
+        {
+          "id": 2290,
+          "navn": "Lokk/rist, type",
+          "eksempel": "Kuppelrist, lav"
+        },
+        {
+          "id": 1269,
+          "navn": "Bruksområde",
+          "eksempel": "Inntak/utløp stikkrenne"
+        },
+        {
+          "id": 1141,
+          "navn": "Type",
+          "eksempel": "Standard kum"
+        },
+        {
+          "id": 1949,
+          "navn": "Antall rør inn",
+          "eksempel": "1 stk"
+        },
+        {
+          "id": 5804,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Fylkeskommune"
+        },
+        {
+          "id": 5816,
+          "navn": "Eier",
+          "eksempel": "Fylkeskommune"
+        },
+        {
+          "id": 1727,
+          "navn": "Diameter",
+          "eksempel": "0.65 m"
+        },
+        {
+          "id": 2388,
+          "navn": "Avstand fra vegkant",
+          "eksempel": "4.0 m"
+        },
+        {
+          "id": 2289,
+          "navn": "Diameter, åpning",
+          "eksempel": "0.65 m"
+        },
+        {
+          "id": 7065,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/83?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92706527,
+        92706576,
+        92706579
+      ]
+    },
+    {
+      "id": 77,
+      "navn": "Rørledning",
+      "beskrivelse_kort": "Rørledning (= drens-/overvannsledning; Bruksområde 1267 er sensitiv og krever innlogging)",
+      "fag": "VA",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 479,
+      "egenskaper": [
+        {
+          "id": 1724,
+          "navn": "Diameter",
+          "eksempel": "125 mm"
+        },
+        {
+          "id": 1322,
+          "navn": "Lengde",
+          "eksempel": "301.22 m"
+        },
+        {
+          "id": 1755,
+          "navn": "Helning/Fall",
+          "eksempel": "0.14258 Forholdstall"
+        },
+        {
+          "id": 1410,
+          "navn": "Materialtype",
+          "eksempel": "Plast, pe"
+        },
+        {
+          "id": 1677,
+          "navn": "Tverrsnittform",
+          "eksempel": "Sirkulært"
+        },
+        {
+          "id": 10350,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [
+        {
+          "id": 1267,
+          "navn": "Bruksområde"
+        },
+        {
+          "id": 1483,
+          "navn": "Produktnavn"
+        },
+        {
+          "id": 10882,
+          "navn": "Tilleggsinformasjon"
+        },
+        {
+          "id": 10877,
+          "navn": "Eier, navn"
+        },
+        {
+          "id": 1137,
+          "navn": "Utgår_Type"
+        }
+      ],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/77?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        481724781,
+        481724782,
+        481724783
+      ]
+    },
+    {
+      "id": 78,
+      "navn": "Lukket rørgrøft",
+      "beskrivelse_kort": "Lukket rørgrøft (drensgrøft)",
+      "fag": "VA",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 173,
+      "egenskaper": [
+        {
+          "id": 1268,
+          "navn": "Type",
+          "eksempel": "Drensgrøft, dyp"
+        },
+        {
+          "id": 10323,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/78?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92775429,
+        92775433,
+        92775438
+      ]
+    },
+    {
+      "id": 80,
+      "navn": "Grøft, åpen",
+      "beskrivelse_kort": "Grøft, åpen",
+      "fag": "VA",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 14,
+      "antall_i_alta_kommune_5601": 5010,
+      "egenskaper": [
+        {
+          "id": 1139,
+          "navn": "Type",
+          "eksempel": "Dyp sidegrøft"
+        },
+        {
+          "id": 1944,
+          "navn": "Materiale",
+          "eksempel": "Løsmasse"
+        },
+        {
+          "id": 10304,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/80?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92727616,
+        92835097,
+        92835106
+      ]
+    },
+    {
+      "id": 876,
+      "navn": "Overvannsrenne",
+      "beskrivelse_kort": "Overvannsrenne",
+      "fag": "VA",
+      "geometri": "ukjent (ingen objekter i Alta)",
+      "geometri_detalj": {
+        "wkt_typer": [],
+        "egengeometri": [],
+        "stedfesting": []
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 0,
+      "egenskaper": [
+        {
+          "id": 10443,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/876?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": []
+    },
+    {
+      "id": 853,
+      "navn": "Trekkekum",
+      "beskrivelse_kort": "Trekkekum",
+      "fag": "Elektro",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 434,
+      "egenskaper": [
+        {
+          "id": 9731,
+          "navn": "Etableringsår",
+          "eksempel": 2013
+        },
+        {
+          "id": 9739,
+          "navn": "Lengde, ytre",
+          "eksempel": "400.0 mm"
+        },
+        {
+          "id": 9737,
+          "navn": "Dybde, ytre",
+          "eksempel": "500.0 mm"
+        },
+        {
+          "id": 9728,
+          "navn": "Bredde, ytre",
+          "eksempel": "400.0 mm"
+        },
+        {
+          "id": 9732,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        },
+        {
+          "id": 9741,
+          "navn": "Materiale, kum",
+          "eksempel": "Betong"
+        },
+        {
+          "id": 10981,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 9738,
+          "navn": "Kumform",
+          "eksempel": "Kvadratisk"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [
+        {
+          "id": 11242,
+          "navn": "Tilleggsinformasjon"
+        },
+        {
+          "id": 9757,
+          "navn": "Driftsmerking"
+        },
+        {
+          "id": 9735,
+          "navn": "Produktnavn"
+        },
+        {
+          "id": 9733,
+          "navn": "Eier, navn"
+        }
+      ],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/853?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        521935141,
+        521935142,
+        521935143
+      ]
+    },
+    {
+      "id": 87,
+      "navn": "Belysningspunkt",
+      "beskrivelse_kort": "Belysningspunkt",
+      "fag": "Elektro",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 10639,
+      "egenskaper": [
+        {
+          "id": 1883,
+          "navn": "Avstand fra vegkant",
+          "eksempel": "4.0 m"
+        },
+        {
+          "id": 10003,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        },
+        {
+          "id": 10005,
+          "navn": "Fellesføring leietaker (Flyttes til lysmast)",
+          "eksempel": "Kommune"
+        },
+        {
+          "id": 2078,
+          "navn": "Strømtilførsel, kategori",
+          "eksempel": "EX"
+        },
+        {
+          "id": 8744,
+          "navn": "Strømtilførsel, type kabel",
+          "eksempel": "ex"
+        },
+        {
+          "id": 1874,
+          "navn": "Plassering",
+          "eksempel": "Lysmast"
+        },
+        {
+          "id": 1555,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 1272,
+          "navn": "Bruksområde",
+          "eksempel": "Veg/gate"
+        },
+        {
+          "id": 10006,
+          "navn": "Overbelastningsvern",
+          "eksempel": "Nei"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/87?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92701310,
+        92701327,
+        92701334
+      ]
+    },
+    {
+      "id": 88,
+      "navn": "Lysarmatur",
+      "beskrivelse_kort": "Lysarmatur",
+      "fag": "Elektro",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 8789,
+      "egenskaper": [
+        {
+          "id": 9953,
+          "navn": "Eier",
+          "eksempel": "Kommune"
+        },
+        {
+          "id": 9955,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Kommune"
+        },
+        {
+          "id": 10007,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/88?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        435095730,
+        435095731,
+        435095732
+      ]
+    },
+    {
+      "id": 86,
+      "navn": "Belysningsstrekning",
+      "beskrivelse_kort": "Belysningsstrekning",
+      "fag": "Elektro",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 141,
+      "egenskaper": [
+        {
+          "id": 1714,
+          "navn": "Avstand, innbyrdes",
+          "eksempel": "50 m"
+        },
+        {
+          "id": 1271,
+          "navn": "Bruksområde",
+          "eksempel": "Veg/gate"
+        },
+        {
+          "id": 8399,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/86?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92708511,
+        92708512,
+        92708523
+      ]
+    },
+    {
+      "id": 92,
+      "navn": "Kabel",
+      "beskrivelse_kort": "Kabel",
+      "fag": "Elektro",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 1500,
+      "egenskaper": [
+        {
+          "id": 2202,
+          "navn": "Antall_Historisk",
+          "eksempel": "1 stk"
+        },
+        {
+          "id": 1327,
+          "navn": "Lengde, reell",
+          "eksempel": "332.15549104028 m"
+        },
+        {
+          "id": 1293,
+          "navn": "Farge",
+          "eksempel": "Sort"
+        },
+        {
+          "id": 2023,
+          "navn": "Framføringsveg",
+          "eksempel": "Trekkrør/kanal"
+        },
+        {
+          "id": 4076,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [
+        {
+          "id": 1274,
+          "navn": "Bruksområde"
+        },
+        {
+          "id": 11802,
+          "navn": "Elnummer"
+        },
+        {
+          "id": 9759,
+          "navn": "Produktnavn"
+        },
+        {
+          "id": 11524,
+          "navn": "Utleid til, Navn"
+        },
+        {
+          "id": 9744,
+          "navn": "Driftsmerking"
+        },
+        {
+          "id": 1531,
+          "navn": "Produsent"
+        },
+        {
+          "id": 9748,
+          "navn": "Tilleggsinformasjon"
+        },
+        {
+          "id": 11664,
+          "navn": "Arkivreferanse"
+        },
+        {
+          "id": 9745,
+          "navn": "Eier, navn"
+        },
+        {
+          "id": 1148,
+          "navn": "Utgår_Typebetegnelse"
+        }
+      ],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/92?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        481719971,
+        481719972,
+        481719973
+      ]
+    },
+    {
+      "id": 852,
+      "navn": "Trekkerør/kanal",
+      "beskrivelse_kort": "Trekkerør/kanal",
+      "fag": "Elektro",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 2013,
+      "egenskaper": [
+        {
+          "id": 9716,
+          "navn": "Etableringsår",
+          "eksempel": 2013
+        },
+        {
+          "id": 9713,
+          "navn": "Diameter, indre",
+          "eksempel": "110.0 mm"
+        },
+        {
+          "id": 9842,
+          "navn": "Lengde",
+          "eksempel": "332.2 m"
+        },
+        {
+          "id": 9727,
+          "navn": "Type",
+          "eksempel": "Rør"
+        },
+        {
+          "id": 9724,
+          "navn": "Materiale",
+          "eksempel": "Plast"
+        },
+        {
+          "id": 10980,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 9717,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [
+        {
+          "id": 9723,
+          "navn": "Ledig plass"
+        },
+        {
+          "id": 11521,
+          "navn": "Utleid til"
+        },
+        {
+          "id": 11522,
+          "navn": "Utleid til, Navn"
+        },
+        {
+          "id": 9715,
+          "navn": "Driftsmerking"
+        },
+        {
+          "id": 9726,
+          "navn": "Produktnavn"
+        },
+        {
+          "id": 9882,
+          "navn": "Tilleggsinformasjon"
+        },
+        {
+          "id": 9718,
+          "navn": "Eier, navn"
+        }
+      ],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/852?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        481396810,
+        481396811,
+        481396812
+      ]
+    },
+    {
+      "id": 843,
+      "navn": "Kabelgrøft",
+      "beskrivelse_kort": "Kabelgrøft",
+      "fag": "Elektro",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 413,
+      "egenskaper": [
+        {
+          "id": 10314,
+          "navn": "Etableringsår",
+          "eksempel": 2015
+        },
+        {
+          "id": 9577,
+          "navn": "Dybde",
+          "eksempel": "0.6 m"
+        },
+        {
+          "id": 11160,
+          "navn": "Prosjektreferanse",
+          "eksempel": "T34 Talvik sentrum, Jansnes - Storelva"
+        },
+        {
+          "id": 10979,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 10879,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/843?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        748639884,
+        748639885,
+        748639886
+      ]
+    },
+    {
+      "id": 502,
+      "navn": "Skap, teknisk",
+      "beskrivelse_kort": "Skap, teknisk (el-skap)",
+      "fag": "Elektro",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 66,
+      "egenskaper": [
+        {
+          "id": 8114,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 8039,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        },
+        {
+          "id": 4013,
+          "navn": "Type",
+          "eksempel": "Betjening/styring"
+        },
+        {
+          "id": 10358,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [
+        {
+          "id": 13101,
+          "navn": "Eier, navn"
+        }
+      ],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/502?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        493049532,
+        493049533,
+        493049534
+      ]
+    },
+    {
+      "id": 5,
+      "navn": "Rekkverk",
+      "beskrivelse_kort": "Rekkverk",
+      "fag": "Veg",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 11,
+      "antall_i_alta_kommune_5601": 1139,
+      "egenskaper": [
+        {
+          "id": 4663,
+          "navn": "Rekkverksbredde",
+          "eksempel": "0.5 m"
+        },
+        {
+          "id": 1574,
+          "navn": "Høyde, dimensjonerende",
+          "eksempel": "1.0 m"
+        },
+        {
+          "id": 1298,
+          "navn": "Lengde",
+          "eksempel": "4301.68374088244 m"
+        },
+        {
+          "id": 1089,
+          "navn": "Rekkverkstype",
+          "eksempel": "Betong, prefabrikkert"
+        },
+        {
+          "id": 1248,
+          "navn": "Bruksområde",
+          "eksempel": "Vann"
+        },
+        {
+          "id": 8048,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 9592,
+          "navn": "Håndlist",
+          "eksempel": "Nei"
+        },
+        {
+          "id": 7984,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        },
+        {
+          "id": 9591,
+          "navn": "MC-skinne",
+          "eksempel": "Nei"
+        },
+        {
+          "id": 1965,
+          "navn": "Elementlengde",
+          "eksempel": "13.12 m"
+        },
+        {
+          "id": 4665,
+          "navn": "Plassering på bru",
+          "eksempel": "Ytterrekkverk"
+        },
+        {
+          "id": 1567,
+          "navn": "Stolpeavstand",
+          "eksempel": "2.0 m"
+        },
+        {
+          "id": 1647,
+          "navn": "Skinneutrustning",
+          "eksempel": "Ensidig, enkel ( o-ll )"
+        },
+        {
+          "id": 7558,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/5?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        761227349,
+        761227347,
+        761227348
+      ]
+    },
+    {
+      "id": 14,
+      "navn": "Rekkverksende",
+      "beskrivelse_kort": "Rekkverksende",
+      "fag": "Veg",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          false,
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 18,
+      "antall_i_alta_kommune_5601": 1337,
+      "egenskaper": [
+        {
+          "id": 1096,
+          "navn": "Type",
+          "eksempel": "Avslutning i annet vegobjekt"
+        },
+        {
+          "id": 1303,
+          "navn": "Lengde",
+          "eksempel": "10.0 m"
+        },
+        {
+          "id": 9550,
+          "navn": "Tilleggsinformasjon",
+          "eksempel": "Plassstøpt betong på grusfundament med utsving ."
+        },
+        {
+          "id": 10346,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/14?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        170607392,
+        761227330,
+        761227354
+      ]
+    },
+    {
+      "id": 9,
+      "navn": "Kantstein",
+      "beskrivelse_kort": "Kantstein",
+      "fag": "Veg",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false,
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 0,
+      "antall_i_alta_kommune_5601": 1039,
+      "egenskaper": [
+        {
+          "id": 1092,
+          "navn": "Materialtype",
+          "eksempel": "Betong, prefabrikkerte element"
+        },
+        {
+          "id": 1301,
+          "navn": "Lengde",
+          "eksempel": "22.0 m"
+        },
+        {
+          "id": 5803,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Fylkeskommune"
+        },
+        {
+          "id": 5815,
+          "navn": "Eier",
+          "eksempel": "Fylkeskommune"
+        },
+        {
+          "id": 10315,
+          "navn": "Etableringsår",
+          "eksempel": null
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kommune 5601 (Alta)",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/9?kommune=5601&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92700709,
+        92701113,
+        92701280
+      ]
+    },
+    {
+      "id": 95,
+      "navn": "Skiltpunkt",
+      "beskrivelse_kort": "Skiltpunkt",
+      "fag": "Veg",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          false,
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 23,
+      "antall_i_alta_kommune_5601": 4912,
+      "egenskaper": [
+        {
+          "id": 1877,
+          "navn": "Antall oppsettingsutstyr",
+          "eksempel": "2 stk"
+        },
+        {
+          "id": 1887,
+          "navn": "Antall fundament",
+          "eksempel": "1 stk"
+        },
+        {
+          "id": 1884,
+          "navn": "Avstand fra dekkekant",
+          "eksempel": "1.0 m"
+        },
+        {
+          "id": 2055,
+          "navn": "Høyde over vegkant",
+          "eksempel": "1.7 m"
+        },
+        {
+          "id": 1881,
+          "navn": "Miljø",
+          "eksempel": "Ikke kjemisk"
+        },
+        {
+          "id": 7999,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        },
+        {
+          "id": 8772,
+          "navn": "Avskjæringsledd",
+          "eksempel": "Nei"
+        },
+        {
+          "id": 8773,
+          "navn": "Bøyle",
+          "eksempel": "Ja"
+        },
+        {
+          "id": 1882,
+          "navn": "Klima",
+          "eksempel": "Innland"
+        },
+        {
+          "id": 8063,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 1671,
+          "navn": "Fundamentering",
+          "eksempel": "I/på jordfundament"
+        },
+        {
+          "id": 1876,
+          "navn": "Oppsettingsutstyr",
+          "eksempel": "Stolpe 88,9 mm (3\")"
+        },
+        {
+          "id": 1919,
+          "navn": "Bebyggelse",
+          "eksempel": "Landlig"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/95?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92741337,
+        729376114,
+        729376110
+      ]
+    },
+    {
+      "id": 96,
+      "navn": "Skiltplate",
+      "beskrivelse_kort": "Skiltplate",
+      "fag": "Veg",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 27,
+      "antall_i_alta_kommune_5601": 6986,
+      "egenskaper": [
+        {
+          "id": 5128,
+          "navn": "Plasseringskode",
+          "eksempel": 1
+        },
+        {
+          "id": 1894,
+          "navn": "Ansiktsside, rettet mot",
+          "eksempel": "Trafikk mot metreringsretning"
+        },
+        {
+          "id": 1294,
+          "navn": "Farge",
+          "eksempel": "Svart"
+        },
+        {
+          "id": 1892,
+          "navn": "Skiltform",
+          "eksempel": "Plan"
+        },
+        {
+          "id": 5530,
+          "navn": "Skiltnummer",
+          "eksempel": "904H - Retningsmarkering, Mot høyre"
+        },
+        {
+          "id": 8828,
+          "navn": "Klappskilt",
+          "eksempel": "Nei"
+        },
+        {
+          "id": 1879,
+          "navn": "Belysning",
+          "eksempel": "Ingen"
+        },
+        {
+          "id": 1921,
+          "navn": "Folieklasse",
+          "eksempel": "Klasse 1"
+        },
+        {
+          "id": 1970,
+          "navn": "Størrelse",
+          "eksempel": "Middels størrelse"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/96?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        729376115,
+        729376111,
+        728224815
+      ]
+    },
+    {
+      "id": 241,
+      "navn": "Vegdekke",
+      "beskrivelse_kort": "Vegdekke",
+      "fag": "Veg",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 4,
+      "antall_i_alta_kommune_5601": 4162,
+      "egenskaper": [
+        {
+          "id": 1216,
+          "navn": "Massetype",
+          "eksempel": "Asfaltgrusbetong"
+        },
+        {
+          "id": 5134,
+          "navn": "Masseforbruk",
+          "eksempel": "70 Kg/m2"
+        },
+        {
+          "id": 5135,
+          "navn": "Dekkebredde, gjennomsnitt",
+          "eksempel": "6.35 m"
+        },
+        {
+          "id": 5136,
+          "navn": "Dekkeleggingsdato",
+          "eksempel": "2022-06-09"
+        },
+        {
+          "id": 5141,
+          "navn": "Budsjett",
+          "eksempel": "Vedlikehold"
+        },
+        {
+          "id": 1642,
+          "navn": "Dekketykkelse",
+          "eksempel": "28 mm"
+        },
+        {
+          "id": 2157,
+          "navn": "Areal",
+          "eksempel": "10643 m2"
+        },
+        {
+          "id": 2288,
+          "navn": "Øvre nominelle steinstørrelse",
+          "eksempel": "11 mm"
+        },
+        {
+          "id": 5499,
+          "navn": "Modifisert bindemiddel",
+          "eksempel": "Nei"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/241?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        1016184622,
+        1025284961,
+        1014121135
+      ]
+    },
+    {
+      "id": 947,
+      "navn": "Tilstandsgrad, rekkverk",
+      "beskrivelse_kort": "Tilstandsgrad, rekkverk",
+      "fag": "Veg",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 37,
+      "antall_i_alta_kommune_5601": 1844,
+      "egenskaper": [
+        {
+          "id": 11776,
+          "navn": "Dato kontrollert, enkel inspeksjon",
+          "eksempel": "2019-11-29"
+        },
+        {
+          "id": 11779,
+          "navn": "Tilstand, samlet",
+          "eksempel": "Ok"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/947?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        944754581,
+        944754580,
+        944754579
+      ]
+    },
+    {
+      "id": 284,
+      "navn": "Tilstand/skade, rekkverk",
+      "beskrivelse_kort": "Tilstand/skade, rekkverk",
+      "fag": "Veg",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 11,
+      "antall_i_alta_kommune_5601": 321,
+      "egenskaper": [
+        {
+          "id": 8778,
+          "navn": "Dato kontrollert",
+          "eksempel": "2016-06-07"
+        },
+        {
+          "id": 2269,
+          "navn": "Tilstand",
+          "eksempel": "Ok"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/284?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        761227357,
+        761227336,
+        761227352
+      ]
+    },
+    {
+      "id": 276,
+      "navn": "Tilstand/skade, skiltpunkt",
+      "beskrivelse_kort": "Tilstand/skade, skiltpunkt",
+      "fag": "Veg",
+      "geometri": "punkt",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POINT"
+        ],
+        "egengeometri": [
+          false,
+          true
+        ],
+        "stedfesting": [
+          "Punkt"
+        ]
+      },
+      "antall_i_omraade": 30,
+      "antall_i_alta_kommune_5601": 2109,
+      "egenskaper": [
+        {
+          "id": 8780,
+          "navn": "Dato kontrollert",
+          "eksempel": "2021-09-15"
+        },
+        {
+          "id": 2270,
+          "navn": "Tilstand",
+          "eksempel": "Ok"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/276?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        1014010160,
+        729376117,
+        729376113
+      ]
+    },
+    {
+      "id": 302,
+      "navn": "Tilstand/skade, grøft",
+      "beskrivelse_kort": "Tilstand/skade, grøft",
+      "fag": "Veg",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 1,
+      "antall_i_alta_kommune_5601": 3715,
+      "egenskaper": [
+        {
+          "id": 2271,
+          "navn": "Tilstand",
+          "eksempel": "Ok"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/302?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92727641
+      ]
+    },
+    {
+      "id": 105,
+      "navn": "Fartsgrense",
+      "beskrivelse_kort": "Fartsgrense",
+      "fag": "Kontekst",
+      "geometri": "linje",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "LINESTRING"
+        ],
+        "egengeometri": [
+          false
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 2,
+      "antall_i_alta_kommune_5601": 3265,
+      "egenskaper": [
+        {
+          "id": 2021,
+          "navn": "Fartsgrense",
+          "eksempel": "80 km/h"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/105?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        92684376,
+        362805318
+      ]
+    },
+    {
+      "id": 60,
+      "navn": "Bru",
+      "beskrivelse_kort": "Bru",
+      "fag": "Kontekst",
+      "geometri": "flate",
+      "geometri_detalj": {
+        "wkt_typer": [
+          "POLYGON"
+        ],
+        "egengeometri": [
+          true
+        ],
+        "stedfesting": [
+          "Linje"
+        ]
+      },
+      "antall_i_omraade": 1,
+      "antall_i_alta_kommune_5601": 111,
+      "egenskaper": [
+        {
+          "id": 2175,
+          "navn": "Brutusnummer",
+          "eksempel": 703
+        },
+        {
+          "id": 11180,
+          "navn": "Opprinnelig Brutus F-Nr",
+          "eksempel": 20
+        },
+        {
+          "id": 10278,
+          "navn": "Byggeår",
+          "eksempel": 1959
+        },
+        {
+          "id": 13015,
+          "navn": "Bredde",
+          "eksempel": 6.5
+        },
+        {
+          "id": 1971,
+          "navn": "Lengste spenn",
+          "eksempel": "17.0 m"
+        },
+        {
+          "id": 1313,
+          "navn": "Lengde",
+          "eksempel": "35.45 m"
+        },
+        {
+          "id": 13094,
+          "navn": "Sv 12/100",
+          "eksempel": "Ja"
+        },
+        {
+          "id": 1263,
+          "navn": "Brukategori",
+          "eksempel": "Vegbru"
+        },
+        {
+          "id": 12653,
+          "navn": "Brukslast vegbane",
+          "eksempel": "Bk 10/60"
+        },
+        {
+          "id": 11459,
+          "navn": "Veggruppe",
+          "eksempel": "A"
+        },
+        {
+          "id": 12149,
+          "navn": "Bruforvaltningssystem",
+          "eksempel": "Brutus"
+        },
+        {
+          "id": 8969,
+          "navn": "Vedlikeholdsansvarlig",
+          "eksempel": "Statens vegvesen"
+        },
+        {
+          "id": 8968,
+          "navn": "Eier",
+          "eksempel": "Stat, Statens vegvesen"
+        },
+        {
+          "id": 11457,
+          "navn": "Sv 12/100 Plassering",
+          "eksempel": "S"
+        },
+        {
+          "id": 11317,
+          "navn": "Status",
+          "eksempel": "Trafikkert "
+        },
+        {
+          "id": 12656,
+          "navn": "Sv 12/65",
+          "eksempel": "Nei"
+        }
+      ],
+      "sensitive_egenskaper_krever_innlogging": [],
+      "eksempel_kilde": "kartutsnitt",
+      "eksempel_url": "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/60?kartutsnitt=816000,7762500,818500,7765500&srid=5973&inkluder=egenskaper,geometri,lokasjon,metadata&antall=3",
+      "eksempel_objekt_ider": [
+        272343377
+      ]
+    }
+  ],
+  "tilleggstyper_tilstand_i_omraadet": [
+    {
+      "id": 761,
+      "navn": "Tilstand/skade, punkt",
+      "antall_i_omraade": 17
+    },
+    {
+      "id": 762,
+      "navn": "Tilstand/skade FU, punkt",
+      "antall_i_omraade": 41
+    },
+    {
+      "id": 294,
+      "navn": "Tilstand/skade, strekning",
+      "antall_i_omraade": 3
+    },
+    {
+      "id": 507,
+      "navn": "Tilstand/skade FU, strekning",
+      "antall_i_omraade": 19
+    },
+    {
+      "id": 438,
+      "navn": "Tilstand/skade, skiltplate",
+      "antall_i_omraade": 43
+    },
+    {
+      "id": 123,
+      "navn": "Tilstand/skade, dekke",
+      "antall_i_omraade": 1
+    },
+    {
+      "id": 838,
+      "navn": "Vegbredde, beregnet",
+      "antall_i_omraade": 38
+    },
+    {
+      "id": 821,
+      "navn": "Funksjonell vegklasse",
+      "antall_i_omraade": 8
+    },
+    {
+      "id": 916,
+      "navn": "Strekning",
+      "antall_i_omraade": 8
+    }
+  ],
+  "merknader": [
+    "Testområdet er landlig E45-strekning (S3D1) med noen private veger: det finnes stikkrenner (8), åpne grøfter (14), rekkverk (11), rekkverksender (18), skiltpunkt (23)/skiltplater (27), vegdekke (4), fartsgrense (2), bru (1) og tilstandsregistreringer. INGEN kum, sandfang, rørledning, belysning, kabel, trekkerør, kantstein eller tekniske skap i området - eksempler for disse er hentet fra Alta kommune (kommune=5601).",
+    "Vurder å utvide testområdet eller bruke kommune=5601 / et utsnitt over Alta sentrum for VA- og elektro-objekter (Alta har 1757 kummer, 10639 belysningspunkt, 1500 kabler, 2013 trekkerør, 66 tekniske skap).",
+    "Sandfang er ikke egen vegobjekttype: bruk Kum (83) med Type (1141) = \"Standard kum m sandfang\" (enum 4146, 381 stk i Alta) eller \"Infiltrasjonskum med sandfang\" (enum 23576).",
+    "Drensledning/overvannsledning er ikke egne typer: bruk Rørledning (77). Bruksområde (1267, f.eks. \"Vann, overvann\" enum 2889 / \"Vann, drenering\" enum 2890) har sensitivitet 3 - vises ikke uten innlogging, og egenskap-filter på 1267 gir HTTP 401 \"Krever innlogging\". Tilsvarende sensitive felt finnes på Kabel (92) og Trekkerør (852).",
+    "Lukket rørgrøft (78) har Type \"Drensgrøft, dyp\" og kan brukes for drenering. Overvannsrenne (876) finnes, men har 0 objekter i Alta.",
+    "Tilstand: egne vegobjekttyper knyttet som barn via relasjoner, f.eks. Tilstand/skade, skiltpunkt (276), Tilstand/skade, rekkverk (284), Tilstandsgrad, rekkverk (947), Tilstand/skade, grøft (302), generisk Tilstand/skade, punkt (761) og strekning (294). Tilstandsgrad, stikkrenne/kulvert (878) og kum (879) er \"til revisjon\" og har 0 objekter i området.",
+    "Byggeår heter typisk \"Etableringsår\" (f.eks. 4556 på stikkrenne, 7065 på kum, 7558 på rekkverk). Bru har \"Byggeår\".",
+    "statistikk.lengde er total lengde av objekter som berører kartutsnittet (ikke klippet til utsnittet).",
+    "Geometri kan være egengeometri (målt) eller avledet fra vegnettet (egengeometri=false). Noen objekter har 2D-WKT (uten Z).",
+    "Enum-filter (egenskap=) må bruke enum-id, ikke tekstverdi (ellers HTTP 400). Anførselstegn/OR i egenskap-parameteren ble avvist av WAF (\"Request Rejected\") i testen - URL-enkod forsiktig.",
+    "Datakatalogen (/datakatalog/api/v1/vegobjekttyper) er ca. 9,4 MB - hent enkelttyper med /datakatalog/api/v1/vegobjekttyper/{id} (ca. 60 KB) og cache.",
+    "Kommune 5601 = Alta (etter fylkesdelingen 2024)."
+  ]
+}

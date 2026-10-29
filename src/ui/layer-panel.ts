@@ -8,6 +8,23 @@ import { store } from "../state/store.ts";
 import { StoreElement } from "./base.ts";
 import { icons } from "./icons.ts";
 import { swatch } from "./legend.ts";
+import { NVDB_MAKS_SKALA, nvdbSynlig } from "../map/nvdb-objekter-layer.ts";
+import { NVDB_FARGE, NVDB_TYPER, type NvdbType } from "../nvdb/vegobjekter.ts";
+
+export function nvdbSwatch(t: NvdbType) {
+  const c = `rgb(${NVDB_FARGE.join(",")})`;
+  const cls =
+    t.geometri === "punkt"
+      ? { circle: "symbol--punkt symbol--fylt", triangle: "symbol--trekant", square: "symbol--kvadrat", diamond: "symbol--diamant" }[t.form ?? "circle"]
+      : t.geometri === "flate"
+        ? "symbol--flate symbol--skravert"
+        : (t.bredde ?? 2.5) >= 6
+          ? "symbol--tykk symbol--svak"
+          : t.strek && t.strek !== "solid"
+            ? t.strek.includes("dot") ? "symbol--prikket" : "symbol--stiplet"
+            : (t.bredde ?? 2.5) >= 4 ? "symbol--tykk" : "symbol--linje";
+  return html`<span class="symbol ${cls}" style="--c:${c}" aria-hidden="true"></span>`;
+}
 
 /** Flytende lagpanel med fanene Lag og Tegnforklaring. */
 export class SvvLayerPanel extends StoreElement {
@@ -112,6 +129,20 @@ export class SvvLayerPanel extends StoreElement {
           <span class="lagrad__navn">NVDB vegnett</span>
           <span class="lagrad__antall">–</span>
         </label>
+      </div>
+      <div class="laggruppe">
+        <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">NVDB VEGOBJEKTER (I DRIFT)</span></div>
+        ${Object.keys(s.nvdbAntall).length === 0
+          ? html`<p class="laggruppe__merknad">Zoom inn til 1:${NVDB_MAKS_SKALA.toLocaleString("nb-NO")} eller nærmere for å hente vegobjekter.</p>`
+          : nothing}
+        ${NVDB_TYPER.map(
+          (t) => html`<label class="lagrad">
+            <input type="checkbox" .checked=${nvdbSynlig(t.id)} @change=${() => store.set({ nvdbTyper: { ...s.nvdbTyper, [t.id]: !nvdbSynlig(t.id) } })} />
+            ${nvdbSwatch(t)}
+            <span class="lagrad__navn">${t.navn}</span>
+            <span class="lagrad__antall">${s.nvdbAntall[t.id] ?? ""}</span>
+          </label>`,
+        )}
       </div>
     `;
   }

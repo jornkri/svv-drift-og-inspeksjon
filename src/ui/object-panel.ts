@@ -9,6 +9,7 @@ import { isOpen } from "../tasks/tasks.ts";
 import { StoreElement, fmtDate, fmtDateTime, fmtNumber } from "./base.ts";
 import { icons } from "./icons.ts";
 import "./lengdeprofil.ts";
+import "./nvdb-naer.ts";
 
 type Tab = "oversikt" | "profil" | "dokumenter" | "inspeksjoner" | "historikk";
 
@@ -180,7 +181,7 @@ export class SvvObjectPanel extends StoreElement {
           )}
         </div>
         <div id="objektpanel-fane" class="objektpanel__fane" role="tabpanel" aria-labelledby="objfane-${this.tab}">
-          ${this.tab === "oversikt" ? this.renderOversikt(o) : nothing}
+          ${this.tab === "oversikt" ? html`${this.renderOversikt(o)}<svv-nvdb-naer .treff=${t}></svv-nvdb-naer>` : nothing}
           ${this.tab === "profil" && t.geometry.type === "polyline" ? html`<svv-lengdeprofil .treff=${t}></svv-lengdeprofil>` : nothing}
           ${this.tab === "dokumenter" ? this.renderDocs() : nothing}
           ${this.tab === "inspeksjoner" ? this.renderInsp() : nothing}

@@ -938,6 +938,79 @@ input[type="radio"] {
   background: var(--c);
   outline: 1px solid var(--svv-gray-dark);
 }
+.symbol--diamant {
+  width: 10px;
+  flex-basis: 10px;
+  height: 10px;
+  background: var(--c);
+  transform: rotate(45deg);
+  margin: 0 5px;
+}
+.symbol--trekant {
+  width: 12px;
+  flex-basis: 12px;
+  height: 11px;
+  background: var(--c);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  margin: 0 4px;
+}
+.symbol--fylt {
+  background: var(--c);
+  border-color: #ffffff;
+  outline: 1px solid var(--c);
+}
+.symbol--prikket {
+  height: 0;
+  border-top: 3px dotted var(--c);
+}
+.symbol--svak {
+  opacity: 0.35;
+}
+.symbol--skravert {
+  background: repeating-linear-gradient(-45deg, var(--c) 0 1.5px, transparent 1.5px 5px);
+  outline-color: var(--c);
+}
+.nvdbliste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nvdbliste__rad {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--svv-gray-regular-dark);
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.nvdbliste__rad:hover {
+  background: var(--svv-gray-light, #f2f3f3);
+}
+.nvdbliste__tekst {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+.nvdbliste__navn {
+  font-weight: 600;
+}
+.nvdbliste__avstand {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+.nvdb__oppsummering {
+  margin: 0;
+  font-weight: 600;
+}
 
 /* Kartkontroller */
 .kartkontroller {
