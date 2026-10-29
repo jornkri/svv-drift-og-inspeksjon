@@ -121,6 +121,23 @@ Se `.env.example`. De viktigste variablene:
 
 **Feltmapping:** De logiske feltnavnene ligger i `src/data/schema.ts`. Mappingen til SVVs tjenester justeres i `src/config.ts` (`fields`). Kjør appen i portalmodus med `?diagnose=1` for å se lag og felt i webkartet.
 
+## Ekte data og fagkunnskap
+
+Appen kobler prosjektmodellen mot ekte data selv i mock-modus.
+
+**NVDB (i drift).** Ekte vegobjekter hentes fra NVDB API Les v4 for kartutsnittet (zoom 1:25 000 eller nærmere): stikkrenner, grøfter, kummer, rørledninger, belysning, kabler, skap, rekkverk og -ender, skilt, kantstein, vegdekke, fartsgrense og bruer (`src/nvdb/vegobjekter.ts`). Typene kan slås av og på i lagpanelet. Når du klikker på et objekt, åpnes et panel med egenskaper, kontraktsområde og NVDB-tilstandsregistreringer, som hentes via relasjoner (f.eks. «Tilstandsgrad, rekkverk»). Linjeobjekter med målte høyder, som stikkrenner, får lengdeprofil mot terrenget. Objektpanelet viser hvilke NVDB-objekter som ligger innen 25 m. ÅDT (type 540) brukes til tiltakstid. Se `docs/research/nvdb.json`.
+
+**Geodata Online.** I tillegg til bakgrunnskart finnes 12 temalag: drenering, flom- og skredaktsomhet, løsmasser og grunnundersøkelser, eiendom, regulering, naturvern, kulturminner, støy, høydekurver, helning og trafikkulykker. Klikk i kartet gir temainformasjon (identify). Historiske flyfoto fra 1958–2024 kan velges per årgang, og terrengprofil kommer fra GDO-terrengmodellen. Tjenestene er kartlagt i `docs/research/gdo-tjenester.json`.
+
+**SVV-håndbøker.** `src/handbok/handboker.json` er en kopi av `docs/research/handboker.json`. Den inneholder krav fra R610:2025, N200:2024, N101, V441 og V124, og hvert punkt har kilde og kravnummer. Appen bruker bare punkter merket «verifisert»:
+
+- Objektpanelet viser driftskrav: inspeksjonsintervall (f.eks. stikkrenne hvert 5. år og rekkverk hver 12. måned), neste frist og status, sjekkpunkter, typiske avvik og tiltak.
+- Inspeksjonsskjemaet har en sjekkliste per objekttype og konsekvensgrad (KG 0–3). Tiltakstiden følger R610 tabell 1.3—1, valgt ut fra ÅDT fra NVDB.
+- Oversikten viser inspeksjonsfrist per fag og en inspeksjonsplan der du kan opprette oppgave.
+- Tilstandsgrad (TG 0–3) bygger på NS 3424, som ikke er lest. TG-betegnelsene i appen er derfor ikke endret.
+
+**Lengdeprofil (R700).** Linjeobjekter har en «Profil»-fane som følger R700-konvensjonene: objektet er heltrukket, terrenget stiplet, referanselinjen har kote, overhøyningen er oppgitt, og rubrikken har profilnummer, profilhøyde, terrenghøyde og overdekning.
+
 ## Arkitektur
 
 ```
@@ -130,7 +147,11 @@ src/
   auth/auth.ts              OAuth 2.0 redirect, mock-bypass
   data/                     schema, DataService (Mock + Portal), spørringer
   filters/                  mmi.ts, filters.ts, counts.ts (ren logikk)
-  map/                      oppsett 2D, objektlag (FeatureFilter, renderere), bakgrunn, søk, NVDB
+  map/                      oppsett 2D, objektlag (FeatureFilter, renderere), bakgrunn, søk,
+                            NVDB-vegnett og -vegobjekter, GDO-temalag og flyfoto
+  nvdb/                     NVDB API Les: typer, WKT, paginering, tilstand, ÅDT
+  handbok/                  driftskrav fra SVV-håndbøker (R610 m.fl.) med kilder
+  reports/                  statistikk og lengdeprofil (ren logikk)
   views/                    2D-kart, 3D-scene, oppgaver, innlogging, diagnose
   ui/                       toppstripe, filterlinje, MMI-boks, lagpanel, objektpanel …
   field/                    geofence.ts, prefill.ts, gps, frakoblet kø, synk, felt-UI
@@ -167,4 +188,6 @@ Valg og begrunnelser:
 - [ ] Team/grupper for «Teamet» i oppgaver
 - [ ] Logo og app-ikon (plassholdere i `public/`), og LFT Etica-webfont (lisens)
 - [ ] Bekreft hva «Landskap» skal være hos Geodata Online
+- [ ] Felt for `konsekvensgrad` og `sjekkliste` i inspeksjonstabellen. Appen sender dem bare hvis tabellen har feltene.
+- [ ] Bekreft TG-definisjonene mot NS 3424:2012 (ikke lest), og om R610-intervallene skal gjelde også for fylkesveger
 - [ ] Offisielle navn på hvert MMI-nivå. Merket viser foreløpig fasenavn («MMI 400 · Utførelse»), fordi mmi-veilederen.no ikke var tilgjengelig ved utvikling.

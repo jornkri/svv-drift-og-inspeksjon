@@ -195,6 +195,14 @@ export class SvvLayerPanel extends StoreElement {
       </div>`;
   }
 
+  private nvdbLegend() {
+    const typer = NVDB_TYPER.filter((t) => nvdbSynlig(t.id));
+    if (!typer.length) return nothing;
+    return html`<h3 class="kategori">NVDB (I DRIFT)</h3>
+      ${typer.map((t) => html`<div class="tegnforklaring__rad">${nvdbSwatch(t)} ${t.navn}</div>`)}
+      <p class="tegnforklaring__hint">Ekte vegobjekter fra NVDB vises mørkt for å skilles fra modellobjektene.</p>`;
+  }
+
   private renderLegend() {
     const s = this.store.state;
     if (s.colorByMmi) {
@@ -205,6 +213,7 @@ export class SvvLayerPanel extends StoreElement {
           (p) => html`<div class="tegnforklaring__rad"><span class="farge" style="background:${p.farge}" aria-hidden="true"></span>${p.navn} (${phaseRange(p)})</div>`,
         )}
         <p class="tegnforklaring__hint">Symbolformen viser fag: linje (VA), stiplet linje (elektro), flate (veg).</p>
+        ${this.nvdbLegend()}
       </div>`;
     }
     return html`<div class="tegnforklaring">
@@ -212,6 +221,7 @@ export class SvvLayerPanel extends StoreElement {
         (fag) => html`<h3 class="kategori">${fag.toUpperCase()}</h3>
           ${(this.types[fag] ?? []).map((t) => html`<div class="tegnforklaring__rad">${swatch(fag, t)} ${t}</div>`)}`,
       )}
+      ${this.nvdbLegend()}
     </div>`;
   }
 }

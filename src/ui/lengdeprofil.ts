@@ -184,28 +184,47 @@ export function profilSvg(m: ProfilModell, opts: { innlopUtlop: boolean; tittel:
   </figure>`;
 }
 
-/** Profilfanen i objektpanelet. */
+/** Det profilet tegnes for: et modellobjekt eller et vegobjekt fra NVDB. */
+export interface ProfilKilde {
+  id: string;
+  navn: string;
+  /** Vis innløp/utløp (VA) i stedet for nøytral kotetekst */
+  innlopUtlop: boolean;
+  geometry: Polyline;
+  /** Opphav til høydene, for teksten under profilet */
+  hoydekilde: string;
+}
+
+export const kildeFraTreff = (t: ObjektTreff): ProfilKilde => ({
+  id: t.objekt.globalid,
+  navn: t.objekt.navn,
+  innlopUtlop: t.objekt.fag === "VA",
+  geometry: t.geometry as Polyline,
+  hoydekilde: "objektkote i modellen",
+});
+
+/** Profilfanen i objektpanelet (og NVDB-panelet). */
 export class SvvLengdeprofil extends LightElement {
-  static override properties = { treff: { attribute: false } };
-  declare treff: ObjektTreff | null;
+  static override properties = { kilde: { attribute: false } };
+  declare kilde: ProfilKilde | null;
 
   private terreng: ProfilPunkt[] | null = null;
   private status: "laster" | "ok" | "ingen-tilgang" | "feil" = "laster";
   private lastetFor: string | null = null;
 
   protected override willUpdate(): void {
-    const t = this.treff;
+    const t = this.kilde;
     if (!t || t.geometry.type !== "polyline") return;
-    if (t.objekt.globalid === this.lastetFor) return;
-    this.lastetFor = t.objekt.globalid;
+    if (t.id === this.lastetFor) return;
+    this.lastetFor = t.id;
     this.terreng = null;
     if (!terrengTilgjengelig()) {
       this.status = "ingen-tilgang";
       return;
     }
     this.status = "laster";
-    const id = t.objekt.globalid;
-    hentTerreng(id, t.geometry as Polyline)
+    const id = t.id;
+    hentTerreng(id, t.geometry)
       .then((p) => {
         if (this.lastetFor !== id) return;
         this.terreng = p;
@@ -220,21 +239,19 @@ export class SvvLengdeprofil extends LightElement {
   }
 
   protected override render() {
-    const t = this.treff;
+    const t = this.kilde;
     if (!t || t.geometry.type !== "polyline") return nothing;
-    const o = t.objekt;
-    const pts = objektPunkter(t.geometry as Polyline);
+    const pts = objektPunkter(t.geometry);
     const objekt: ProfilPunkt[] = pts.map((p) => ({ s: p.s, z: p.z }));
     const lengde = pts.at(-1)?.s ?? 0;
     const harZ = objekt.some((p) => p.z != null);
     const m = lagProfil(objekt, this.terreng ?? [], profilIntervall(lengde));
-    const innlopUtlop = o.fag === "VA";
 
     return html`<section class="seksjon profilseksjon" aria-labelledby="profil-tittel">
       <h3 id="profil-tittel" class="seksjon__tittel">LENGDEPROFIL</h3>
       ${harZ
-        ? profilSvg(m, { innlopUtlop, tittel: `Lengdeprofil for ${o.navn}` })
-        : html`<p class="sekundar">Objektet har ikke høyder i modellen, så profilet kan ikke tegnes.</p>`}
+        ? profilSvg(m, { innlopUtlop: t.innlopUtlop, tittel: `Lengdeprofil for ${t.navn}` })
+        : html`<p class="sekundar">Objektet har ikke registrerte høyder, så profilet kan ikke tegnes.</p>`}
       <dl class="nokkeltall nokkeltall--kompakt">
         <div><dt>Lengde (plan)</dt><dd>${fmtNumber(lengde)} m</dd></div>
         <div><dt>Fall</dt><dd>${m.fallProsent != null ? `${fmtNumber(m.fallProsent, 2)} %` : "–"}</dd></div>
@@ -242,7 +259,7 @@ export class SvvLengdeprofil extends LightElement {
       </dl>
       <p class="sekundar liten" role="status">
         ${this.status === "laster" ? "Henter terrenghøyder fra Geodata Online …" : nothing}
-        ${this.status === "ok" ? "Terreng: Geodata Online terrengmodell. Overdekning = terrenghøyde − objektkote i modellen; negativ verdi (rød) betyr at objektet ligger over terrenget." : nothing}
+        ${this.status === "ok" ? `Terreng: Geodata Online terrengmodell. Overdekning = terrenghøyde − ${t.hoydekilde}; negativ verdi (rød) betyr at objektet ligger over terrenget.` : nothing}
         ${this.status === "ingen-tilgang" ? "Terrengprofil krever tilgang til Geodata Online (se README)." : nothing}
         ${this.status === "feil" ? "Kunne ikke hente terrenghøyder fra Geodata Online." : nothing}
       </p>

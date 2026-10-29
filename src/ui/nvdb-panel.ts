@@ -15,6 +15,8 @@ import { services } from "../services.ts";
 import { store } from "../state/store.ts";
 import { StoreElement, fmtDate, fmtDateTime, fmtNumber } from "./base.ts";
 import { icons } from "./icons.ts";
+import "./lengdeprofil.ts";
+import type Polyline from "@arcgis/core/geometry/Polyline.js";
 
 type Tilstand = Awaited<ReturnType<typeof hentTilstander>>[number];
 
@@ -72,6 +74,14 @@ export class SvvNvdbPanel extends StoreElement {
       this.feil = e instanceof Error ? e.message : String(e);
     }
     this.requestUpdate();
+  }
+
+  /** Lengdeprofil for linjeobjekter med målte høyder (egengeometri med Z), f.eks. stikkrenner. */
+  private profil(o: NvdbVegobjekt, navn: string) {
+    const g = nvdbGeometri(o);
+    if (!g || g.type !== "polyline" || !(g as Polyline).hasZ || o.geometri?.egengeometri === false) return nothing;
+    const kilde = { id: `nvdb-${o.id}`, navn, innlopUtlop: [79, 77].includes(o.metadata?.type?.id ?? 0), geometry: g as Polyline, hoydekilde: "høyde registrert i NVDB" };
+    return html`<svv-lengdeprofil .kilde=${kilde}></svv-lengdeprofil>`;
   }
 
   private zoom() {
@@ -156,6 +166,7 @@ export class SvvNvdbPanel extends StoreElement {
                   </table>`
               : html`<p class="tom">Ingen tilstandsregistreringer er knyttet til objektet i NVDB.</p>`}
         </section>
+        ${this.profil(o, navn)}
         <section class="egenskaper">
           <h3 class="kategori">EGENSKAPER</h3>
           <dl>

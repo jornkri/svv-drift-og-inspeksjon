@@ -8,7 +8,7 @@ import { store } from "../state/store.ts";
 import { isOpen } from "../tasks/tasks.ts";
 import { StoreElement, fmtDate, fmtDateTime, fmtNumber } from "./base.ts";
 import { icons } from "./icons.ts";
-import "./lengdeprofil.ts";
+import { kildeFraTreff } from "./lengdeprofil.ts";
 import "./nvdb-naer.ts";
 import "./driftskrav.ts";
 
@@ -183,7 +183,7 @@ export class SvvObjectPanel extends StoreElement {
         </div>
         <div id="objektpanel-fane" class="objektpanel__fane" role="tabpanel" aria-labelledby="objfane-${this.tab}">
           ${this.tab === "oversikt" ? html`<svv-driftskrav .objekt=${o} .insp=${this.insp}></svv-driftskrav>${this.renderOversikt(o)}<svv-nvdb-naer .treff=${t}></svv-nvdb-naer>` : nothing}
-          ${this.tab === "profil" && t.geometry.type === "polyline" ? html`<svv-lengdeprofil .treff=${t}></svv-lengdeprofil>` : nothing}
+          ${this.tab === "profil" && t.geometry.type === "polyline" ? html`<svv-lengdeprofil .kilde=${kildeFraTreff(t)}></svv-lengdeprofil>` : nothing}
           ${this.tab === "dokumenter" ? this.renderDocs() : nothing}
           ${this.tab === "inspeksjoner" ? this.renderInsp() : nothing}
           ${this.tab === "historikk" ? this.renderHist() : nothing}
