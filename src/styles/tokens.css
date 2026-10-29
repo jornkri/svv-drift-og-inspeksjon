@@ -1,0 +1,62 @@
+/*
+ * Statens vegvesen – profilfarger (R902) som CSS-variabler, mappet til Calcite.
+ * orange: kun aksent og flater – aldri bak brødtekst og aldri som tekstfarge.
+ */
+:root {
+  --svv-orange: #ff9600;
+  --svv-gray-dark: #444f55;
+  --svv-gray-regular-dark: #dadada;
+  --svv-gray-light: #f5f5f5;
+  --svv-white: #ffffff;
+  --svv-grey-dark-80: #697277; /* sekundærtekst, kun på hvit */
+  --svv-grey-dark-65: #858d90; /* linjer og kanter */
+  --svv-blue-regular: #077197;
+  --svv-blue-dark: #065e7f; /* lenker */
+  --svv-blue-bg: #e6f1f5;
+  --svv-green-dark: #1d7721;
+  --svv-green-bg: #e8f3e9;
+  --svv-orange-dark: #e27500;
+  --svv-orange-bg: #fff5e6;
+  --svv-red-dark: #b63434;
+  --svv-red-bg: #fedfe1;
+  --svv-map-bg: #eceeed;
+
+  --svv-font: "LFT Etica", Arial, Helvetica, sans-serif;
+  --svv-topbar-h: 52px;
+  --svv-touch: 44px;
+
+  /* Calcite → SVV */
+  --calcite-font-family: var(--svv-font);
+  --calcite-font-weight-semibold: 600;
+  --calcite-font-weight-bold: 600;
+  --calcite-corner-radius: 0;
+  --calcite-corner-radius-xs: 0;
+  --calcite-corner-radius-sm: 0;
+  --calcite-corner-radius-round: 0;
+  --calcite-corner-radius-pill: 0;
+  --calcite-shadow-sm: none;
+  --calcite-shadow-md: none;
+  --calcite-color-brand: var(--svv-gray-dark);
+  --calcite-color-brand-hover: #2f373b;
+  --calcite-color-brand-press: #20272a;
+  --calcite-color-brand-underline: var(--svv-orange);
+  --calcite-color-focus: var(--svv-blue-dark);
+  --calcite-color-text-1: var(--svv-gray-dark);
+  --calcite-color-text-2: var(--svv-gray-dark);
+  --calcite-color-text-3: var(--svv-grey-dark-80);
+  --calcite-color-text-inverse: var(--svv-white);
+  --calcite-color-text-link: var(--svv-blue-dark);
+  --calcite-color-background: var(--svv-gray-light);
+  --calcite-color-foreground-1: var(--svv-white);
+  --calcite-color-foreground-2: var(--svv-gray-light);
+  --calcite-color-foreground-3: var(--svv-gray-regular-dark);
+  --calcite-color-border-1: var(--svv-grey-dark-65);
+  --calcite-color-border-2: var(--svv-gray-regular-dark);
+  --calcite-color-border-3: var(--svv-gray-light);
+  --calcite-color-border-input: var(--svv-grey-dark-65);
+  --calcite-color-inverse: var(--svv-gray-dark);
+  --calcite-color-status-info: var(--svv-blue-dark);
+  --calcite-color-status-success: var(--svv-green-dark);
+  --calcite-color-status-warning: var(--svv-orange-dark);
+  --calcite-color-status-danger: var(--svv-red-dark);
+}

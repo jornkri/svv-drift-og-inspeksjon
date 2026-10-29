@@ -1,0 +1,45 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--svv-white);
+  color: var(--svv-gray-dark);
+  font-family: var(--svv-font);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* Kartflatene skal ikke ha avrunding, skygger eller gradienter */
+.esri-ui *,
+arcgis-map *,
+arcgis-scene * {
+  border-radius: 0 !important;
+}
+
+:focus-visible {
+  outline: 3px solid var(--svv-blue-dark);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+svv-app {
+  display: block;
+  height: 100%;
+}

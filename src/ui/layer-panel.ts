@@ -1,0 +1,140 @@
+import { html, nothing } from "lit";
+import { FAG, type Fag } from "../data/schema.ts";
+import { typesByFag } from "../filters/counts.ts";
+import { typeKey } from "../filters/filters.ts";
+import { PHASES, phaseRange } from "../filters/mmi.ts";
+import { services } from "../services.ts";
+import { store } from "../state/store.ts";
+import { StoreElement } from "./base.ts";
+import { icons } from "./icons.ts";
+import { swatch } from "./legend.ts";
+
+/** Flytende lagpanel med fanene Lag og Tegnforklaring. */
+export class SvvLayerPanel extends StoreElement {
+  private types: Record<string, string[]> = {};
+
+  override async connectedCallback() {
+    super.connectedCallback();
+    const stats = await services().data.objectStats();
+
+    this.types = typesByFag(stats);
+    this.requestUpdate();
+  }
+
+  private toggleType(fag: Fag, type: string) {
+    const k = typeKey(fag, type);
+    const cur = store.get().filters.skjulteTyper;
+    store.setFilters({ skjulteTyper: cur.includes(k) ? cur.filter((x) => x !== k) : [...cur, k] });
+  }
+
+  private toggleFag(fag: Fag, on: boolean) {
+    const keys = (this.types[fag] ?? []).map((t) => typeKey(fag, t));
+    const cur = store.get().filters.skjulteTyper.filter((k) => !keys.includes(k));
+    store.setFilters({ skjulteTyper: on ? cur : [...cur, ...keys] });
+  }
+
+  private tab(id: "lag" | "tegnforklaring", label: string) {
+    const sel = this.store.state.layerPanelTab === id;
+    return html`<button
+      role="tab"
+      id="lagfane-${id}"
+      class="fane ${sel ? "is-valgt" : ""}"
+      aria-selected=${sel}
+      aria-controls="lagpanel-innhold"
+      tabindex=${sel ? 0 : -1}
+      @click=${() => store.set({ layerPanelTab: id })}
+      @keydown=${(e: KeyboardEvent) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          store.set({ layerPanelTab: id === "lag" ? "tegnforklaring" : "lag" });
+          requestAnimationFrame(() => this.querySelector<HTMLElement>(".fane.is-valgt")?.focus());
+        }
+      }}
+    >
+      ${label}
+    </button>`;
+  }
+
+  protected override render() {
+    const s = this.store.state;
+    return html`
+      <section id="lagpanel" class="lagpanel" aria-label="Lag og tegnforklaring">
+        <div class="lagpanel__hode">
+          <div role="tablist" class="faner" aria-label="Lagpanel">${this.tab("lag", "Lag")}${this.tab("tegnforklaring", "Tegnforklaring")}</div>
+          <button class="ikonknapp" aria-label="Skjul lagpanel" @click=${() => store.set({ layerPanelOpen: false })}>${icons.close()}</button>
+        </div>
+        <div id="lagpanel-innhold" class="lagpanel__innhold" role="tabpanel" aria-labelledby="lagfane-${s.layerPanelTab}">
+          ${s.layerPanelTab === "lag" ? this.renderLayers() : this.renderLegend()}
+        </div>
+      </section>
+    `;
+  }
+
+  private renderLayers() {
+    const s = this.store.state;
+    const hidden = new Set(s.filters.skjulteTyper);
+    const perType = s.counts?.perType ?? {};
+    return html`
+      ${FAG.map((fag) => {
+        const types = this.types[fag] ?? [];
+        const onCount = types.filter((t) => !hidden.has(typeKey(fag, t))).length;
+        const fagOff = s.filters.fag !== "Alle" && s.filters.fag !== fag;
+        return html`<div class="laggruppe">
+          <label class="laggruppe__hode">
+            <input
+              type="checkbox"
+              .checked=${onCount === types.length}
+              .indeterminate=${onCount > 0 && onCount < types.length}
+              @change=${(e: Event) => this.toggleFag(fag, (e.target as HTMLInputElement).checked)}
+            />
+            <span class="kategori">${fag.toUpperCase()}</span>
+            <span class="laggruppe__antall">${s.counts?.perFag[fag] ?? ""}</span>
+          </label>
+          ${fagOff ? html`<p class="laggruppe__merknad">Skjult av fagfilteret</p>` : nothing}
+          ${types.map(
+            (t) => html`<label class="lagrad">
+              <input type="checkbox" .checked=${!hidden.has(typeKey(fag, t))} @change=${() => this.toggleType(fag, t)} />
+              ${swatch(fag, t)}
+              <span class="lagrad__navn">${t}</span>
+              <span class="lagrad__antall">${perType[typeKey(fag, t)] ?? ""}</span>
+            </label>`,
+          )}
+        </div>`;
+      })}
+      <div class="laggruppe">
+        <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">REFERANSE</span></div>
+        <label class="lagrad">
+          <input
+            type="checkbox"
+            .checked=${s.referanse.nvdb ?? true}
+            @change=${() => store.set({ referanse: { ...s.referanse, nvdb: !(s.referanse.nvdb ?? true) } })}
+          />
+          <span class="symbol symbol--linje" style="--c:#697277" aria-hidden="true"></span>
+          <span class="lagrad__navn">NVDB vegnett</span>
+          <span class="lagrad__antall">–</span>
+        </label>
+      </div>
+    `;
+  }
+
+  private renderLegend() {
+    const s = this.store.state;
+    if (s.colorByMmi) {
+      const sel = new Set(s.filters.phases);
+      return html`<div class="tegnforklaring">
+        <h3 class="kategori">FARGE ETTER MMI</h3>
+        ${PHASES.filter((p) => sel.has(p.id)).map(
+          (p) => html`<div class="tegnforklaring__rad"><span class="farge" style="background:${p.farge}" aria-hidden="true"></span>${p.navn} (${phaseRange(p)})</div>`,
+        )}
+        <p class="tegnforklaring__hint">Symbolformen viser fag: linje (VA), stiplet linje (elektro), flate (veg).</p>
+      </div>`;
+    }
+    return html`<div class="tegnforklaring">
+      ${FAG.map(
+        (fag) => html`<h3 class="kategori">${fag.toUpperCase()}</h3>
+          ${(this.types[fag] ?? []).map((t) => html`<div class="tegnforklaring__rad">${swatch(fag, t)} ${t}</div>`)}`,
+      )}
+    </div>`;
+  }
+}
+
+customElements.define("svv-layer-panel", SvvLayerPanel);

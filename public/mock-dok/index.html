@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mock-dokument – Drift og inspeksjon</title>
+    <style>
+      body { margin: 0; font-family: "LFT Etica", Arial, Helvetica, sans-serif; color: #444f55; background: #f5f5f5; }
+      main { max-width: 720px; margin: 32px auto; background: #ffffff; padding: 32px; border-top: 4px solid #ff9600; }
+      h1 { font-weight: 600; margin: 0 0 8px; }
+      .kode { letter-spacing: 0.1em; font-weight: 600; font-size: 12px; color: #065e7f; }
+      .ramme { margin-top: 24px; height: 360px; border: 1px dashed #858d90; display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="kode" id="kode">DOKUMENT</p>
+      <h1 id="tittel">Dokument</h1>
+      <p>Dette er et mock-dokument for testområdet E45 Kløfta B12016. I produksjon peker lenken til SVVs dokumentarkiv (URL-feltet i tabellen «dokumenter»).</p>
+      <div class="ramme">[Tegning / datablad / FDV-dokumentasjon vises her]</div>
+    </main>
+    <script>
+      const p = new URLSearchParams(location.search);
+      document.getElementById("kode").textContent = (p.get("kode") || "DOKUMENT").toUpperCase();
+      document.getElementById("tittel").textContent = p.get("tittel") || "Dokument";
+      document.title = `${p.get("kode") || ""} ${p.get("tittel") || "Dokument"} – mock`;
+    </script>
+  </body>
+</html>

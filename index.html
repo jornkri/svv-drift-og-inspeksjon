@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#444f55" />
+    <meta name="description" content="Se, inspiser og registrer på VA-, elektro- og vegobjekter – på kontoret og i felt." />
+    <link rel="icon" href="/logo-plassholder.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <title>Drift og inspeksjon – Statens vegvesen</title>
+    <style>
+      /* Vises til appen er lastet */
+      #oppstart {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-family: "LFT Etica", Arial, Helvetica, sans-serif;
+        color: #444f55;
+        background: #ffffff;
+      }
+      #oppstart .stripe {
+        width: 120px;
+        height: 4px;
+        background: #ff9600;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="oppstart" role="status" aria-live="polite">
+      <span class="stripe" aria-hidden="true"></span>
+      <span>Laster Drift og inspeksjon …</span>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
