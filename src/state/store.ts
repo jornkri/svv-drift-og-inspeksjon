@@ -4,7 +4,7 @@ import type { ObjektTreff } from "../data/DataService.ts";
 import { DEFAULT_FILTERS, type FilterState } from "../filters/filters.ts";
 import type { PhaseId } from "../filters/mmi.ts";
 
-export type Route = "kart" | "3d" | "oppgaver" | "inspeksjon" | "verktoy" | "meg";
+export type Route = "kart" | "3d" | "oppgaver" | "oversikt" | "inspeksjon" | "verktoy" | "meg";
 export type Popover = "fag" | "mmi" | "inspeksjon" | "ekstra" | "bakgrunn" | "maaling" | "utskrift" | null;
 
 export interface Counts {

@@ -83,11 +83,15 @@ export interface DataService {
 
   getDocuments(globalid: string): Promise<Dokument[]>;
   getInspections(globalid: string): Promise<Inspeksjon[]>;
+  /** Alle inspeksjoner i prosjektet (for oversikt og rapporter) */
+  allInspections(): Promise<Inspeksjon[]>;
   getHistory(objekt: Objekt): Promise<HistorikkPost[]>;
 
   getTasks(): Promise<OppgaveMedLogg[]>;
   reassignTask(oppgaveId: string, tildelt: string): Promise<void>;
   setTaskStatus(oppgaveId: string, status: OppgaveStatus): Promise<void>;
+  /** Oppretter en ny oppgave (f.eks. fra et avvik). Returnerer oppgave-ID. */
+  createTask(o: Omit<import("./schema.ts").Oppgave, "oppgave_id">): Promise<string>;
 
   submitInspection(insp: Inspeksjon, bilder: Fotovedlegg[]): Promise<InnsendingResultat>;
 }

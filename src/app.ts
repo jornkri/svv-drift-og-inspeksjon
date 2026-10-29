@@ -16,6 +16,8 @@ const LOADERS: Record<string, () => Promise<unknown>> = {
   "3d-felt": () => import("./views/scene-view.ts"),
   "oppgaver-kontor": () => import("./views/tasks-view.ts"),
   "oppgaver-felt": () => import("./field/ui/my-tasks.ts"),
+  "oversikt-kontor": () => import("./views/overview-view.ts"),
+  "oversikt-felt": () => import("./views/overview-view.ts"),
   "inspeksjon-kontor": () => import("./field/ui/inspection-form.ts"),
   "inspeksjon-felt": () => import("./field/ui/inspection-form.ts"),
   "verktoy-felt": () => import("./field/ui/field-pages.ts"),
@@ -85,6 +87,8 @@ export class SvvApp extends StoreElement {
         return html`<svv-scene-view></svv-scene-view>`;
       case "oppgaver":
         return felt ? html`<svv-my-tasks></svv-my-tasks>` : html`<svv-tasks-view></svv-tasks-view>`;
+      case "oversikt":
+        return html`<svv-overview-view></svv-overview-view>`;
       case "inspeksjon":
         return html`<svv-inspection-form></svv-inspection-form>`;
       case "verktoy":

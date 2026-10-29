@@ -33,6 +33,12 @@ test("kontor: oppgaver", async ({ page }) => {
   await sjekk(page, "Oppgaver");
 });
 
+test("kontor: oversikt", async ({ page }) => {
+  await page.goto("/#/oversikt");
+  await expect(page.getByRole("img", { name: "MMI-fremdrift per fag" })).toBeVisible({ timeout: 60_000 });
+  await sjekk(page, "Oversikt");
+});
+
 test.describe("felt", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 

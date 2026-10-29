@@ -6,6 +6,7 @@ import "./styles/components.css";
 import "./styles/field.css";
 import "./styles/tasks.css";
 import "./styles/scene.css";
+import "./styles/overview.css";
 
 import esriConfig from "@arcgis/core/config.js";
 import { setLocale } from "@arcgis/core/intl.js";

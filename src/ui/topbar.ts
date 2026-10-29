@@ -54,7 +54,7 @@ export class SvvTopbar extends StoreElement {
     const today = new Date();
     const mine = s.oppgaver.filter((o) => o.tildelt === data.user.navn && isOpen(o));
     const varsler = mine.filter((o) => ["over", "idag"].includes(dueClass(o, today)));
-    const link = (route: "kart" | "oppgaver", label: string, extra: unknown = nothing) => html`
+    const link = (route: "kart" | "oppgaver" | "oversikt", label: string, extra: unknown = nothing) => html`
       <a
         class="topbar__lenke ${s.route === route || (route === "kart" && s.route === "3d") ? "is-aktiv" : ""}"
         href="#/${route}"
@@ -100,6 +100,7 @@ export class SvvTopbar extends StoreElement {
         <nav class="topbar__nav" aria-label="Hovedmeny">
           ${link("kart", "Kart")}
           ${link("oppgaver", "Oppgaver", mine.length ? html` <span class="teller" aria-label="${mine.length} åpne">${mine.length}</span>` : nothing)}
+          ${link("oversikt", "Oversikt")}
         </nav>
 
         <div class="topbar__meny-wrap">

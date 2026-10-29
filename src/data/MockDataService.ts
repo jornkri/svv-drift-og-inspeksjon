@@ -239,6 +239,10 @@ export class MockDataService implements DataService {
       .sort((a, b) => b.tidspunkt.localeCompare(a.tidspunkt));
   }
 
+  async allInspections() {
+    return [...this.inspeksjoner];
+  }
+
   async getHistory(objekt: Objekt): Promise<HistorikkPost[]> {
     return deriveHistory(objekt, await this.getInspections(objekt.globalid));
   }
@@ -259,6 +263,17 @@ export class MockDataService implements DataService {
     if (!o) throw new Error(`Fant ikke oppgave ${oppgaveId}`);
     o.status = status;
     o.logg.push({ tidspunkt: new Date().toISOString(), tekst: `Status endret til ${status}` });
+  }
+
+  async createTask(o: Omit<OppgaveMedLogg, "oppgave_id" | "logg">): Promise<string> {
+    const max = Math.max(1000, ...this.oppgaver.map((x) => Number(x.oppgave_id.replace(/\D/g, "")) || 0));
+    const oppgave_id = `OPG-${max + 1}`;
+    this.oppgaver.push({
+      ...o,
+      oppgave_id,
+      logg: [{ tidspunkt: new Date().toISOString(), tekst: `Opprettet av ${this.user.navn}` }],
+    });
+    return oppgave_id;
   }
 
   async submitInspection(insp: Inspeksjon, bilder: Fotovedlegg[]): Promise<InnsendingResultat> {

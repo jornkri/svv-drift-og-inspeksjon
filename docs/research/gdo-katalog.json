@@ -1,0 +1,2081 @@
+[
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeoKonvertering",
+  "navn": "GeoKonvertering/Geokonvertering",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeoKonvertering/Geokonvertering/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeoKonvertering",
+  "navn": "GeoKonvertering/GeokonverteringBIM",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeoKonvertering/GeokonverteringBIM/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeoKonvertering",
+  "navn": "GeoKonvertering/GeokonverteringUtvidet",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeoKonvertering/GeokonverteringUtvidet/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoanalyse",
+  "navn": "Geoanalyse/GeoanalyseDOK",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoanalyse/GeoanalyseDOK/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasis",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasis/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasis_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasis_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasis_UTM35",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasis_UTM35/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasis_WGS84",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasis_WGS84/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasis_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasis_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasisTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasisTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasisTerreng_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasisTerreng_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasisTerreng_UTM35",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasisTerreng_UTM35/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheBasisTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheBasisTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinland",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinland/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinland_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinland_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandGraatone",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandGraatone/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandGraatone_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandGraatone_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandGraatoneTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandGraatoneTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandGraatoneTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandGraatoneTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandHoydekurver",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandHoydekurver/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandHoydekurver_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandHoydekurver_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandKanvasMork",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandKanvasMork/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandKanvasMork_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandKanvasMork_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandKanvasMorkTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandKanvasMorkTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandKanvasMorkTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandKanvasMorkTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheFinlandTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheFinlandTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatone",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatone/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatone_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatone_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatone_UTM35",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatone_UTM35/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatone_WGS84",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatone_WGS84/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatone_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatone_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatoneTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatoneTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatoneTerreng_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatoneTerreng_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatoneTerreng_UTM35",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatoneTerreng_UTM35/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheGraatoneTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheGraatoneTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheHoydekurver",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheHoydekurver/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheHoydekurver_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheHoydekurver_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheHoydekurver_UTM35",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheHoydekurver_UTM35/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheHoydekurver_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheHoydekurver_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheKanvas",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKanvas/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheKanvas_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKanvas_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheKanvas_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKanvas_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheKanvasMork",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKanvasMork/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheKanvasMork_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKanvasMork_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheKanvasMork_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKanvasMork_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheKyst",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKyst/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenBasis",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenBasis/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenBasis_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenBasis_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenBasisTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenBasisTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenBasisTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenBasisTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenGraatone",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenGraatone/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenGraatone_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenGraatone_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenGraatoneTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenGraatoneTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenGraatoneTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenGraatoneTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenKanvasMork",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenKanvasMork/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheNordenKanvasMork_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheNordenKanvasMork_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSM2",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSM2/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSM2_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSM2_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMBasis2",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMBasis2/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMBasis2_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMBasis2_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMGraatone2",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMGraatone2/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMGraatone2_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMGraatone2_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMKanvasMork2",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMKanvasMork2/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMKanvasMork2_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMKanvasMork2_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMUtenSveFinBasis",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMUtenSveFinBasis/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheOSMUtenSveFinBasis_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheOSMUtenSveFinBasis_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolar",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolar/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolar_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolar_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolar_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolar_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolarGraatone",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolarGraatone/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolarGraatone_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolarGraatone_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolarGraatone_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolarGraatone_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolarKanvasMork",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolarKanvasMork/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolarKanvasMork_UTM32",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolarKanvasMork_UTM32/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocachePolarKanvasMork_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocachePolarKanvasMork_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50Graatone",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50Graatone/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50Graatone_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50Graatone_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50GraatoneTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50GraatoneTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50GraatoneTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50GraatoneTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50Hoydekurver",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50Hoydekurver/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50Hoydekurver_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50Hoydekurver_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50KanvasMork",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50KanvasMork/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50KanvasMork_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50KanvasMork_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50KanvasMorkTerreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50KanvasMorkTerreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50KanvasMorkTerreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50KanvasMorkTerreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50Terreng",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50Terreng/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopo50Terreng_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopo50Terreng_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopoHoydekurver",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopoHoydekurver/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheSverigeTopoHoydekurver_WM",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheSverigeTopoHoydekurver_WM/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "GeocacheVector",
+  "navn": "GeocacheVector/GeocacheVerden_EqualEarth",
+  "type": "VectorTileServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheVerden_EqualEarth/VectorTileServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_NTM_EUREF89",
+  "navn": "Geocache_NTM_EUREF89/GeocacheBilderNTM16",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_NTM_EUREF89/GeocacheBilderNTM16/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_NTM_EUREF89",
+  "navn": "Geocache_NTM_EUREF89/GeocacheTerrengNTM16",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_NTM_EUREF89/GeocacheTerrengNTM16/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM32_EUREF89",
+  "navn": "Geocache_UTM32_EUREF89/GeocacheBasis",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM32_EUREF89/GeocacheBasis/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM32_EUREF89",
+  "navn": "Geocache_UTM32_EUREF89/GeocacheBilder",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM32_EUREF89/GeocacheBilder/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM32_EUREF89",
+  "navn": "Geocache_UTM32_EUREF89/GeocacheGraatone",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM32_EUREF89/GeocacheGraatone/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM32_EUREF89",
+  "navn": "Geocache_UTM32_EUREF89/GeocacheTerreng",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM32_EUREF89/GeocacheTerreng/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM32_EUREF89",
+  "navn": "Geocache_UTM32_EUREF89/GeocacheTerrengskygge",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM32_EUREF89/GeocacheTerrengskygge/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheBasis",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheBasis/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheBilder",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheBilder/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheDybdedata",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheDybdedata/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheGraatone",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheGraatone/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheHelning",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheHybrid",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheHybrid/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheLandskap",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheLandskap/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheOverflate",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheOverflate/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocachePolar",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocachePolar/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheTerreng",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheTerreng_ND",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheTerreng_ND/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_EUREF89",
+  "navn": "Geocache_UTM33_EUREF89/GeocacheTerrengskygge",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheTerrengskygge/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_WGS84",
+  "navn": "Geocache_UTM33_WGS84/GeocacheBasis",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_WGS84/GeocacheBasis/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_WGS84",
+  "navn": "Geocache_UTM33_WGS84/GeocacheBilder",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_WGS84/GeocacheBilder/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_WGS84",
+  "navn": "Geocache_UTM33_WGS84/GeocacheGraatone",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_WGS84/GeocacheGraatone/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_WGS84",
+  "navn": "Geocache_UTM33_WGS84/GeocacheHybrid",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_WGS84/GeocacheHybrid/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_WGS84",
+  "navn": "Geocache_UTM33_WGS84/GeocacheLandskap",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_WGS84/GeocacheLandskap/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM33_WGS84",
+  "navn": "Geocache_UTM33_WGS84/GeocacheTerrengskygge",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_WGS84/GeocacheTerrengskygge/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM35_EUREF89",
+  "navn": "Geocache_UTM35_EUREF89/GeocacheBasis",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM35_EUREF89/GeocacheBasis/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM35_EUREF89",
+  "navn": "Geocache_UTM35_EUREF89/GeocacheBilder",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM35_EUREF89/GeocacheBilder/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM35_EUREF89",
+  "navn": "Geocache_UTM35_EUREF89/GeocacheGraatone",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM35_EUREF89/GeocacheGraatone/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM35_EUREF89",
+  "navn": "Geocache_UTM35_EUREF89/GeocacheTerreng",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM35_EUREF89/GeocacheTerreng/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_UTM35_EUREF89",
+  "navn": "Geocache_UTM35_EUREF89/GeocacheTerrengskygge",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM35_EUREF89/GeocacheTerrengskygge/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_WMAS_WGS84",
+  "navn": "Geocache_WMAS_WGS84/GeocacheBasis",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_WMAS_WGS84/GeocacheBasis/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_WMAS_WGS84",
+  "navn": "Geocache_WMAS_WGS84/GeocacheBilder",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_WMAS_WGS84/GeocacheBilder/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_WMAS_WGS84",
+  "navn": "Geocache_WMAS_WGS84/GeocacheLandskap",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_WMAS_WGS84/GeocacheLandskap/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_WMAS_WGS84",
+  "navn": "Geocache_WMAS_WGS84/GeocacheTerreng",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_WMAS_WGS84/GeocacheTerreng/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geocache_WMAS_WGS84",
+  "navn": "Geocache_WMAS_WGS84/GeocacheTerrengskygge",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geocache_WMAS_WGS84/GeocacheTerrengskygge/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/3DClipAndShip",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/3DClipAndShip/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/AvansertUttrekk2",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/AvansertUttrekk2/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/DOKUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/DOKUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/MatrikkelUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/MatrikkelUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/NvdbUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/NvdbUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/StandardUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/StandardUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/TilepackExport2",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/TilepackExport2/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoeksport",
+  "navn": "Geoeksport/UnrealUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoeksport/UnrealUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_LatLong_ED50",
+  "navn": "Geomap_LatLong_ED50/GeomapPetroleumCultural",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_LatLong_ED50/GeomapPetroleumCultural/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_LatLong_ED50",
+  "navn": "Geomap_LatLong_ED50/GeomapPetroleumCultural",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_LatLong_ED50/GeomapPetroleumCultural/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM32_EUREF89",
+  "navn": "Geomap_UTM32_EUREF89/GeomapBasis2",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM32_EUREF89/GeomapBasis2/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM32_EUREF89",
+  "navn": "Geomap_UTM32_EUREF89/GeomapGraatone2",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM32_EUREF89/GeomapGraatone2/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKAnnen",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKAnnen/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKBefolkning",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKBefolkning/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKEnergi",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKEnergi/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKForurensning",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKForurensning/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKFriluftsliv",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKFriluftsliv/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKGeologi",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKGeologi/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKKulturminner",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKKulturminner/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKKystOgFiskeri",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKKystOgFiskeri/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKLandbruk",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKLandbruk/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKNatur",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKPlan",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKPlan/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKSamferdsel",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKSamferdsel/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapAdmin",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapAdmin/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapAdmin",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapAdmin/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapAnleggsregister",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapAnleggsregister/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapAnleggsregister",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapAnleggsregister/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapArealressurs",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapArealressurs/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBasis2",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBasis2/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBedrifter",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBedrifter/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBedrifter",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBedrifter/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBil",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBil/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBil",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBil/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBilder3",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBilderNyeste",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBilderNyeste/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBrann",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBrann/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapBrann",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapBrann/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapButikkregister",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapButikkregister/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapButikkregister",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapButikkregister/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDagligvare2",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDagligvare2/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDagligvare2",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDagligvare2/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDagligvareEditing",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDagligvareEditing/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDagligvareEditing",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDagligvareEditing/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDagligvarePoi2",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDagligvarePoi2/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDagligvarePoi2",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDagligvarePoi2/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografi",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografi/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografi",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografi/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografi_2026",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografi_2026/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografi_2026",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografi_2026/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografiAdmin",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografiAdmin/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografiAdmin",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografiAdmin/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografiAdmin_2026",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografiAdmin_2026/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDemografiAdmin_2026",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDemografiAdmin_2026/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOK",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOK/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDOM",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDOM/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDrenering",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDrenering/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDTM",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDTM/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDuckyData",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDuckyData/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapDybdedata",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapDybdedata/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapEiendom2",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapEiendom2/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapEiendom2",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapEiendom2/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapEiendomGraatone",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapEiendomGraatone/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapFKB",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapFKB/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapFlom",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapFlom/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapFlom",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapFlom/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapForurensning",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapForurensning/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapGeoEiendom",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapGeoEiendom/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapGeologi",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapGeologi/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapGraatone2",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapGraatone2/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapGRIP",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapGRIP/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapHOB",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapHOB/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapHydrologi",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapHydrologi/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapHydrologi",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapHydrologi/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapInfrastruktur",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapInfrastruktur/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapKjopesenter",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapKjopesenter/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapKjopesenter",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapKjopesenter/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapKollektivtransport",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapKollektivtransport/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapKollektivtransport",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapKollektivtransport/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapKulturminner",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapKulturminner/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapKyst",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapKyst/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapLandskap",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapLandskap/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapMarkfuktighet",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapMarkfuktighet/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapMarkfuktighet2",
+  "type": "ImageServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapMarkfuktighet2/ImageServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapMatrikkel",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapMatrikkel/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapMatrikkel",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapMatrikkel/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapNVDB",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapNVDB/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapNVDB",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapOffentligEiendom",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapOffentligEiendom/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapOffentligEiendom",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapOffentligEiendom/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapPOI",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapPOI/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapPOI",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapPOI/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapPost",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapPost/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapPost",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapPost/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapReguleringsplan",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapROSBygg",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapROSBygg/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapROSByggCompare",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapROSByggCompare/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapROSByggForenklet",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapROSByggForenklet/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapROSData",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapROSData/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapSamferdsel",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapSamferdsel/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapSamferdsel",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapSamferdsel/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapSkred",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapSkred/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapSkred",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapSkred/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapTelekom",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapTelekom/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapUtbygger",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapUtbygger/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapUtbygger",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapUtbygger/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapUtdanning",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapUtdanning/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapUtdanning",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapUtdanning/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapValgresultat",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapValgresultat/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_UTM33_EUREF89",
+  "navn": "Geomap_UTM33_EUREF89/GeomapValgresultat",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_UTM33_EUREF89/GeomapValgresultat/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_WMAS_WGS84",
+  "navn": "Geomap_WMAS_WGS84/GeomapMarinData",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_WMAS_WGS84/GeomapMarinData/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_WMAS_WGS84",
+  "navn": "Geomap_WMAS_WGS84/GeomapMarinData",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_WMAS_WGS84/GeomapMarinData/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_WMAS_WGS84",
+  "navn": "Geomap_WMAS_WGS84/GeomapPetroleumCultural",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_WMAS_WGS84/GeomapPetroleumCultural/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geomap_WMAS_WGS84",
+  "navn": "Geomap_WMAS_WGS84/GeomapPetroleumCultural",
+  "type": "FeatureServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geomap_WMAS_WGS84/GeomapPetroleumCultural/FeatureServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Georapport",
+  "navn": "Georapport/Kartutskrift",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Georapport/Kartutskrift/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Georapport",
+  "navn": "Georapport/KartutskriftArcMap",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Georapport/KartutskriftArcMap/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Georapport",
+  "navn": "Georapport/Matrikkelkart",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Georapport/Matrikkelkart/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneBygning2",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneBygning2/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneBygningUTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneBygningUTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneBygningUTM35",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneBygningUTM35/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneBygningWM2",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneBygningWM2/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneGarnityr",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneGarnityr/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneGarnityr_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneGarnityr_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneGarnityr_WM",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneGarnityr_WM/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneStedsnavn",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneStedsnavn/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneStedsnavn_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneStedsnavn_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneStedsnavn_WM",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneStedsnavn_WM/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneTrees",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneTrees/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneTrees_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneTrees_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneTrees_WM",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneTrees_WM/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjon",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjon/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonFollo_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonFollo_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonHedmark",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonHedmark/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonHIKTNord_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonHIKTNord_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonHIKTSor_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonHIKTSor_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonIKTAgder_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonIKTAgder_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonNordreFollo_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonNordreFollo_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonRomerike_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonRomerike_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonSandnes",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonSandnes/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonStorFollo_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonStorFollo_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonStorOslo",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonStorOslo/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonVarKart_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonVarKart_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geoscene",
+  "navn": "Geoscene/GeosceneVegetasjonVGIS_UTM32",
+  "type": "SceneServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geoscene/GeosceneVegetasjonVGIS_UTM32/SceneServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geosok",
+  "navn": "Geosok/GeosokLokasjon3",
+  "type": "GeocodeServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geosok/GeosokLokasjon3/GeocodeServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geosok",
+  "navn": "Geosok/GeosokRute3",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geosok/GeosokRute3/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Geosok",
+  "navn": "Geosok/GeosokRute3",
+  "type": "NAServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Geosok/GeosokRute3/NAServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/3DClipAndShip",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/3DClipAndShip/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/Adresse",
+  "type": "GeocodeServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/Adresse/GeocodeServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/Adresse__filter_kilde-stedsnavn",
+  "type": "GeocodeServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/Adresse__filter_kilde-stedsnavn/GeocodeServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/AvansertUttrekk2",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/AvansertUttrekk2/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/DOKUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/DOKUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/EchoService",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/EchoService/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/GeokonverteringBIM",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/GeokonverteringBIM/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/Kartutskrift",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/Kartutskrift/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/KartutskriftGamp",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/KartutskriftGamp/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/MatrikkelUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/MatrikkelUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/NTUtility",
+  "type": "MapServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/NTUtility/MapServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/NvdbUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/NvdbUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/StandardUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/StandardUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/TilepackExport2",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/TilepackExport2/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "ProxyServices",
+  "navn": "ProxyServices/UnrealUttrekk",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/ProxyServices/UnrealUttrekk/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Utilities",
+  "navn": "Utilities/Geometry",
+  "type": "GeometryServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Utilities/Geometry/GeometryServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Utilities",
+  "navn": "Utilities/PrintingTools",
+  "type": "GPServer",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Utilities/PrintingTools/GPServer"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Wms",
+  "navn": "Wms/Fiskeridirektoratet",
+  "type": "Wfs",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Wms/Fiskeridirektoratet/Wfs"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Wms",
+  "navn": "Wms/Fiskeridirektoratet_WMS",
+  "type": "Wms",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Wms/Fiskeridirektoratet_WMS/Wms"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Wms",
+  "navn": "Wms/Geonorge_Arealbruk_Wfs",
+  "type": "Wfs",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Wms/Geonorge_Arealbruk_Wfs/Wfs"
+ },
+ {
+  "host": "https://services.geodataonline.no/arcgis/rest/services",
+  "mappe": "Wms",
+  "navn": "Wms/Geonorge_Stedsnavn50_Wfs",
+  "type": "Wfs",
+  "url": "https://services.geodataonline.no/arcgis/rest/services/Wms/Geonorge_Stedsnavn50_Wfs/Wfs"
+ }
+]

@@ -95,6 +95,17 @@ test("3D: lokal scene, IFC-egenskaper og fagmodeller", async ({ page }) => {
   await expect(page.getByRole("region", { name: "Snitt" })).toHaveCount(0);
 });
 
+test("oversikt: nøkkeltall, diagrammer og oppgave fra avvik", async ({ page }) => {
+  await page.goto("/#/oversikt");
+  await expect(page.getByRole("heading", { name: "Oversikt", level: 1 })).toBeVisible({ timeout: 60_000 });
+  await expect(page.locator(".nokkelkort")).toContainText("312");
+  await expect(page.getByRole("img", { name: "Inspeksjonsstatus per fag" })).toBeVisible();
+  await expect(page.getByRole("img", { name: "MMI-fremdrift per fag" })).toBeVisible();
+  const forste = page.getByRole("button", { name: "Opprett oppgave" }).first();
+  await forste.click();
+  await expect(page.locator(".toasts")).toContainText("er opprettet");
+});
+
 test.describe("felt (mobil)", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 

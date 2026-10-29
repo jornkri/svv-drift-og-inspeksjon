@@ -1,0 +1,178 @@
+/* =========================================================================
+   Oversikt og diagrammer
+   ========================================================================= */
+svv-overview-view {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+.oversikt {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1400px;
+}
+.oversikt__hode {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.oversikt__hode h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 32px;
+}
+.oversikt__hode p {
+  margin: 4px 0 0;
+}
+.oversikt__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.kort {
+  border: 1px solid var(--svv-gray-regular-dark);
+  padding: 16px 20px 20px;
+  background: var(--svv-white);
+  min-width: 0;
+}
+.kort h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  line-height: 24px;
+}
+.kort__hode {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.nokkelkort__kort--blaa {
+  background: var(--svv-blue-bg);
+  color: var(--svv-blue-dark);
+}
+.nokkelkort__kort dd small {
+  font-size: 14px;
+  font-weight: 400;
+}
+.knapp--liten {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+.tabell__tekst {
+  max-width: 320px;
+}
+.tabell--kompakt {
+  min-width: 0;
+  font-size: 12px;
+}
+.tabell--kompakt th,
+.tabell--kompakt td {
+  padding: 4px 8px;
+}
+
+.diagram {
+  margin: 0;
+}
+.diagram svg {
+  display: block;
+  overflow: visible;
+}
+.diagram__etikett {
+  font: 600 13px var(--svv-font);
+  fill: var(--svv-gray-dark);
+}
+.diagram__verdi {
+  font: 600 11px var(--svv-font);
+}
+.diagram__verdi-mork {
+  font: 600 11px var(--svv-font);
+  fill: var(--svv-gray-dark);
+}
+.diagram__tick {
+  font: 11px var(--svv-font);
+  fill: var(--svv-grey-dark-80);
+}
+.diagram__akse {
+  stroke: var(--svv-grey-dark-65);
+  stroke-width: 1;
+}
+.diagram__rutenett {
+  stroke: var(--svv-gray-regular-dark);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.diagram__soyle:hover path {
+  opacity: 0.8;
+}
+.forklaring {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+.forklaring__post {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.forklaring__farge {
+  width: 12px;
+  height: 12px;
+  outline: 1px solid rgba(68, 79, 85, 0.35);
+}
+.forklaring__farge--skravur {
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.55) 0 2px, transparent 2px 5px) !important;
+}
+.diagram__tabell {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.diagram__tabell summary {
+  cursor: pointer;
+  color: var(--svv-blue-dark);
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 1000px) {
+  .oversikt__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .oversikt {
+    padding: 16px;
+  }
+}
+
+/* Utskrift av rapport */
+@media print {
+  .topbar,
+  .bunnmeny,
+  .toasts,
+  .hopp-til,
+  .oversikt__hode button,
+  .diagram__tabell,
+  .tabell button {
+    display: none !important;
+  }
+  .app,
+  svv-app,
+  .app__main,
+  svv-overview-view {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .oversikt {
+    padding: 0;
+  }
+  .kort {
+    break-inside: avoid;
+  }
+}

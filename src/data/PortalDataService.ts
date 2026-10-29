@@ -202,6 +202,19 @@ export class PortalDataService implements DataService {
     return insp;
   }
 
+  async allInspections(): Promise<Inspeksjon[]> {
+    if (!this.inspTable) return [];
+    const f = this.cfg.fields.inspeksjon;
+    const out: Inspeksjon[] = [];
+    const pageSize = this.inspTable.capabilities?.query.maxRecordCount ?? 1000;
+    for (let start = 0; ; start += pageSize) {
+      const fs = await this.inspTable.queryFeatures({ where: "1=1", outFields: ["*"], start, num: pageSize });
+      out.push(...fs.features.map((g) => fromAttributes<Inspeksjon>(g.attributes, f)));
+      if (!fs.exceededTransferLimit) break;
+    }
+    return out;
+  }
+
   async getHistory(objekt: Objekt) {
     return deriveHistory(objekt, await this.getInspections(objekt.globalid));
   }
@@ -232,6 +245,17 @@ export class PortalDataService implements DataService {
 
   setTaskStatus(oppgaveId: string, status: OppgaveStatus) {
     return this.updateTask(oppgaveId, { status });
+  }
+
+  async createTask(o: Omit<Oppgave, "oppgave_id">): Promise<string> {
+    if (!this.oppgaveLayer) throw new Error("Oppgavelaget er ikke konfigurert");
+    // TODO(SVV): oppgave-ID bør genereres av tjenesten (Attribute Rule / sekvens). Midlertidig lokal ID.
+    const oppgave_id = `OPG-${Date.now().toString(36).toUpperCase()}`;
+    const attributes = toAttributes<Oppgave>({ ...o, oppgave_id }, this.cfg.fields.oppgave);
+    const res = await this.oppgaveLayer.applyEdits({ addFeatures: [new Graphic({ attributes })] });
+    const err = res.addFeatureResults[0]?.error;
+    if (err) throw new Error(err.message);
+    return oppgave_id;
   }
 
   async submitInspection(insp: Inspeksjon, bilder: Fotovedlegg[]): Promise<InnsendingResultat> {
