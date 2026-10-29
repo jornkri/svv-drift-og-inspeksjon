@@ -9,6 +9,8 @@ export interface KoElement {
   inspeksjon: Inspeksjon;
   bilder: Fotovedlegg[];
   opprettet: string;
+  /** Monotont økende, slik at elementer lagt inn i samme millisekund beholder rekkefølgen */
+  rekkefolge: number;
   forsok: number;
   sisteFeil: string | null;
 }
@@ -19,6 +21,12 @@ interface Schema extends DBSchema {
 }
 
 export const DB_NAME = "svv-drift-og-inspeksjon";
+
+let sist = 0;
+function nesteRekkefolge(): number {
+  sist = Math.max(sist + 1, Date.now() * 1000);
+  return sist;
+}
 
 /** Kø og utkast i IndexedDB. Blob-er (bilder) lagres direkte. */
 export class OfflineQueue {
@@ -35,14 +43,15 @@ export class OfflineQueue {
   }
 
   async enqueue(inspeksjon: Inspeksjon, bilder: Fotovedlegg[], id: string = crypto.randomUUID()): Promise<KoElement> {
-    const el: KoElement = { id, inspeksjon, bilder, opprettet: new Date().toISOString(), forsok: 0, sisteFeil: null };
+    const el: KoElement = { id, inspeksjon, bilder, opprettet: new Date().toISOString(), rekkefolge: nesteRekkefolge(), forsok: 0, sisteFeil: null };
     await (await this.db).put("ko", el);
     return el;
   }
 
   /** Eldste først. */
   async list(): Promise<KoElement[]> {
-    return (await this.db).getAllFromIndex("ko", "opprettet");
+    const all = await (await this.db).getAll("ko");
+    return all.sort((a, b) => (a.rekkefolge ?? 0) - (b.rekkefolge ?? 0));
   }
 
   async count(): Promise<number> {

@@ -31,14 +31,14 @@ const bilde = (): Fotovedlegg => ({
 describe("frakoblet kø (IndexedDB)", () => {
   it("lagrer, lister i rekkefølge og fjerner", async () => {
     const q = newQueue();
-    await q.enqueue(insp("A"), [bilde()], "1");
-    await new Promise((r) => setTimeout(r, 5));
-    await q.enqueue(insp("B"), [], "2");
+    // Samme millisekund og id-er i omvendt rekkefølge: rekkefølgen skal likevel bevares
+    await q.enqueue(insp("A"), [bilde()], "2");
+    await q.enqueue(insp("B"), [], "1");
     expect(await q.count()).toBe(2);
     const items = await q.list();
     expect(items.map((i) => i.inspeksjon.objekt_globalid)).toEqual(["A", "B"]);
     expect(items[0]!.bilder[0]!.retning).toBe(135);
-    await q.remove("1");
+    await q.remove("2");
     expect(await q.count()).toBe(1);
   });
 

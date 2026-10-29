@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "mock": "node scripts/generate-mock.ts"
+    "mock": "node scripts/generate-mock.ts",
+    "verify": "npm run build && npm test && npm run test:e2e"
   },
   "dependencies": {
     "@arcgis/core": "^5.1.27",
