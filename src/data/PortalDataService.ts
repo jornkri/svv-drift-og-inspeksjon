@@ -8,6 +8,7 @@ import WebScene from "@arcgis/core/WebScene.js";
 import type { AppConfig, LayerRef } from "../config.ts";
 import { bimTilObjekter, erBimLag, fagFraTittel, finnLag, manglendeFelt, tilpassFelt, type AutoMapping, type LagInfo } from "./auto-mapping.ts";
 import { objekttypeRenderer, registrerKildeSymboler } from "../map/kildestil.ts";
+import { lagretNavn } from "../auth/navn.ts";
 import { hentVegreferanse } from "../nvdb/vegobjekter.ts";
 import { lagKlientLag, type KlientLagDef, type KlientObjekt } from "./klientlag.ts";
 import {
@@ -140,6 +141,8 @@ export class PortalDataService implements DataService {
   constructor(
     private readonly cfg: AppConfig,
     readonly portal: Portal,
+    /** Offentlig pilot uten innlogging: navnet oppgis av brukeren */
+    private readonly anonym = false,
   ) {
     this.fields = { ...cfg.fields };
     this.objektFields = cfg.fields.objekt;
@@ -147,10 +150,10 @@ export class PortalDataService implements DataService {
 
   async init(): Promise<void> {
     const u = this.portal.user;
-    const navn = u?.fullName || u?.username || "Ukjent bruker";
+    const navn = this.anonym ? (lagretNavn() ?? "Pilotbruker") : u?.fullName || u?.username || "Ukjent bruker";
     this.user = {
       navn,
-      brukernavn: u?.username ?? "",
+      brukernavn: this.anonym ? "Offentlig pilot – uten innlogging" : (u?.username ?? ""),
       initialer: initialsOf(navn),
       // TODO(SVV): hent teamet fra en portalgruppe eller oppgavelaget
       team: [navn],
@@ -161,8 +164,10 @@ export class PortalDataService implements DataService {
       await this.webmap.loadAll();
     }
 
-    const konfigurert = FAG.some((f) => this.cfg.layers[f].length) || !!(this.cfg.inspeksjonTable || this.cfg.oppgaveLayer || this.cfg.dokumentTable);
-    if (konfigurert || !this.webmap) {
+    // Objektlag: fra VITE_LAYERS_* når satt, ellers kartlegges webkartet automatisk.
+    // Tabeller: fra konfigurasjonen når satt (URL eller tittel), ellers fra den automatiske kartleggingen.
+    const lagKonfigurert = FAG.some((f) => this.cfg.layers[f].length);
+    if (lagKonfigurert || !this.webmap) {
       for (const fag of FAG) {
         for (const ref of this.cfg.layers[fag]) {
           const layer = await this.resolveFeatureLayer(ref);
@@ -171,12 +176,12 @@ export class PortalDataService implements DataService {
           this.resolved.push({ fag, url: lagUrl(layer), title: layer.title ?? fag, kind: geometriType(layer) });
         }
       }
-      this.inspTable = this.cfg.inspeksjonTable ? await this.resolveFeatureLayer(this.cfg.inspeksjonTable) : null;
-      this.dokTable = this.cfg.dokumentTable ? await this.resolveFeatureLayer(this.cfg.dokumentTable) : null;
-      this.oppgaveLayer = this.cfg.oppgaveLayer ? await this.resolveFeatureLayer(this.cfg.oppgaveLayer) : null;
     } else {
       await this.autoKartlegg();
     }
+    if (this.cfg.inspeksjonTable) this.inspTable = await this.resolveFeatureLayer(this.cfg.inspeksjonTable);
+    if (this.cfg.dokumentTable) this.dokTable = await this.resolveFeatureLayer(this.cfg.dokumentTable);
+    if (this.cfg.oppgaveLayer) this.oppgaveLayer = await this.resolveFeatureLayer(this.cfg.oppgaveLayer);
     await Promise.all([this.inspTable?.load(), this.dokTable?.load(), this.oppgaveLayer?.load()]);
 
     if (this.klient) {

@@ -102,8 +102,8 @@ export class SvvSceneView extends StoreElement {
     this.global = !!ws && !!wsSr && wsSr.wkid !== cfg.wkid;
     const wsLag = ws ? await (data as PortalDataService).sceneLag() : [];
 
-    const gdo = hasGdoAccess() && !this.global;
-    const def = cfg.gdo.basemaps.find((b) => b.id === store.get().basemap) ?? cfg.gdo.basemaps[0]!;
+    const def = cfg.gdo.basemaps.find((b) => b.id === store.get().basemap) ?? cfg.gdo.basemaps[0];
+    const gdo = hasGdoAccess() && !this.global && !!def && !!cfg.gdo.elevationUrl;
     // Terreng fra webscenen (f.eks. prosjektets terrengmodell) når den har det, ellers Geodata Online
     const ground = ws?.ground?.layers.length
       ? ws.ground.clone()
@@ -112,7 +112,7 @@ export class SvvSceneView extends StoreElement {
     ground.navigationConstraint = { type: this.underBakken ? "none" : "stay-above" } as never;
     this.harTerreng = ground.layers.length > 0;
     ground.opacity = this.harTerreng ? 1 - this.terrengGjennomsiktig / 100 : 0;
-    const basemap = this.global ? ws!.basemap?.clone() : gdo ? createBasemap(def, "3d") : null;
+    const basemap = this.global ? ws!.basemap?.clone() : gdo && def ? createBasemap(def, "3d") : null;
     const map = new EsriMap({ ...(basemap ? { basemap } : {}), ground });
 
     // Fagmodeller fra IFC/BIM som i3s-scenelag (konfig) og lagene i webscenen

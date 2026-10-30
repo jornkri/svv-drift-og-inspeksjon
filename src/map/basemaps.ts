@@ -82,6 +82,14 @@ export async function portalBasemaps(cfg: AppConfig, portal: Portal): Promise<Pa
   return out;
 }
 
+let proxyTilgang = false;
+
+/** Geodata Online er tilgjengelig via proxy i ArcGIS Online (uten token i nettleseren). */
+export function settGdoProxyTilgang(v: boolean): void {
+  proxyTilgang = v;
+}
+
+/** Har appen tilgang til Geodata Online (token fra dev-serveren eller proxy i AGOL)? */
 export function hasGdoAccess(): boolean {
-  return gdoToken !== null;
+  return gdoToken !== null || proxyTilgang;
 }

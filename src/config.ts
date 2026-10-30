@@ -11,6 +11,12 @@ import {
   type Oppgave,
 } from "./data/schema.ts";
 
+import gdoProxyFil from "./gdo-proxy.json";
+import { brukGdoProxy, type GdoProxy } from "./map/gdo-proxy.ts";
+
+/** Geodata Online-tjenester bak proxy i ArcGIS Online (se src/map/gdo-proxy.ts). */
+const GDO_PROXY: GdoProxy = gdoProxyFil;
+
 /** Referanse til et lag: URL til feature-lag/tabell, eller tittel på et lag i webkartet. */
 export type LayerRef = { kind: "url"; url: string } | { kind: "title"; title: string };
 
@@ -33,6 +39,8 @@ export type BasemapId = "graatone" | "basis" | "bilder" | "bilder_hybrid" | "lan
 
 export interface AppConfig {
   useMock: boolean;
+  /** Offentlig pilot: portalen brukes uten innlogging (bare offentlig delte tjenester) */
+  anonym: boolean;
   portalUrl: string;
   appId: string;
   webmapId: string;
@@ -198,6 +206,7 @@ export function parseConfig(env: Record<string, string | boolean | undefined>): 
   const s = (k: string) => (typeof env[k] === "string" ? (env[k] as string) : undefined);
   return {
     useMock: s("VITE_USE_MOCK") !== "false",
+    anonym: s("VITE_ANONYM") === "true",
     portalUrl: (s("VITE_PORTAL_URL") || "https://kart.vegvesen.no/portal").replace(/\/$/, ""),
     appId: s("VITE_APP_ID") ?? "",
     webmapId: s("VITE_WEBMAP_ID") ?? "",
@@ -220,14 +229,14 @@ export function parseConfig(env: Record<string, string | boolean | undefined>): 
       inspeksjon: { ...INSPEKSJON_FIELDS },
       oppgave: { ...OPPGAVE_FIELDS },
     },
-    gdo: {
+    gdo: brukGdoProxy({
       tokenEndpoint: "/api/gdo-token",
       basemaps: GDO_BASEMAPS,
       elevationUrl: `${GDO}/Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer`,
       adresseSokUrl: `${GDO}/ProxyServices/search/adresse`,
       temalag: GDO_TEMALAG,
       flyfoto: { url: `${GDO}/Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer`, aar: [1958, 1966, 1968, 2005, 2006, 2009, 2011, 2013, 2015, 2024] },
-    },
+    }, GDO_PROXY),
     nvdb: {
       baseUrl: "https://nvdbapiles.atlas.vegvesen.no",
       client: s("VITE_NVDB_CLIENT") || "svv-drift-og-inspeksjon",

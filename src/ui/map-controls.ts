@@ -193,9 +193,9 @@ export class SvvBasemapPicker extends StoreElement {
 
   protected override render() {
     const s = this.store.state;
-    const { cfg, data } = services();
-    const current = cfg.gdo.basemaps.find((b) => b.id === s.basemap)!;
-    const available = hasGdoAccess() || data.mode === "portal";
+    const { cfg } = services();
+    const current = cfg.gdo.basemaps.find((b) => b.id === s.basemap) ?? cfg.gdo.basemaps[0]!;
+    const available = hasGdoAccess() && cfg.gdo.basemaps.length > 0;
     return html`<div class="popwrap bakgrunnsvelger">
       <button
         class="bakgrunnsvelger__knapp"

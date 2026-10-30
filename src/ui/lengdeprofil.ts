@@ -19,7 +19,7 @@ let hoydemodell: ElevationLayer | null = null;
 const terrengCache = new Map<string, Promise<ProfilPunkt[] | null>>();
 
 function terrengTilgjengelig(): boolean {
-  return hasGdoAccess() || services().data.mode === "portal";
+  return hasGdoAccess() && !!services().cfg.gdo.elevationUrl;
 }
 
 /** Punktene i linja med stasjonering og eventuell z. */

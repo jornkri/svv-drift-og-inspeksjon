@@ -84,7 +84,7 @@ export class SvvReportView extends StoreElement {
           <p class="sekundar">${o.objekt_id} · ${o.fag} · ${o.objekttype} · ${mmiBadgeText(o.mmi)}</p>
         </div>
         <div>
-          <img class="rapport__logo" src="/svv-logo-print.svg" alt="Statens vegvesen" width="110" height="58" />
+          <img class="rapport__logo" src="${import.meta.env.BASE_URL}svv-logo-print.svg" alt="Statens vegvesen" width="110" height="58" />
           <dl class="rapport__meta">
             ${rad("Utskrevet", fmtDateTime(new Date().toISOString()))}
             ${rad("Av", data.user.navn)}

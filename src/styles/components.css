@@ -1744,3 +1744,28 @@ svv-login {
     repeating-linear-gradient(0deg, #999999 0 1px, transparent 1px 4px),
     repeating-linear-gradient(90deg, #999999 0 1px, transparent 1px 4px);
 }
+
+/* Navn i offentlig pilot */
+.navndialog {
+  max-width: 420px;
+  width: calc(100% - 32px);
+  border: 0;
+  border-radius: 4px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+.navndialog::backdrop {
+  background: rgba(68, 79, 85, 0.5);
+}
+.navndialog h2 {
+  margin: 0 0 8px;
+}
+.navndialog input {
+  width: 100%;
+}
+.navndialog__knapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

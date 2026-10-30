@@ -13,9 +13,11 @@ import { setLocale } from "@arcgis/core/intl.js";
 import { setAssetPath as setComponentsAssetPath } from "@arcgis/map-components";
 import { setAssetPath as setCalciteAssetPath } from "@esri/calcite-components";
 import { initAuth } from "./auth/auth.ts";
+import { lagretNavn } from "./auth/navn.ts";
 import { config } from "./config.ts";
 import type { DataService } from "./data/DataService.ts";
-import { setupGdoToken } from "./map/basemaps.ts";
+import { settGdoProxyTilgang, setupGdoToken } from "./map/basemaps.ts";
+import { begrensTilProxy } from "./map/gdo-proxy.ts";
 import { setServices } from "./services.ts";
 import { startRouter } from "./state/router.ts";
 import { store } from "./state/store.ts";
@@ -54,13 +56,19 @@ async function bootstrap() {
     data = new MockDataService();
   } else {
     const { PortalDataService } = await import("./data/PortalDataService.ts");
-    data = new PortalDataService(config, auth.portal);
+    data = new PortalDataService(config, auth.portal, auth.status === "anonym");
   }
   await data.init();
 
   // Geodata Online-token fra Vite-endepunktet (dev/preview). Uten endepunkt brukes portalens
   // bakgrunnskartgruppe (VITE_BASEMAP_GROUP_ID) i portalmodus.
   const gdoToken = await setupGdoToken(config);
+  if (!gdoToken) {
+    // Uten token: bare tjenester bak proxy i AGOL (ingen innloggingsdialog fra Geodata Online)
+    config.gdo = begrensTilProxy(config.gdo);
+    settGdoProxyTilgang(config.gdo.basemaps.length > 0);
+    if (config.gdo.basemaps.length && !config.gdo.basemaps.some((b) => b.id === store.get().basemap)) store.set({ basemap: config.gdo.basemaps[0]!.id });
+  }
   setServices({ cfg: config, data, gdoToken });
 
   if (params.get("diagnose") === "1" && data.mode === "portal") {
@@ -78,6 +86,11 @@ async function bootstrap() {
   await import("./app.ts");
   document.body.append(document.createElement("svv-app"));
   done();
+
+  if (auth.status === "anonym" && !lagretNavn()) {
+    await import("./ui/navn-dialog.ts");
+    document.body.append(document.createElement("svv-navn-dialog"));
+  }
 
   const lokalt = (data as { lokalt?: string[] }).lokalt ?? [];
   if (data.mode === "portal" && lokalt.length) {

@@ -1,5 +1,6 @@
-import { html } from "lit";
-import { signOut } from "../../auth/auth.ts";
+import { html, nothing } from "lit";
+import { kanLoggeUt, signOut } from "../../auth/auth.ts";
+import { apneNavnDialog } from "../../auth/navn.ts";
 import { services } from "../../services.ts";
 import { navigate } from "../../state/router.ts";
 import { store } from "../../state/store.ts";
@@ -69,7 +70,11 @@ export class SvvFieldMe extends StoreElement {
         <input type="checkbox" .checked=${s.simFrakoblet} @change=${() => store.set({ simFrakoblet: !s.simFrakoblet })} />
         Simuler frakoblet modus (test av køen)
       </label>
-      <button class="knapp knapp--sekundar knapp--hoy" @click=${() => signOut(cfg)}>${icons.logout(18)} Logg ut</button>
+      ${kanLoggeUt(cfg)
+        ? html`<button class="knapp knapp--sekundar knapp--hoy" @click=${() => signOut(cfg)}>${icons.logout(18)} Logg ut</button>`
+        : cfg.anonym
+          ? html`<button class="knapp knapp--sekundar knapp--hoy" @click=${() => void apneNavnDialog()}>Endre navn</button>`
+          : nothing}
     </div>`;
   }
 }

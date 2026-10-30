@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
-import { signOut } from "../auth/auth.ts";
+import { kanLoggeUt, signOut } from "../auth/auth.ts";
+import { apneNavnDialog } from "../auth/navn.ts";
 import { services } from "../services.ts";
 import { navigate } from "../state/router.ts";
 import { store } from "../state/store.ts";
@@ -70,7 +71,7 @@ export class SvvTopbar extends StoreElement {
     return html`
       <header class="topbar">
         <div class="topbar__merke">
-          <img class="topbar__logo" src="/svv-merke.svg" alt="Statens vegvesen" width="43" height="30" />
+          <img class="topbar__logo" src="${import.meta.env.BASE_URL}svv-merke.svg" alt="Statens vegvesen" width="43" height="30" />
           <span class="topbar__app">Drift og inspeksjon</span>
         </div>
         <span class="topbar__skille" aria-hidden="true"></span>
@@ -148,7 +149,11 @@ export class SvvTopbar extends StoreElement {
           ${this.menu === "bruker"
             ? html`<div class="meny meny--hoyre" role="menu" aria-label="Brukermeny">
                 <p class="meny__hint"><strong>${data.user.navn}</strong><br />${data.mode === "mock" ? "Mock-modus (uten portal)" : data.user.brukernavn}</p>
-                <button class="meny__valg" role="menuitem" @click=${() => signOut(cfg)}>${icons.logout(18)} Logg ut</button>
+                ${kanLoggeUt(cfg)
+                  ? html`<button class="meny__valg" role="menuitem" @click=${() => signOut(cfg)}>${icons.logout(18)} Logg ut</button>`
+                  : cfg.anonym
+                    ? html`<button class="meny__valg" role="menuitem" @click=${() => void apneNavnDialog()}>Endre navn</button>`
+                    : nothing}
               </div>`
             : nothing}
         </div>

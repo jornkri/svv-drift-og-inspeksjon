@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
 import type { ObjektTreff } from "../data/DataService.ts";
 import { currentGdoToken } from "../map/basemaps.ts";
-import { lookupVegref, parseVegref, searchAddress, type StedTreff } from "../map/search.ts";
+import { lookupVegref, parseVegref, searchAddress, searchAddressGeonorge, type StedTreff } from "../map/search.ts";
 import { services } from "../services.ts";
 import { navigate } from "../state/router.ts";
 import { store } from "../state/store.ts";
@@ -55,7 +55,9 @@ export class SvvSearchBox extends LightElement {
     const [obj, veg, adr] = await Promise.all([
       data.search(q, 6).catch(() => []),
       vegref ? lookupVegref(cfg, vegref, ctrl.signal).catch(() => null) : Promise.resolve(null),
-      token && !vegref ? searchAddress(cfg, q, token, ctrl.signal).catch(() => []) : Promise.resolve([]),
+      vegref
+        ? Promise.resolve([])
+        : (token ? searchAddress(cfg, q, token, ctrl.signal) : searchAddressGeonorge(q, ctrl.signal)).catch(() => []),
     ]);
     if (ctrl.signal.aborted) return;
     this.treff = [

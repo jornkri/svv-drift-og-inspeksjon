@@ -78,6 +78,32 @@ export async function searchAddress(cfg: AppConfig, text: string, token: string,
   });
 }
 
+/**
+ * Adressesøk i Kartverkets åpne adresse-API (ws.geonorge.no, ingen nøkkel). Brukes når appen
+ * ikke har Geodata Online-token, f.eks. i den offentlige piloten. Koordinater i UTM33.
+ */
+export async function searchAddressGeonorge(text: string, signal?: AbortSignal, fetchFn: typeof fetch = fetch): Promise<StedTreff[]> {
+  const q = text.trim();
+  if (q.length < 3) return [];
+  const url = `https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(q.endsWith("*") ? q : `${q}*`)}&treffPerSide=5&utkoordsys=25833`;
+  const r = await fetchFn(url, signal ? { signal } : {});
+  if (!r.ok) return [];
+  const j = (await r.json()) as {
+    adresser?: { adressetekst?: string; postnummer?: string; poststed?: string; kommunenavn?: string; representasjonspunkt?: { lat?: number; lon?: number } }[];
+  };
+  const tittel = (s?: string) => (s ? s.charAt(0) + s.slice(1).toLowerCase() : "");
+  return (j.adresser ?? [])
+    .filter((a) => a.representasjonspunkt?.lat != null && a.representasjonspunkt?.lon != null)
+    .map((a) => ({
+      kilde: "adresse" as const,
+      tekst: a.adressetekst ?? q,
+      undertekst: [a.postnummer && a.poststed ? `${a.postnummer} ${tittel(a.poststed)}` : null, tittel(a.kommunenavn)].filter(Boolean).join(" · "),
+      // I EPSG:25833 er «lat» nord og «lon» øst
+      x: a.representasjonspunkt!.lon!,
+      y: a.representasjonspunkt!.lat!,
+    }));
+}
+
 /** NVDB vegnett i et kartutsnitt (for referanselaget). */
 export async function fetchVegnett(
   cfg: AppConfig,

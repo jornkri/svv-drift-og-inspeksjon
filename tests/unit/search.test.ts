@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseVegref, prettyVegref } from "../../src/map/search.ts";
+import { parseVegref, prettyVegref, searchAddressGeonorge } from "../../src/map/search.ts";
 
 describe("vegreferanse", () => {
   it.each([
@@ -18,5 +18,27 @@ describe("vegreferanse", () => {
 
   it("formaterer tilbake med mellomrom", () => {
     expect(prettyVegref("EV45S1D1m2340")).toBe("EV45 S1D1 m2340");
+  });
+});
+
+describe("searchAddressGeonorge", () => {
+  it("søker med jokertegn og gjør om lat/lon (nord/øst i UTM33) til x/y", async () => {
+    let kalt = "";
+    const fetchFn = (async (url: string) => {
+      kalt = url;
+      return new Response(
+        JSON.stringify({
+          adresser: [{ adressetekst: "Markveien 1", postnummer: "9510", poststed: "ALTA", kommunenavn: "ALTA", representasjonspunkt: { lat: 7764330, lon: 816955 } }],
+        }),
+      );
+    }) as unknown as typeof fetch;
+    const t = await searchAddressGeonorge("Markveien 1", undefined, fetchFn);
+    expect(kalt).toContain("sok=Markveien%201*");
+    expect(kalt).toContain("utkoordsys=25833");
+    expect(t).toEqual([{ kilde: "adresse", tekst: "Markveien 1", undertekst: "9510 Alta · Alta", x: 816955, y: 7764330 }]);
+  });
+
+  it("søker ikke på korte tekster", async () => {
+    expect(await searchAddressGeonorge("ab")).toEqual([]);
   });
 });

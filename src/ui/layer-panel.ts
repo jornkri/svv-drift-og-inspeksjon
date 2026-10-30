@@ -151,8 +151,8 @@ export class SvvLayerPanel extends StoreElement {
 
   private renderTema() {
     const s = this.store.state;
-    const { cfg, data } = services();
-    if (!hasGdoAccess() && data.mode !== "portal") {
+    const { cfg } = services();
+    if (!hasGdoAccess() || (!cfg.gdo.temalag.length && !cfg.gdo.flyfoto.aar.length)) {
       return html`<div class="laggruppe">
         <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">TEMA (GEODATA ONLINE)</span></div>
         <p class="laggruppe__merknad">Krever tilgang til Geodata Online.</p>

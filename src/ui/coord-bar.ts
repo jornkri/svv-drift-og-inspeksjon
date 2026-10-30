@@ -24,7 +24,7 @@ export class SvvCoordBar extends LightElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (hasGdoAccess()) this.elevation = new ElevationLayer({ url: services().cfg.gdo.elevationUrl });
+    if (hasGdoAccess() && services().cfg.gdo.elevationUrl) this.elevation = new ElevationLayer({ url: services().cfg.gdo.elevationUrl });
     this.unsub = onMapContext((c) => this.attach(c));
   }
 
@@ -79,7 +79,7 @@ export class SvvCoordBar extends LightElement {
   }
 
   protected override render() {
-    const gdo = hasGdoAccess() || services().data.mode === "portal";
+    const gdo = hasGdoAccess() && !!services().cfg.gdo.elevationUrl;
     return html`<div class="koordlinje">
       ${this.ctx?.dim === "2d" && this.dim === "2d"
         ? html`<arcgis-scale-bar reference-element=${this.ctx.elementId} unit="metric" bar-style="line"></arcgis-scale-bar>`

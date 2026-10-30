@@ -119,6 +119,17 @@ Se `.env.example`. De viktigste variablene:
 | `VITE_NVDB_CLIENT` | Verdi for `X-Client`-headeren mot NVDB |
 | `VITE_GPS_MAX_ACCURACY_M`, `VITE_GEOFENCE_RADIUS_M` | Geofence (standard 10 m og 15 m) |
 
+### Offentlig pilot på GitHub Pages
+
+`npm run build:pages` bygger med `.env.pages`, og workflowen `.github/workflows/pages.yml` publiserer ved push til `master`. Piloten har ingen innlogging (`VITE_ANONYM=true`):
+- Appen leser offentlig delte elementer i ArcGIS Online.
+- Brukeren oppgir navnet sitt én gang. Det lagres i nettleseren og brukes som inspektør.
+- Inspeksjoner og oppgaver lagres i tjenesten `SVV_Drift_og_inspeksjon` (element `c909ba5894944f53b885fea13b6ec524`). Tjenesten har tabell 0 *Inspeksjoner* med bildevedlegg og tabell 1 *Oppgaver*. Den tillater å legge til og oppdatere, men ikke å slette.
+- **Geodata Online** brukes via proxy i ArcGIS Online, altså elementer med lagret innlogging, slik at passordet aldri havner i nettleseren. Proxy-URL-ene legges i `src/gdo-proxy.json`, med tjenestesti → proxy-URL, for eksempel `"Geocache_UTM33_EUREF89/GeocacheGraatone/MapServer": "https://utility.arcgis.com/usrsvcs/servers/<id>/rest/services/Geocache_UTM33_EUREF89/GeocacheGraatone/MapServer"`. Uten token viser appen bare tjenestene som har proxy.
+- **Adressesøk** bruker Kartverkets åpne adresse-API (`ws.geonorge.no`) når det ikke finnes noe GDO-token.
+
+Dette må være delt offentlig i ArcGIS Online: webkartet, webscenen, BIM-lagene, 3D-scenelaget og tjenesten for inspeksjoner og oppgaver, samt proxy-elementene for GDO. For proxy-elementene bør du sette henvisningsadresse (referrer) til Pages-adressen og en grense for antall forespørsler.
+
 ### Pilot på ArcGIS Online
 
 Piloten kjører mot ArcGIS Online-organisasjonen `geodata.maps.arcgis.com`, med webkart `d41d15c2c72b4498992d7b6428d7f23e` og webscene `87fcf27968834310a7da2fda6b637d05`. Appen ser fortsatt ut som SVV-appen. Bare `VITE_PORTAL_URL`, `VITE_APP_ID` og ID-ene er forskjellige, og samme kode fungerer mot `kart.vegvesen.no/portal`.

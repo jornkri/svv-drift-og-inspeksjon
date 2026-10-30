@@ -85,6 +85,8 @@ function localAssetsPlugin(): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
+    // GitHub Pages ligger under /<repo>/ (se .env.pages); ellers roten
+    base: env.VITE_BASE || "/",
     plugins: [
       gdoTokenPlugin(env),
       localAssetsPlugin(),

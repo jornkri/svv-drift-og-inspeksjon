@@ -105,9 +105,9 @@ export class SvvTasksView extends StoreElement {
     if (!el || !o) return;
     if (!this.miniView || (el.view as MapView | undefined) !== this.miniView) {
       await customElements.whenDefined("arcgis-map");
-      const { cfg, data } = services();
-      const def = cfg.gdo.basemaps.find((b) => b.id === "graatone")!;
-      const map = new EsriMap(data.mode === "portal" || hasGdoAccess() ? { basemap: createBasemap(def, "2d") } : {});
+      const { cfg } = services();
+      const def = cfg.gdo.basemaps.find((b) => b.id === "graatone") ?? cfg.gdo.basemaps[0];
+      const map = new EsriMap(def && hasGdoAccess() ? { basemap: createBasemap(def, "2d") } : {});
       this.miniLayer = new GraphicsLayer();
       map.add(this.miniLayer);
       el.map = map;

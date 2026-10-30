@@ -3,7 +3,14 @@ import OAuthInfo from "@arcgis/core/identity/OAuthInfo.js";
 import Portal from "@arcgis/core/portal/Portal.js";
 import type { AppConfig } from "../config.ts";
 
-export type AuthState = { status: "mock" } | { status: "signed-in"; portal: Portal } | { status: "signed-out"; reason?: string };
+export type AuthState =
+  | { status: "mock" }
+  | { status: "signed-in"; portal: Portal }
+  | { status: "anonym"; portal: Portal }
+  | { status: "signed-out"; reason?: string };
+
+/** Om brukeren kan logge ut (ikke i mock og ikke i offentlig pilot uten innlogging). */
+export const kanLoggeUt = (cfg: AppConfig) => !cfg.useMock && !cfg.anonym;
 
 const sharingUrl = (cfg: AppConfig) => `${cfg.portalUrl}/sharing`;
 
@@ -26,6 +33,12 @@ function registerOAuth(cfg: AppConfig) {
  */
 export async function initAuth(cfg: AppConfig): Promise<AuthState> {
   if (cfg.useMock) return { status: "mock" };
+  if (cfg.anonym) {
+    // Offentlig delte webkart, webscener og lag – ingen innlogging
+    const portal = new Portal({ url: cfg.portalUrl, authMode: "anonymous" });
+    await portal.load();
+    return { status: "anonym", portal };
+  }
   if (!cfg.appId) return { status: "signed-out", reason: "VITE_APP_ID er ikke satt. Registrer appen i portalen (se README)." };
   registerOAuth(cfg);
   try {

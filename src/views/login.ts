@@ -13,7 +13,7 @@ export class SvvLogin extends LightElement {
       <div class="login">
         <section class="login__innhold">
           <div class="login__merke">
-            <img src="/svv-merke.svg" alt="" width="69" height="48" />
+            <img src="${import.meta.env.BASE_URL}svv-merke.svg" alt="" width="69" height="48" />
             <span>Statens vegvesen</span>
           </div>
           <div class="login__midt">
