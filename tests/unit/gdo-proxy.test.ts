@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { begrensTilProxy, brukGdoProxy, proxyUrl } from "../../src/map/gdo-proxy.ts";
+import { begrensTilProxy, brukGdoProxy, lagUrlUtenToken, proxyUrl } from "../../src/map/gdo-proxy.ts";
 import { parseConfig } from "../../src/config.ts";
 
 const PROXY = {
@@ -39,5 +39,15 @@ describe("bakgrunnskart via proxy", () => {
   it("VITE_ELEVATION_URL overstyrer høydemodellen", () => {
     const u = "https://tiles.arcgis.com/tiles/x/arcgis/rest/services/Terreng/ImageServer";
     expect(begrensTilProxy(parseConfig({ VITE_ELEVATION_URL: u }, {}).gdo).elevationUrl).toBe(u);
+  });
+});
+
+describe("åpne GDO-tjenester", () => {
+  it("tjenester merket «direkte» brukes uten proxy og token", () => {
+    const proxy = { "Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer": "direkte" };
+    const b = begrensTilProxy(brukGdoProxy(parseConfig({}, {}).gdo, proxy));
+    expect(b.elevationUrl).toBe("https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer");
+    expect(lagUrlUtenToken(b.elevationUrl, proxy, false)).toBe(b.elevationUrl);
+    expect(lagUrlUtenToken("https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheBilder/MapServer", proxy, false)).toBeNull();
   });
 });

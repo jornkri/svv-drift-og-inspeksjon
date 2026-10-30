@@ -6,24 +6,37 @@ import type { AppConfig } from "../config.ts";
  * «Geocache_UTM33_EUREF89/GeocacheGraatone/MapServer» →
  * «https://utility.arcgis.com/usrsvcs/servers/<id>/rest/services/Geocache_UTM33_EUREF89/GeocacheGraatone/MapServer».
  * Proxy-URL-ene er ikke hemmelige; tilgangen begrenses med henvisningsadresser (referrer) i AGOL.
+ * Verdien «direkte» betyr at tjenesten er åpen og brukes uten proxy og token (f.eks. terrenget
+ * i elementet «Høydemodell 3D», 9d5c0b5dab4b4bbfb536d88f42653c5f).
  */
 export type GdoProxy = Record<string, string>;
 
 const GDO_HOST = /^https:\/\/(vector\.)?services\.geodataonline\.no\//;
 
-/** Proxy-URL for en GDO-URL (lengste treff vinner), eller URL-en uendret. */
-export function proxyUrl(url: string, proxy: GdoProxy): string {
-  if (!GDO_HOST.test(url)) return url;
-  const treff = Object.keys(proxy)
+export const DIREKTE = "direkte";
+
+/** Nøkkelen i proxy-tabellen som dekker URL-en (lengste treff vinner). */
+function treffFor(url: string, proxy: GdoProxy): string | undefined {
+  return Object.keys(proxy)
     .filter((sti) => url.includes(`/rest/services/${sti}`))
     .sort((a, b) => b.length - a.length)[0];
-  if (!treff) return url;
+}
+
+/** Proxy-URL for en GDO-URL, eller URL-en uendret (også for tjenester merket «direkte»). */
+export function proxyUrl(url: string, proxy: GdoProxy): string {
+  if (!GDO_HOST.test(url)) return url;
+  const treff = treffFor(url, proxy);
+  if (!treff || proxy[treff] === DIREKTE) return url;
   const i = url.indexOf(`/rest/services/${treff}`) + `/rest/services/${treff}`.length;
   return proxy[treff]!.replace(/\/$/, "") + url.slice(i);
 }
 
 /** Krever URL-en et GDO-token (dvs. går den direkte mot Geodata Online)? */
-export const kreverGdoToken = (url: string) => GDO_HOST.test(url);
+export const kreverGdoToken = (url: string, proxy: GdoProxy = {}) => {
+  if (!GDO_HOST.test(url)) return false;
+  const treff = treffFor(url, proxy);
+  return !(treff && proxy[treff] === DIREKTE);
+};
 
 /** Bytter alle GDO-URL-er i konfigurasjonen til proxy-URL-er der det finnes en. */
 export function brukGdoProxy(gdo: Omit<AppConfig["gdo"], "proxy">, proxy: GdoProxy): AppConfig["gdo"] {
@@ -44,7 +57,7 @@ export function brukGdoProxy(gdo: Omit<AppConfig["gdo"], "proxy">, proxy: GdoPro
  */
 export function lagUrlUtenToken(url: string, proxy: GdoProxy, harToken: boolean): string | null {
   const p = proxyUrl(url, proxy);
-  return kreverGdoToken(p) && !harToken ? null : p;
+  return kreverGdoToken(p, proxy) && !harToken ? null : p;
 }
 
 /**
@@ -52,7 +65,7 @@ export function lagUrlUtenToken(url: string, proxy: GdoProxy, harToken: boolean)
  * aldri får en innloggingsdialog fra Geodata Online. Tomme verdier betyr «ikke tilgjengelig».
  */
 export function begrensTilProxy(gdo: AppConfig["gdo"]): AppConfig["gdo"] {
-  const ok = (u: string) => !!u && !kreverGdoToken(u);
+  const ok = (u: string) => !!u && !kreverGdoToken(u, gdo.proxy);
   return {
     ...gdo,
     // 3D bruker 2D-lagene (vektorfliser i UTM33) når rasterutgaven ikke går via proxy

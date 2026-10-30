@@ -1,5 +1,6 @@
 {
   "GeocacheVector/GeocacheGraatone/VectorTileServer": "https://utility.arcgis.com/usrsvcs/servers/b1b64b13115c48c6a320e447195c565d/rest/services/GeocacheVector/GeocacheGraatone/VectorTileServer",
   "GeocacheVector/GeocacheBasis/VectorTileServer": "https://utility.arcgis.com/usrsvcs/servers/291b09c85ba947e889e8517b58516ab9/rest/services/GeocacheVector/GeocacheBasis/VectorTileServer",
+  "Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer": "direkte",
   "Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer": "https://utility.arcgis.com/usrsvcs/servers/3f0d17482f814edeb9c40eb6ada4ead3/rest/services/Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer"
 }
