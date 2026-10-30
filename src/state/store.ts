@@ -19,6 +19,8 @@ export interface Counts {
 export interface GpsState {
   aktiv: boolean;
   simulert: boolean;
+  /** Simulert posisjon flyttet manuelt (står stille til turen fortsetter) */
+  manuell: boolean;
   x: number | null;
   y: number | null;
   noyaktighet: number | null;
@@ -91,7 +93,7 @@ export const initialState: AppState = {
   counts: null,
   selection: null,
   inspeksjon: null,
-  gps: { aktiv: false, simulert: false, x: null, y: null, noyaktighet: null, retning: null, feil: null },
+  gps: { aktiv: false, simulert: false, manuell: false, x: null, y: null, noyaktighet: null, retning: null, feil: null },
   naer: [],
   online: typeof navigator === "undefined" ? true : navigator.onLine,
   koAntall: 0,

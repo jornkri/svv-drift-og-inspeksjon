@@ -1,12 +1,14 @@
 import Graphic from "@arcgis/core/Graphic.js";
 import Circle from "@arcgis/core/geometry/Circle.js";
 import Point from "@arcgis/core/geometry/Point.js";
+import SpatialReference from "@arcgis/core/geometry/SpatialReference.js";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol.js";
 import type { ArcgisMap } from "@arcgis/map-components/components/arcgis-map";
 import { html, nothing } from "lit";
 import { formatDistance } from "../../map/coords.ts";
+import { tilSr } from "../../map/projeksjon.ts";
 import { setup2DMap, type Map2D } from "../../map/setup-2d.ts";
 import { services } from "../../services.ts";
 import { navigate } from "../../state/router.ts";
@@ -22,7 +24,7 @@ import "../../ui/tema-panel.ts";
 import "../../ui/search-box.ts";
 import { startInspection } from "../../ui/object-panel.ts";
 import { forrigeTekst } from "../prefill.ts";
-import { startFieldRuntime } from "../field-runtime.ts";
+import { flyttSimulertPosisjon, fortsettSimulertTur, isSimGps, startFieldRuntime } from "../field-runtime.ts";
 import "./gps-status.ts";
 
 const MAP_ID = "kart-felt";
@@ -52,6 +54,16 @@ export class SvvFieldMap extends StoreElement {
       this.kart = k;
       k.map.add(this.pos);
       this.unsubs.push(store.select((s) => s.gps, () => this.drawPosition()));
+      if (isSimGps()) {
+        // Simulert GPS: trykk i kartet (utenfor objektene og NVDB-objektene) flytter posisjonen dit
+        const h = k.view.on("click", async (e) => {
+          if ((await k.objects.hitTest(e)).length) return;
+          if ((await k.view.hitTest(e, { include: k.nvdbObjekter.layers })).results.some((r) => r.type === "graphic")) return;
+          const p = await tilSr(e.mapPoint, new SpatialReference({ wkid: 25833 }));
+          flyttSimulertPosisjon(p.x, p.y);
+        });
+        this.unsubs.push(() => h.remove());
+      }
       this.drawPosition();
       this.setAttribute("data-klar", "");
     });
@@ -130,7 +142,14 @@ export class SvvFieldMap extends StoreElement {
             ${icons.layers(22)}
           </button>
         </div>
-        <svv-gps-status class="feltkart__gps"></svv-gps-status>
+        <div class="feltkart__gps">
+          <svv-gps-status></svv-gps-status>
+          ${s.gps.simulert
+            ? s.gps.manuell
+              ? html`<button class="simknapp" @click=${() => fortsettSimulertTur()}>${icons.locate(18)} Fortsett turen langs vegen</button>`
+              : html`<p class="simhint">Trykk i kartet for å flytte posisjonen</p>`
+            : nothing}
+        </div>
         ${s.layerPanelOpen ? html`<svv-layer-panel class="feltkart__lag"></svv-layer-panel>` : nothing}
 
         <div class="feltkart__hoyre">
@@ -209,7 +228,9 @@ export class SvvFieldMap extends StoreElement {
                 <strong>Ingen objekter innenfor ${cfg.geofence.radiusM} m</strong>
                 <span class="sekundar"
                   >${s.gps.aktiv
-                    ? "Gå nærmere et objekt, eller trykk på et objekt i kartet."
+                    ? s.gps.simulert
+                      ? "Gå nærmere et objekt, trykk på et objekt, eller trykk i kartet for å flytte den simulerte posisjonen."
+                      : "Gå nærmere et objekt, eller trykk på et objekt i kartet."
                     : "Venter på posisjon. Tips: legg til ?simgps=1 i adressen for simulert GPS."}</span
                 >
               </div>`}

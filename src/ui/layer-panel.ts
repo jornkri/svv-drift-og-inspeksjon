@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html, nothing, type SVGTemplateResult, type TemplateResult } from "lit";
 import { FAG, type Fag } from "../data/schema.ts";
 import { typesByFag } from "../filters/counts.ts";
 import { typeKey } from "../filters/filters.ts";
@@ -10,10 +10,12 @@ import { icons } from "./icons.ts";
 import { swatch } from "./legend.ts";
 import { NVDB_MAKS_SKALA, nvdbSynlig } from "../map/nvdb-objekter-layer.ts";
 import { hasGdoAccess } from "../map/basemaps.ts";
-import { NVDB_FARGE, NVDB_TYPER, type NvdbType } from "../nvdb/vegobjekter.ts";
+import { NVDB_FARGE, NVDB_TYPER, type NvdbFag, type NvdbType } from "../nvdb/vegobjekter.ts";
 import type { TemalagDef } from "../config.ts";
 import "./tema-legende.ts";
-import { gruppeIkon, temaIkon } from "./tema-ikoner.ts";
+import { fagIkon, gruppeIkon, temaIkon } from "./tema-ikoner.ts";
+
+const NVDB_FAG: NvdbFag[] = ["VA", "Elektro", "Veg", "Kontekst"];
 
 /** Avkrysning for en gruppe: på når alle er på, delvis når noen er på. */
 function gruppeBoks(paa: number, totalt: number, navn: string, sett: (paa: boolean) => void) {
@@ -44,8 +46,8 @@ export function nvdbSwatch(t: NvdbType) {
 /** Flytende lagpanel med fanene Lag og Tegnforklaring. */
 export class SvvLayerPanel extends StoreElement {
   private types: Record<string, string[]> = {};
-  /** Åpne/lukkede temagrupper (brukerens valg mens panelet er åpent) */
-  private temaApne = new Map<string, boolean>();
+  /** Åpne/lukkede grupper (brukerens valg mens panelet er åpent) */
+  private apne = new Map<string, boolean>();
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -88,6 +90,55 @@ export class SvvLayerPanel extends StoreElement {
     </button>`;
   }
 
+  /**
+   * Sammenleggbar laggruppe: knapp (pil, ikon, navn, antall) og gruppeavkrysning ved siden av
+   * hverandre (ikke nestet), og radene under når gruppen er åpen.
+   */
+  private gruppe(g: {
+    id: string;
+    navn: string;
+    /** Navn for skjermleser når navnet går igjen i flere seksjoner (f.eks. «VA») */
+    etikett?: string;
+    ikon: SVGTemplateResult;
+    paa: number;
+    totalt: number;
+    antall: string;
+    aktiv?: boolean;
+    apen: boolean;
+    sett: (paa: boolean) => void;
+    rader: () => unknown;
+  }): TemplateResult {
+    const apen = this.apne.get(g.id) ?? g.apen;
+    return html`<div class="temagruppe ${apen ? "is-apen" : ""}">
+      <div class="temagruppe__hode">
+        <button
+          class="temagruppe__knapp"
+          aria-expanded=${apen}
+          aria-controls=${g.id}
+          @click=${() => {
+            this.apne.set(g.id, !apen);
+            this.requestUpdate();
+          }}
+        >
+          <span class="temagruppe__pil" aria-hidden="true">${icons.chevronRight(16)}</span>
+          <span class="temaikon" aria-hidden="true">${g.ikon}</span>
+          <span class="temagruppe__navn">${g.navn}</span>
+          <span class="temagruppe__antall ${g.aktiv ? "is-aktiv" : ""}">${g.antall}</span>
+        </button>
+        ${gruppeBoks(g.paa, g.totalt, g.etikett ?? g.navn, g.sett)}
+      </div>
+      ${apen ? html`<div class="temagruppe__lag" id=${g.id}>${g.rader()}</div>` : nothing}
+    </div>`;
+  }
+
+  /** Overskrift for en seksjon i lagpanelet, med «Slå av alle» når noe er på. */
+  private seksjon(navn: string, paa: number, totalt: string, slaAv: () => void, tittel?: string) {
+    return html`<div class="laggruppe__hode laggruppe__hode--tekst" title=${tittel ?? nothing}>
+      <span class="kategori">${navn}</span>
+      ${paa ? html`<button class="lenkeknapp" @click=${slaAv}>Slå av alle (${paa})</button>` : html`<span class="laggruppe__antall">${totalt}</span>`}
+    </div>`;
+  }
+
   protected override render() {
     const s = this.store.state;
     return html`
@@ -107,65 +158,81 @@ export class SvvLayerPanel extends StoreElement {
     const s = this.store.state;
     const hidden = new Set(s.filters.skjulteTyper);
     const perType = s.counts?.perType ?? {};
+    const paaFag = (fag: Fag) => (this.types[fag] ?? []).filter((t) => !hidden.has(typeKey(fag, t))).length;
+    const fagMedTyper = FAG.filter((f) => (this.types[f] ?? []).length);
+    const typerPaa = fagMedTyper.reduce((n, f) => n + paaFag(f), 0);
+    const nvdbPaa = NVDB_TYPER.filter((t) => nvdbSynlig(t.id)).length;
+    const nvdbFag = NVDB_FAG.filter((f) => NVDB_TYPER.some((t) => t.fag === f));
+    const vegnett = s.referanse.nvdb ?? true;
     return html`
-      ${FAG.map((fag) => {
-        const types = this.types[fag] ?? [];
-        const onCount = types.filter((t) => !hidden.has(typeKey(fag, t))).length;
-        const fagOff = s.filters.fag !== "Alle" && s.filters.fag !== fag;
-        return html`<div class="laggruppe">
-          <label class="laggruppe__hode">
-            <input
-              type="checkbox"
-              .checked=${onCount === types.length}
-              .indeterminate=${onCount > 0 && onCount < types.length}
-              @change=${(e: Event) => this.toggleFag(fag, (e.target as HTMLInputElement).checked)}
-            />
-            <span class="kategori">${fag.toUpperCase()}</span>
-            <span class="laggruppe__antall">${s.counts?.perFag[fag] ?? ""}</span>
-          </label>
-          ${fagOff ? html`<p class="laggruppe__merknad">Skjult av fagfilteret</p>` : nothing}
-          ${types.map(
-            (t) => html`<label class="lagrad">
-              <input type="checkbox" .checked=${!hidden.has(typeKey(fag, t))} @change=${() => this.toggleType(fag, t)} />
-              ${swatch(fag, t)}
-              <span class="lagrad__navn">${t}</span>
-              <span class="lagrad__antall">${perType[typeKey(fag, t)] ?? ""}</span>
-            </label>`,
-          )}
-        </div>`;
-      })}
       <div class="laggruppe">
-        <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">REFERANSE</span></div>
-        <label class="lagrad">
-          <input
-            type="checkbox"
-            .checked=${s.referanse.nvdb ?? true}
-            @change=${() => store.set({ referanse: { ...s.referanse, nvdb: !(s.referanse.nvdb ?? true) } })}
-          />
-          <span class="symbol symbol--linje" style="--c:#697277" aria-hidden="true"></span>
-          <span class="lagrad__navn">NVDB vegnett</span>
-          <span class="lagrad__antall">–</span>
-        </label>
+        ${this.seksjon("FAGMODELLER (BIM)", typerPaa, `${s.counts?.total ?? ""}`, () => fagMedTyper.forEach((f) => this.toggleFag(f, false)))}
+        ${fagMedTyper.map((fag) => {
+          const types = this.types[fag] ?? [];
+          const n = paaFag(fag);
+          const fagOff = s.filters.fag !== "Alle" && s.filters.fag !== fag;
+          return this.gruppe({
+            id: `faggruppe-${fag}`,
+            navn: fag,
+            etikett: `${fag} i fagmodellen`,
+            ikon: fagIkon(fag),
+            paa: n,
+            totalt: types.length,
+            antall: fagOff ? "filtrert" : n === 0 ? "av" : n < types.length ? `${n} av ${types.length}` : `${s.counts?.perFag[fag] ?? ""}`,
+            aktiv: n > 0 && n < types.length,
+            apen: false,
+            sett: (v) => this.toggleFag(fag, v),
+            rader: () => html`${fagOff ? html`<p class="laggruppe__merknad">Skjult av fagfilteret</p>` : nothing}
+              ${types.map(
+                (t) => html`<label class="temarad">
+                  <input type="checkbox" .checked=${!hidden.has(typeKey(fag, t))} @change=${() => this.toggleType(fag, t)} />
+                  ${swatch(fag, t)}
+                  <span class="lagrad__navn">${t}</span>
+                  <span class="lagrad__antall">${perType[typeKey(fag, t)] ?? ""}</span>
+                </label>`,
+              )}`,
+          });
+        })}
       </div>
       <div class="laggruppe">
-        <label class="laggruppe__hode">
-          ${gruppeBoks(NVDB_TYPER.filter((t) => nvdbSynlig(t.id)).length, NVDB_TYPER.length, "NVDB vegobjekter", (paa) =>
-            store.set({ nvdbTyper: Object.fromEntries(NVDB_TYPER.map((t) => [t.id, paa])) }),
-          )}
-          <span class="kategori">NVDB VEGOBJEKTER (I DRIFT)</span>
-          <span class="laggruppe__antall">${Object.values(s.nvdbAntall).reduce((a, b) => a + b, 0) || ""}</span>
+        ${this.seksjon("NVDB", nvdbPaa + (vegnett ? 1 : 0), "", () =>
+          store.set({ referanse: { ...s.referanse, nvdb: false }, nvdbTyper: Object.fromEntries(NVDB_TYPER.map((t) => [t.id, false])) }),
+        )}
+        <label class="temagruppe__hode temagruppe__enkel">
+          <span class="temagruppe__pil" aria-hidden="true"></span>
+          <span class="temaikon" aria-hidden="true">${fagIkon("Vegnett")}</span>
+          <span class="temagruppe__navn">Vegnett</span>
+          <input type="checkbox" .checked=${vegnett} @change=${() => store.set({ referanse: { ...s.referanse, nvdb: !vegnett } })} />
         </label>
-        ${Object.keys(s.nvdbAntall).length === 0
+        ${nvdbFag.map((fag) => {
+          const typer = NVDB_TYPER.filter((t) => t.fag === fag);
+          const n = typer.filter((t) => nvdbSynlig(t.id)).length;
+          const antall = typer.reduce((a, t) => a + (s.nvdbAntall[t.id] ?? 0), 0);
+          return this.gruppe({
+            id: `nvdbgruppe-${fag}`,
+            navn: fag === "Kontekst" ? "Skilt, bru og fart" : fag,
+            etikett: `NVDB ${fag === "Kontekst" ? "skilt, bru og fart" : fag}`,
+            ikon: fagIkon(fag),
+            paa: n,
+            totalt: typer.length,
+            antall: n === 0 ? "av" : n < typer.length ? `${n} av ${typer.length}` : antall ? String(antall) : "",
+            aktiv: n > 0 && n < typer.length,
+            apen: false,
+            sett: (v) => store.set({ nvdbTyper: { ...s.nvdbTyper, ...Object.fromEntries(typer.map((t) => [t.id, v])) } }),
+            rader: () =>
+              typer.map(
+                (t) => html`<label class="temarad">
+                  <input type="checkbox" .checked=${nvdbSynlig(t.id)} @change=${() => store.set({ nvdbTyper: { ...s.nvdbTyper, [t.id]: !nvdbSynlig(t.id) } })} />
+                  ${nvdbSwatch(t)}
+                  <span class="lagrad__navn">${t.navn}</span>
+                  <span class="lagrad__antall">${s.nvdbAntall[t.id] ?? ""}</span>
+                </label>`,
+              ),
+          });
+        })}
+        ${Object.keys(s.nvdbAntall).length === 0 && nvdbPaa
           ? html`<p class="laggruppe__merknad">Zoom inn til 1:${NVDB_MAKS_SKALA.toLocaleString("nb-NO")} eller nærmere for å hente vegobjekter.</p>`
           : nothing}
-        ${NVDB_TYPER.map(
-          (t) => html`<label class="lagrad">
-            <input type="checkbox" .checked=${nvdbSynlig(t.id)} @change=${() => store.set({ nvdbTyper: { ...s.nvdbTyper, [t.id]: !nvdbSynlig(t.id) } })} />
-            ${nvdbSwatch(t)}
-            <span class="lagrad__navn">${t.navn}</span>
-            <span class="lagrad__antall">${s.nvdbAntall[t.id] ?? ""}</span>
-          </label>`,
-        )}
       </div>
       ${this.renderTema()}
     `;
@@ -185,54 +252,35 @@ export class SvvLayerPanel extends StoreElement {
     const sett = (l: TemalagDef[], v: boolean) => store.set({ referanse: { ...s.referanse, ...Object.fromEntries(l.map((t) => [`tema:${t.id}`, v])) } });
     const totaltPaa = paa(cfg.gdo.temalag);
     return html`<div class="laggruppe">
-        <div class="laggruppe__hode laggruppe__hode--tekst" title="Klikk i kartet for å se informasjon fra temalagene som er slått på.">
-          <span class="kategori">TEMA</span>
-          ${totaltPaa
-            ? html`<button class="lenkeknapp" @click=${() => sett(cfg.gdo.temalag, false)}>Slå av alle (${totaltPaa})</button>`
-            : html`<span class="laggruppe__antall">${cfg.gdo.temalag.length} lag</span>`}
-        </div>
+        ${this.seksjon("TEMA", totaltPaa, `${cfg.gdo.temalag.length} lag`, () => sett(cfg.gdo.temalag, false), "Klikk i kartet for å se informasjon fra temalagene som er slått på.")}
         ${grupper.map((g) => {
           const lag = cfg.gdo.temalag.filter((t) => t.gruppe === g);
           const n = paa(lag);
-          // Grupper med aktive lag er åpne; brukerens valg huskes mens panelet er åpent
-          const apen = this.temaApne.get(g) ?? n > 0;
-          const id = `temagruppe-${grupper.indexOf(g)}`;
-          // Knapp (åpne/lukke) og avkrysning ligger ved siden av hverandre – ikke nestet
-          return html`<div class="temagruppe ${apen ? "is-apen" : ""}">
-            <div class="temagruppe__hode">
-              <button
-                class="temagruppe__knapp"
-                aria-expanded=${apen}
-                aria-controls=${id}
-                @click=${() => {
-                  this.temaApne.set(g, !apen);
-                  this.requestUpdate();
-                }}
-              >
-                <span class="temagruppe__pil" aria-hidden="true">${icons.chevronRight(16)}</span>
-                <span class="temaikon" aria-hidden="true">${gruppeIkon(g)}</span>
-                <span class="temagruppe__navn">${g}</span>
-                <span class="temagruppe__antall ${n ? "is-aktiv" : ""}">${n ? `${n} av ${lag.length}` : lag.length}</span>
-              </button>
-              ${gruppeBoks(n, lag.length, g, (v) => sett(lag, v))}
-            </div>
-            ${apen
-              ? html`<div class="temagruppe__lag" id=${id}>
-                  ${lag.map(
-                    (t) => html`<label class="temarad" title=${t.beskrivelse}>
-                        <input
-                          type="checkbox"
-                          .checked=${!!s.referanse[`tema:${t.id}`]}
-                          @change=${() => store.set({ referanse: { ...s.referanse, [`tema:${t.id}`]: !s.referanse[`tema:${t.id}`] } })}
-                        />
-                        <span class="temaikon" aria-hidden="true">${temaIkon(t)}</span>
-                        <span class="lagrad__navn">${t.navn}</span>
-                      </label>
-                      ${s.referanse[`tema:${t.id}`] ? html`<svv-tema-legende class="temarad__legende" .def=${t} kompakt></svv-tema-legende>` : nothing}`,
-                  )}
-                </div>`
-              : nothing}
-          </div>`;
+          return this.gruppe({
+            id: `temagruppe-${grupper.indexOf(g)}`,
+            navn: g,
+            ikon: gruppeIkon(g),
+            paa: n,
+            totalt: lag.length,
+            antall: n ? `${n} av ${lag.length}` : `${lag.length}`,
+            aktiv: n > 0,
+            // Grupper med aktive lag er åpne; brukerens valg huskes mens panelet er åpent
+            apen: n > 0,
+            sett: (v) => sett(lag, v),
+            rader: () =>
+              lag.map(
+                (t) => html`<label class="temarad" title=${t.beskrivelse}>
+                    <input
+                      type="checkbox"
+                      .checked=${!!s.referanse[`tema:${t.id}`]}
+                      @change=${() => store.set({ referanse: { ...s.referanse, [`tema:${t.id}`]: !s.referanse[`tema:${t.id}`] } })}
+                    />
+                    <span class="temaikon" aria-hidden="true">${temaIkon(t)}</span>
+                    <span class="lagrad__navn">${t.navn}</span>
+                  </label>
+                  ${s.referanse[`tema:${t.id}`] ? html`<svv-tema-legende class="temarad__legende" .def=${t} kompakt></svv-tema-legende>` : nothing}`,
+              ),
+          });
         })}
       </div>
       <div class="laggruppe">

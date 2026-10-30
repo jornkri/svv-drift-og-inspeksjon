@@ -74,6 +74,31 @@
   top: 72px;
   left: 12px;
   z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+/* Simulert GPS: hint og «fortsett turen» */
+.simhint {
+  margin: 0;
+  padding: 4px 8px;
+  background: rgb(255 255 255 / 0.9);
+  font-size: 12px;
+  color: var(--svv-gray-dark);
+}
+.simknapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  background: var(--svv-white);
+  border: 1px solid var(--svv-gray-dark);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
 }
 .gpsstatus {
   display: flex;

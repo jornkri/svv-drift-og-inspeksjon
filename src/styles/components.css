@@ -1862,6 +1862,20 @@ svv-login {
 .temarad:hover {
   background: var(--svv-gray-light);
 }
+/* Enkeltlag på gruppenivå (f.eks. NVDB vegnett): samme linje som gruppene, uten pil */
+.temagruppe__enkel {
+  gap: 6px;
+  min-height: 34px;
+  padding-left: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.temagruppe__enkel .temagruppe__pil {
+  width: 16px;
+}
+.temagruppe__enkel .temagruppe__navn {
+  margin-right: 2px;
+}
 .temarad__legende {
   display: block;
   padding: 0 0 6px 28px;

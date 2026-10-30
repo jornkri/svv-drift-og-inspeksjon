@@ -23,6 +23,7 @@ export interface Map2D {
   view: MapView;
   map: EsriMap;
   objects: ObjectLayerController;
+  nvdbObjekter: NvdbObjekterLayer;
   dispose(): void;
 }
 
@@ -131,6 +132,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
     view,
     map,
     objects,
+    nvdbObjekter: nvdbObj,
     dispose() {
       unsubs.forEach((u) => u());
       click.remove();

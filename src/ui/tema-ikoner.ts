@@ -30,6 +30,14 @@ const IKON: Record<string, SVGTemplateResult> = {
   helning: svg`<path d="M3 20h18L3 7z"></path><path d="M9 20a5 5 0 00-1.4-3.5"></path>`,
   // Bil
   trafikk: svg`<path d="M5 16v-3l2-5h10l2 5v3z"></path><path d="M5 13h14"></path><circle cx="8" cy="17.5" r="1.5"></circle><circle cx="16" cy="17.5" r="1.5"></circle>`,
+  // Lyn
+  elektro: svg`<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"></path>`,
+  // Veg i perspektiv med midtlinje
+  veg: svg`<path d="M8 3L3 21M16 3l5 18"></path><path d="M12 4v3M12 10.5v3M12 17v3"></path>`,
+  // Vegnett (lenker og noder)
+  vegnett: svg`<circle cx="5" cy="18" r="2"></circle><circle cx="12" cy="7" r="2"></circle><circle cx="19" cy="16" r="2"></circle><path d="M6.2 16.3l4.6-7.6M13.3 8.6l4.6 5.7M7 18h10"></path>`,
+  // Skilt
+  skilt: svg`<path d="M12 3l8 8-8 8-8-8z"></path><path d="M12 19v2"></path>`,
 };
 
 const LAG: Record<string, keyof typeof IKON> = {
@@ -63,4 +71,10 @@ export function temaIkon(def: TemalagDef, s?: number): SVGTemplateResult {
 
 export function gruppeIkon(gruppe: TemalagDef["gruppe"], s?: number): SVGTemplateResult {
   return ikon(IKON[GRUPPE[gruppe]]!, s);
+}
+
+/** Ikon for fag (BIM-modell og NVDB): VA, Elektro, Veg og kontekst (skilt, bru, fartsgrense). */
+export function fagIkon(fag: string, s?: number): SVGTemplateResult {
+  const id: keyof typeof IKON = fag === "VA" ? "vann" : fag === "Elektro" ? "elektro" : fag === "Veg" ? "veg" : fag === "Vegnett" ? "vegnett" : "skilt";
+  return ikon(IKON[id]!, s);
 }
