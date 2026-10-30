@@ -11,6 +11,8 @@ import { rensRute, startIndeks, type RutePunkt } from "./sim-rute.ts";
 let gps: GpsSource | null = null;
 let fence: Geofence<ObjektTreff> | null = null;
 let lastFix: Fix | null = null;
+/** Antall posisjoner på rad som er for unøyaktige til geofence */
+let darlige = 0;
 
 export const isSimGps = () => new URLSearchParams(location.search).get("simgps") === "1";
 
@@ -48,18 +50,27 @@ export async function startFieldRuntime(): Promise<void> {
     },
     onRejected: (_f, reason) => store.set((s) => ({ gps: { ...s.gps, feil: reason } })),
   });
-  store.set((s) => ({ gps: { ...s.gps, aktiv: true, simulert: gps!.simulert } }));
+  store.set((s) => ({ gps: { ...s.gps, aktiv: true, simulert: gps!.simulert, feil: null } }));
   gps.start(
     (fix) => {
       lastFix = fix;
       const ok = fix.accuracy <= cfg.geofence.maxAccuracyM;
+      // Under bruer og i kulverter: «DU ER VED» skal ikke bli stående på en gammel posisjon
+      darlige = ok ? 0 : darlige + 1;
+      if (darlige === 3) store.set({ naer: [] });
       store.set({
         gps: { aktiv: true, simulert: gps!.simulert, manuell: gps instanceof SimulatedGps && gps.erManuell, x: fix.x, y: fix.y, noyaktighet: fix.accuracy, retning: fix.heading ?? null, feil: ok ? null : store.get().gps.feil },
       });
       fence!.push(fix);
     },
-    (msg) => store.set((s) => ({ gps: { ...s.gps, aktiv: false, feil: msg } })),
+    (msg) => store.set((s) => ({ gps: { ...s.gps, aktiv: false, feil: msg, noyaktighet: null }, naer: [] })),
   );
+}
+
+/** Starter GPS på nytt, f.eks. etter at brukeren har gitt tilgang til posisjon. */
+export function provGpsIgjen(): void {
+  stopFieldRuntime();
+  void startFieldRuntime();
 }
 
 /**

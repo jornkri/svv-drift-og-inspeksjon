@@ -202,12 +202,14 @@ export class SvvLayerPanel extends StoreElement {
         ${this.seksjon("NVDB", nvdbPaa + (vegnett ? 1 : 0), "", () =>
           store.set({ referanse: { ...s.referanse, nvdb: false }, nvdbTyper: Object.fromEntries(NVDB_TYPER.map((t) => [t.id, false])) }),
         )}
-        <label class="temagruppe__hode temagruppe__enkel">
-          <span class="temagruppe__pil" aria-hidden="true"></span>
-          <span class="temaikon" aria-hidden="true">${fagIkon("Vegnett")}</span>
-          <span class="temagruppe__navn">Vegnett</span>
-          <input type="checkbox" .checked=${vegnett} @change=${() => store.set({ referanse: { ...s.referanse, nvdb: !vegnett } })} />
-        </label>
+        ${s.route === "3d"
+          ? nothing
+          : html`<label class="temagruppe__hode temagruppe__enkel">
+              <span class="temagruppe__pil" aria-hidden="true"></span>
+              <span class="temaikon" aria-hidden="true">${fagIkon("Vegnett")}</span>
+              <span class="temagruppe__navn">Vegnett</span>
+              <input type="checkbox" .checked=${vegnett} @change=${() => store.set({ referanse: { ...s.referanse, nvdb: !vegnett } })} />
+            </label>`}
         ${nvdbFag.map((fag) => {
           const typer = NVDB_TYPER.filter((t) => t.fag === fag);
           const n = typer.filter((t) => nvdbSynlig(t.id)).length;
@@ -238,7 +240,9 @@ export class SvvLayerPanel extends StoreElement {
           ? html`<p class="laggruppe__merknad">Zoom inn til 1:${NVDB_MAKS_SKALA.toLocaleString("nb-NO")} eller nærmere for å hente vegobjekter.</p>`
           : nothing}
       </div>
-      ${this.renderFeltbilder()} ${this.renderTema()}
+      ${s.route === "3d"
+        ? html`<p class="laggruppe__merknad">Vegnett, feltbilder og temalag vises i 2D-kartet.</p>`
+        : html`${this.renderFeltbilder()} ${this.renderTema()}`}
     `;
   }
 
@@ -262,9 +266,9 @@ export class SvvLayerPanel extends StoreElement {
   private bildeLegend() {
     if (!this.antallBilder || !(this.store.state.referanse.feltbilder ?? true)) return nothing;
     return html`<h3 class="kategori">FELTBILDER</h3>
-      <div class="tegnforklaring__rad"><span class="symbol symbol--punkt symbol--fylt" style="--c:rgb(0,95,158)" aria-hidden="true"></span> Bilde fra mobil</div>
+      <div class="tegnforklaring__rad"><span class="symbol symbol--punkt" style="--c:rgb(0,95,158);background:#fff" aria-hidden="true"></span> Bilde fra mobil</div>
       <div class="tegnforklaring__rad"><span class="symbol symbol--trekant" style="--c:rgb(0,95,158)" aria-hidden="true"></span> Bilde fra drone</div>
-      <div class="tegnforklaring__rad"><span class="symbol symbol--flate" style="--c:rgb(0,95,158)" aria-hidden="true"></span> Synsfelt (kameraretning)</div>`;
+      <div class="tegnforklaring__rad"><span class="symbol symbol--flate" style="--c:rgb(0,95,158)" aria-hidden="true"></span> Synsfelt (kameraretning, vises når du zoomer inn)</div>`;
   }
 
   private renderTema() {

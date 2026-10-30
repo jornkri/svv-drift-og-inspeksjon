@@ -74,7 +74,8 @@ describe("bytte av objekt", () => {
     expect(byttet.forrige).toBeNull();
     expect(byttet.kommentar).toBe("Utvasking ved innløp");
     expect(byttet.tilstandsgrad).toBe(2);
-    expect(byttet.id).toBe("utkast-1");
+    // Utkastet lagres under det nye objektet
+    expect(byttet.id).toBe("utkast-{K}");
   });
 });
 

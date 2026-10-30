@@ -262,7 +262,7 @@ export class SvvLengdeprofil extends LightElement {
       <p class="sekundar liten" role="status">
         ${this.status === "laster" ? "Henter terrenghøyder fra Geodata Online …" : nothing}
         ${this.status === "ok" ? `Terreng: Geodata Online terrengmodell. Overdekning = terrenghøyde − ${t.hoydekilde}; negativ verdi (rød) betyr at objektet ligger over terrenget.` : nothing}
-        ${this.status === "ingen-tilgang" ? "Terrengprofil krever tilgang til Geodata Online (se README)." : nothing}
+        ${this.status === "ingen-tilgang" ? "Terrengprofilen er ikke tilgjengelig uten høydemodell fra Geodata Online." : nothing}
         ${this.status === "feil" ? "Kunne ikke hente terrenghøyder fra Geodata Online." : nothing}
       </p>
     </section>`;

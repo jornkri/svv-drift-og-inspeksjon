@@ -169,6 +169,20 @@ export class Store {
 
 export const store = new Store(initialState);
 
+/**
+ * Velger objekter (kartklikk, søk, lister). Andre paneler (NVDB, tema) lukkes, slik at de ikke
+ * dukker opp igjen når objektpanelet lukkes. `zoom` ber aktiv kartvisning gå til det første.
+ */
+export function velgObjekter(globalids: string[], opts: { zoom?: boolean } = {}): void {
+  store.set({
+    selection: { globalids, index: 0 },
+    nvdbValgt: null,
+    temaTreff: null,
+    popover: null,
+    ...(opts.zoom && globalids[0] ? { zoomTil: globalids[0] } : {}),
+  });
+}
+
 /** Lit-kontroller som ber komponenten tegne seg på nytt når tilstanden endres. */
 export class StoreController implements ReactiveController {
   private unsub?: () => void;

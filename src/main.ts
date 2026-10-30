@@ -20,7 +20,7 @@ import { settGdoProxyTilgang, setupGdoToken } from "./map/basemaps.ts";
 import { begrensTilProxy } from "./map/gdo-proxy.ts";
 import { setServices } from "./services.ts";
 import { startRouter } from "./state/router.ts";
-import { store } from "./state/store.ts";
+import { store, velgObjekter } from "./state/store.ts";
 
 setLocale("nb");
 
@@ -101,7 +101,7 @@ async function bootstrap() {
   const objektId = params.get("objekt");
   if (objektId) {
     const hit = await data.findByObjektId(objektId);
-    if (hit) store.set({ selection: { globalids: [hit.objekt.globalid], index: 0 }, zoomTil: hit.objekt.globalid });
+    if (hit) velgObjekter([hit.objekt.globalid], { zoom: true });
     else store.notify(`Fant ikke objektet «${objektId}»`, "feil");
   }
 }

@@ -6,6 +6,7 @@ import { html, nothing } from "lit";
 import type { ObjektTreff } from "../data/DataService.ts";
 import { NVDB_TYPER, hentVegobjekter, minsteAvstand, oppsummer, parseWkt, wktLinjer, type NvdbType, type NvdbVegobjekt } from "../nvdb/vegobjekter.ts";
 import { services } from "../services.ts";
+import { navigate } from "../state/router.ts";
 import { store } from "../state/store.ts";
 import { LightElement, fmtNumber } from "./base.ts";
 import { nvdbSwatch } from "./layer-panel.ts";
@@ -96,7 +97,11 @@ export class SvvNvdbNaer extends LightElement {
                   (x) => html`<li>
                     <button
                       class="nvdbliste__rad"
-                      @click=${() => store.set({ selection: null, nvdbValgt: { typeId: x.type.id, id: x.o.id } })}
+                      @click=${() => {
+                        store.set({ selection: null, temaTreff: null, nvdbValgt: { typeId: x.type.id, id: x.o.id } });
+                        // Fra objektrapporten: NVDB-panelet vises i kartet
+                        if (store.get().route === "rapport") navigate("kart");
+                      }}
                     >
                       ${nvdbSwatch(x.type)}
                       <span class="nvdbliste__tekst">

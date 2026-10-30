@@ -1240,7 +1240,9 @@ svv-tema-panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  /* Hele panelet ruller, så faneinnholdet får hele høyden; fanene står fast øverst */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .objektpanel__topp {
   padding: 14px 16px 16px;
@@ -1274,9 +1276,14 @@ svv-tema-panel {
   font-size: 14px;
 }
 .objektpanel__fane {
-  flex: 1;
-  overflow: auto;
+  flex: 1 0 auto;
   padding: 4px 16px 16px;
+}
+.objektpanel .faner--panel {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--svv-white);
 }
 .merker {
   display: flex;
@@ -1614,12 +1621,16 @@ svv-login {
 .login__foto {
   position: absolute;
   inset: 32px;
-  background: var(--svv-gray-regular-dark);
+  background: var(--svv-gray-regular-dark) center / cover no-repeat;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 32px;
+  align-items: flex-end;
+}
+.login__kreditering {
+  margin: 0 0 12px 12px;
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--svv-white);
+  font-size: 12px;
 }
 .login__trekant {
   position: absolute;
@@ -1745,11 +1756,19 @@ svv-login {
   background: var(--svv-white);
   padding: 0 8px;
 }
-.flyfotomerke {
+.kartmerker {
   position: absolute;
   left: 50%;
   bottom: 44px;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 3;
+  max-width: calc(100% - 32px);
+}
+.flyfotomerke {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2133,16 +2152,25 @@ svv-login {
     max-height: 26vh;
   }
 }
+/* Med et sidepanel åpent (objekt, NVDB, tema) står bildet til venstre for panelet */
+@media (min-width: 1000px) {
+  body:has(.app__main .objektpanel) .bildeviser--dokket {
+    right: 400px;
+    border-right: 1px solid var(--svv-gray-regular-dark);
+  }
+}
+/* Kartknappene flyttes like langt inn som viseren dekker kartet (settes fra feltbilde-lag.ts) */
 body[data-bilde-dokket] .kartkontroller,
 body[data-bilde-dokket] .bakgrunnsvelger {
-  right: 452px;
+  right: calc(var(--bilde-dekker-hoyre, 0px) + 12px);
 }
-@media (max-width: 699px) {
-  body[data-bilde-dokket] .kartkontroller,
-  body[data-bilde-dokket] .bakgrunnsvelger {
-    right: 12px;
-  }
-  body[data-bilde-dokket] .bakgrunnsvelger {
-    bottom: calc(55vh + 12px);
-  }
+body[data-bilde-dokket] .bakgrunnsvelger {
+  bottom: calc(var(--bilde-dekker-bunn, 0px) + 44px);
+}
+body[data-bilde-dokket] .kartflate .koordlinje {
+  margin-right: var(--bilde-dekker-hoyre, 0px);
+}
+/* Kartflaten blir smal: knappene under filterlinjen i stedet for oppå den */
+body[data-bilde-dokket] .kartflate .kartkontroller {
+  top: 116px;
 }

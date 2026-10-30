@@ -35,10 +35,20 @@ export class SvvFeltbildeViser extends LightElement {
   declare indeks: number;
   declare dokket: boolean;
   private aktivNokkel = "";
+  private unsubRute: (() => void) | null = null;
 
   constructor() {
     super();
     this.dokket = lesDokket();
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    // Bildet hører til kartet: lukkes når brukeren går til en annen visning
+    this.unsubRute = store.select(
+      (s) => s.route,
+      () => this.lukk(),
+    );
   }
 
   private get dialog() {
@@ -73,6 +83,7 @@ export class SvvFeltbildeViser extends LightElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.unsubRute?.();
     delete document.body.dataset.bildeDokket;
     store.set({ feltbildeAktiv: null });
   }
@@ -97,8 +108,9 @@ export class SvvFeltbildeViser extends LightElement {
   }
 
   private visIKart(b: Feltbilde) {
+    // Viseren lukkes, og kartet viser bildepunktet med en markør som kan fjernes
+    this.lukk();
     store.set({ markor: { x: b.x, y: b.y, tekst: b.tittel } });
-    if (!this.dokket) this.lukk();
     navigate("kart");
   }
 

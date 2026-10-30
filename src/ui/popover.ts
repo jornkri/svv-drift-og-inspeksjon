@@ -18,6 +18,8 @@ export function installPopoverBehavior(): () => void {
     const t = e.target as HTMLElement;
     if (!store.get().popover) return;
     if (t.closest(".popwrap")) return;
+    // Under måling er klikk i kartet en del av målingen
+    if (document.body.dataset.maaling === "aktiv" && t.closest("arcgis-map")) return;
     store.set({ popover: null });
   };
   document.addEventListener("keydown", onKey);

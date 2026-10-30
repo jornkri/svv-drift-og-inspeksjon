@@ -55,11 +55,12 @@ export class SvvTopbar extends StoreElement {
     const today = new Date();
     const mine = s.oppgaver.filter((o) => o.tildelt === data.user.navn && isOpen(o));
     const varsler = mine.filter((o) => ["over", "idag"].includes(dueClass(o, today)));
+    const aktiv = (route: string) => s.route === route || (route === "kart" && s.route === "3d");
     const link = (route: "kart" | "oppgaver" | "oversikt", label: string, extra: unknown = nothing) => html`
       <a
-        class="topbar__lenke ${s.route === route || (route === "kart" && s.route === "3d") ? "is-aktiv" : ""}"
+        class="topbar__lenke ${aktiv(route) ? "is-aktiv" : ""}"
         href="#/${route}"
-        aria-current=${s.route === route ? "page" : nothing}
+        aria-current=${aktiv(route) ? "page" : nothing}
         @click=${(e: Event) => {
           e.preventDefault();
           navigate(route);
@@ -107,7 +108,7 @@ export class SvvTopbar extends StoreElement {
         <div class="topbar__meny-wrap">
           <button
             class="topbar__ikon"
-            aria-label=${`Varsler${varsler.length ? ` (${varsler.length} nye)` : ""}`}
+            aria-label=${`Varsler${varsler.length ? ` (${varsler.length} ${varsler.length === 1 ? "oppgave" : "oppgaver"} med frist i dag eller over frist)` : ""}`}
             aria-haspopup="true"
             aria-expanded=${this.menu === "varsler"}
             @click=${this.toggle("varsler")}

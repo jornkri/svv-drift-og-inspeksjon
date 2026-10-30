@@ -26,6 +26,7 @@ import {
   type OppgaveMedLogg,
   type UserInfo,
 } from "./DataService.ts";
+import { latestPerObject } from "../reports/stats.ts";
 import { queryLayersNearby, queryLayersWhere } from "./query.ts";
 import {
   FAG,
@@ -203,9 +204,11 @@ export class PortalDataService implements DataService {
     if (this.klient) {
       this.objektFields = OBJEKT_FIELDS;
       this.objektFeltFinnes = new Set(Object.values(OBJEKT_FIELDS));
+      // Inspeksjonsstatus fra siste inspeksjon per objekt, før klientlagene bygges av objektene
+      const insp = this.inspTable ? await this.allInspections().catch(() => [] as Inspeksjon[]) : this.lokalInsp;
+      for (const i of latestPerObject(insp).values()) this.oppdaterKlientStatus(i);
       this.queryLayers = lagKlientLag(this.klient.defs, this.klient.objekter).map((h) => h.layer);
       this.lokalt = [...(this.inspTable ? [] : (["inspeksjoner"] as const)), ...(this.oppgaveLayer ? [] : (["oppgaver"] as const))];
-      for (const i of this.lokalInsp) this.oppdaterKlientStatus(i);
       return;
     }
 
@@ -443,7 +446,7 @@ export class PortalDataService implements DataService {
   private async vegreferanse(globalid: string, g: Geometry): Promise<string | null> {
     const k = this.klient?.objekter.find((o) => o.objekt.globalid === globalid);
     if (k?.objekt.vegreferanse) return k.objekt.vegreferanse;
-    const c = g.extent?.center ?? (g.type === "point" ? (g as unknown as { x: number; y: number }) : null);
+    const c = punktPaa(g);
     if (!c) return null;
     const v = await hentVegreferanse(this.cfg.nvdb, c.x, c.y).catch(() => null);
     if (k && v) k.objekt.vegreferanse = v;
@@ -476,7 +479,7 @@ export class PortalDataService implements DataService {
   }
 
   async getInspections(globalid: string): Promise<Inspeksjon[]> {
-    if (!this.inspTable) return this.lokalInsp.filter((i) => i.objekt_globalid === globalid);
+    if (!this.inspTable) return this.lokalInsp.filter((i) => i.objekt_globalid === globalid).sort((a, b) => b.tidspunkt.localeCompare(a.tidspunkt));
     const f = this.fields.inspeksjon;
     const fs = await this.inspTable.queryFeatures({
       where: `${f.objekt_globalid} = ${sqlString(globalid)}`,
@@ -595,6 +598,7 @@ export class PortalDataService implements DataService {
         vedleggFeilet++;
       }
     }
+    this.oppdaterKlientStatus({ ...insp, globalid: add.globalId ?? String(add.objectId) });
     if (insp.oppgave_id) await this.setTaskStatus(insp.oppgave_id, "Klar for kontroll").catch(() => undefined);
     return { globalid: add.globalId ?? String(add.objectId), vedleggFeilet };
   }
@@ -633,4 +637,28 @@ export class PortalDataService implements DataService {
       };
     });
   }
+}
+
+/**
+ * Et punkt på geometrien: midt langs linjen for ledninger og vegelementer (senteret av
+ * utstrekningen kan ligge langt fra en lang eller buet linje), ellers senteret.
+ */
+function punktPaa(g: Geometry): { x: number; y: number } | null {
+  if (g.type === "point") return g as unknown as { x: number; y: number };
+  if (g.type === "polyline") {
+    // Den lengste delen (flest punkter) for linjer med flere deler
+    const sti = (g as unknown as { paths: number[][][] }).paths.reduce((a, b) => (b.length > a.length ? b : a), [] as number[][]);
+    const lengder = sti.slice(1).map((p, i) => Math.hypot(p[0]! - sti[i]![0]!, p[1]! - sti[i]![1]!));
+    let igjen = lengder.reduce((a, b) => a + b, 0) / 2;
+    for (let i = 0; i < lengder.length; i++) {
+      const l = lengder[i]!;
+      if (igjen <= l && l > 0) {
+        const t = igjen / l;
+        return { x: sti[i]![0]! + t * (sti[i + 1]![0]! - sti[i]![0]!), y: sti[i]![1]! + t * (sti[i + 1]![1]! - sti[i]![1]!) };
+      }
+      igjen -= l;
+    }
+    return sti[0] ? { x: sti[0][0]!, y: sti[0][1]! } : null;
+  }
+  return g.extent?.center ?? null;
 }

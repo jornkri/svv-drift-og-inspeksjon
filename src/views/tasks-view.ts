@@ -1,6 +1,7 @@
 import "@arcgis/map-components/components/arcgis-map";
 import Graphic from "@arcgis/core/Graphic.js";
 import EsriMap from "@arcgis/core/Map.js";
+import Point from "@arcgis/core/geometry/Point.js";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference.js";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
@@ -14,7 +15,7 @@ import { FAG, OPPGAVE_STATUSER, type Fag } from "../data/schema.ts";
 import { createBasemap, hasGdoAccess } from "../map/basemaps.ts";
 import { services } from "../services.ts";
 import { navigate } from "../state/router.ts";
-import { store } from "../state/store.ts";
+import { store, velgObjekter } from "../state/store.ts";
 import { dataChanged, ensureTasks } from "../tasks/task-store.ts";
 import {
   DEFAULT_TASK_FILTER,
@@ -41,6 +42,12 @@ export class SvvTasksView extends StoreElement {
   private dialog = false;
   private miniView: MapView | null = null;
   private miniLayer = new GraphicsLayer();
+  /** Minikartet viser dette (oppgave:objekt lastet); oppdateres bare når det endres */
+  private miniFor = "";
+  private miniInit: Promise<void> | null = null;
+  private miniEl: ArcgisMap | null = null;
+  /** Fokus flyttes inn i tildelingsdialogen når den åpnes, og tilbake når den lukkes */
+  private dialogFokus = false;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -50,6 +57,8 @@ export class SvvTasksView extends StoreElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.miniView = null;
+    this.miniInit = null;
+    this.miniFor = "";
   }
 
   private async loadObjects() {
@@ -71,7 +80,7 @@ export class SvvTasksView extends StoreElement {
   }
 
   private visIKart(o: OppgaveMedLogg) {
-    store.set({ selection: { globalids: [o.objekt_globalid], index: 0 }, zoomTil: o.objekt_globalid });
+    velgObjekter([o.objekt_globalid], { zoom: true });
     navigate("kart");
   }
 
@@ -96,7 +105,17 @@ export class SvvTasksView extends StoreElement {
   }
 
   protected override updated(): void {
-    void this.updateMini();
+    if (this.dialog && !this.dialogFokus) {
+      this.dialogFokus = true;
+      this.querySelector<HTMLSelectElement>(".dialog select")?.focus();
+    }
+    // Ikke ved hver endring i tilstanden (meldinger o.l.): da hopper minikartet tilbake
+    const o = this.valgt();
+    const nokkel = o ? `${o.oppgave_id}:${this.objekter.has(o.objekt_globalid)}` : "";
+    if (nokkel && nokkel !== this.miniFor) {
+      this.miniFor = nokkel;
+      void this.updateMini();
+    }
   }
 
   private async updateMini() {
@@ -104,19 +123,12 @@ export class SvvTasksView extends StoreElement {
     const o = this.valgt();
     if (!el || !o) return;
     if (!this.miniView || (el.view as MapView | undefined) !== this.miniView) {
-      await customElements.whenDefined("arcgis-map");
-      const { cfg } = services();
-      const def = cfg.gdo.basemaps.find((b) => b.id === "kanvas") ?? cfg.gdo.basemaps[0];
-      const map = new EsriMap(def && hasGdoAccess() ? { basemap: createBasemap(def, "2d") } : {});
-      this.miniLayer = new GraphicsLayer();
-      map.add(this.miniLayer);
-      el.map = map;
-      el.spatialReference = new SpatialReference({ wkid: cfg.wkid });
-      el.center = [cfg.prosjekt.senter[0], cfg.prosjekt.senter[1]] as never;
-      el.scale = 4000;
-      await el.viewOnReady();
-      this.miniView = el.view as MapView;
-      this.miniView.background = { color: [236, 238, 237, 1] } as never;
+      // Én oppstart av minikartet selv om flere oppdateringer kommer samtidig
+      if (this.miniInit && this.miniEl !== el) this.miniInit = null;
+      this.miniEl = el;
+      this.miniInit ??= this.startMini(el);
+      await this.miniInit;
+      if (!this.miniView) return;
     }
     const t = this.objekter.get(o.objekt_globalid);
     this.miniLayer.removeAll();
@@ -130,6 +142,22 @@ export class SvvTasksView extends StoreElement {
           : new SimpleLineSymbol({ color: [6, 94, 127, 1], width: 5 });
     this.miniLayer.add(new Graphic({ geometry: g, symbol }));
     await this.miniView.goTo((g.type === "point" ? { target: g, scale: 1500 } : { target: g.extent!.clone().expand(3) }) as never, { animate: false }).catch(() => undefined);
+  }
+
+  private async startMini(el: ArcgisMap) {
+    await customElements.whenDefined("arcgis-map");
+    const { cfg } = services();
+    const def = cfg.gdo.basemaps.find((b) => b.id === "kanvas") ?? cfg.gdo.basemaps[0];
+    const map = new EsriMap(def && hasGdoAccess() ? { basemap: createBasemap(def, "2d") } : {});
+    this.miniLayer = new GraphicsLayer();
+    map.add(this.miniLayer);
+    el.map = map;
+    el.spatialReference = new SpatialReference({ wkid: cfg.wkid });
+    el.center = new Point({ x: cfg.prosjekt.senter[0], y: cfg.prosjekt.senter[1], spatialReference: { wkid: cfg.wkid } });
+    el.scale = 4000;
+    await el.viewOnReady();
+    this.miniView = el.view as MapView;
+    this.miniView.background = { color: [236, 238, 237, 1] } as never;
   }
 
   protected override render() {
@@ -245,7 +273,16 @@ export class SvvTasksView extends StoreElement {
                     <td><span class="pille ${statusKlasse(ds)}">${ds}</span></td>
                   </tr>`;
                 })}
-                ${rows.length ? nothing : html`<tr><td colspan="7" class="tom">Ingen oppgaver med valgte filtre.</td></tr>`}
+                ${rows.length
+                  ? nothing
+                  : html`<tr>
+                      <td colspan="7" class="tom">
+                        ${s.oppgaver.length
+                          ? "Ingen oppgaver med valgte filtre."
+                          : html`Ingen oppgaver ennå. Opprett oppgaver for avvik og forfalte inspeksjoner under
+                              <a href="#/oversikt" @click=${(e: Event) => (e.preventDefault(), navigate("oversikt"))}>Oversikt</a>.`}
+                      </td>
+                    </tr>`}
               </tbody>
             </table>
           </div>
@@ -293,7 +330,7 @@ export class SvvTasksView extends StoreElement {
         <div class="knapperad">
           <button class="knapp knapp--primar" ?disabled=${o.status === "Fullført"} @click=${() => this.startInspeksjon(o)}>Start inspeksjon</button>
           <button
-            class="knapp knapp--sekundar"
+            class="knapp knapp--sekundar tildel-knapp"
             @click=${() => {
               this.dialog = true;
               this.requestUpdate();
@@ -308,10 +345,12 @@ export class SvvTasksView extends StoreElement {
 
   private renderDialog(o: OppgaveMedLogg) {
     const { data } = services();
-    let valgt = o.tildelt;
     const close = () => {
       this.dialog = false;
+      this.dialogFokus = false;
       this.requestUpdate();
+      // Fokus tilbake til knappen som åpnet dialogen
+      void this.updateComplete.then(() => this.querySelector<HTMLButtonElement>(".tildel-knapp")?.focus());
     };
     return html`<div class="dialogbakgrunn" @click=${(e: Event) => e.target === e.currentTarget && close()}>
       <div
@@ -327,7 +366,7 @@ export class SvvTasksView extends StoreElement {
         </div>
         <label class="felt">
           <span class="felt__etikett">Tildel til</span>
-          <select autofocus @change=${(e: Event) => (valgt = (e.target as HTMLSelectElement).value)}>
+          <select>
             ${[...new Set([...data.user.team, o.tildelt])].map((p) => html`<option ?selected=${p === o.tildelt}>${p}</option>`)}
           </select>
         </label>
@@ -336,6 +375,8 @@ export class SvvTasksView extends StoreElement {
           <button
             class="knapp knapp--primar"
             @click=${async () => {
+              // Valget leses fra listen: dialogen tegnes på nytt ved endringer i tilstanden
+              const valgt = this.querySelector<HTMLSelectElement>(".dialog select")?.value ?? o.tildelt;
               try {
                 await data.reassignTask(o.oppgave_id, valgt);
                 store.notify(`${o.oppgave_id} er tildelt ${valgt}`, "suksess");

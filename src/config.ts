@@ -331,9 +331,10 @@ export function parseConfig(env: Record<string, string | boolean | undefined>, g
     },
     prosjekt: {
       navn: "E45 Kløfta B12016",
-      // Kløfta/Langhølen, Alta (EV45 S2D1 ca. m10200)
-      senter: [816955, 7764330],
-      skala: 9000,
+      // Kløfta/Langhølen, Alta (EV45 S2D1 ca. m10200). Midt i fagmodellene (veg og elektro), litt
+      // vest for midten så objektene ikke havner bak lagpanelet til venstre
+      senter: [816560, 7764780],
+      skala: 7000,
     },
     wkid: 25833,
   };

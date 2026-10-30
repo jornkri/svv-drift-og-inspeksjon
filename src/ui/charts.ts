@@ -93,11 +93,12 @@ export function columns(
   const padT = 18;
   const padL = 30;
   const max = Math.max(1, ...data.map((d) => d.value));
-  const nice = niceMax(max);
+  // Antall er heltall: minst 0–2 på aksen, og bare hele tall som merker (ikke «0, 1, 1»)
+  const nice = Math.max(2, niceMax(max));
   const plotH = H - padB - padT;
   const slot = (W - padL) / Math.max(1, data.length);
   const bw = Math.max(4, Math.min(40, slot - 6));
-  const ticks = [0, nice / 2, nice];
+  const ticks = [0, nice / 2, nice].filter((t) => Number.isInteger(t));
   const maxIdx = data.reduce((m, d, i) => (d.value > (data[m]?.value ?? -1) ? i : m), 0);
   return html`<figure class="diagram">
     <svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label=${opts.title}>

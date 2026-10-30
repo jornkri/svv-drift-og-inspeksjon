@@ -12,7 +12,7 @@ import { tilSr } from "../../map/projeksjon.ts";
 import { setup2DMap, type Map2D } from "../../map/setup-2d.ts";
 import { services } from "../../services.ts";
 import { navigate } from "../../state/router.ts";
-import { store, type NaerTreff } from "../../state/store.ts";
+import { store, type NaerTreff, velgObjekter } from "../../state/store.ts";
 import { ensureTasks } from "../../tasks/task-store.ts";
 import { isOpen } from "../../tasks/tasks.ts";
 import { StoreElement, fmtDate } from "../../ui/base.ts";
@@ -24,14 +24,13 @@ import "../../ui/tema-panel.ts";
 import "../../ui/search-box.ts";
 import { startInspection } from "../../ui/object-panel.ts";
 import { forrigeTekst } from "../prefill.ts";
-import { flyttSimulertPosisjon, fortsettSimulertTur, isSimGps, startFieldRuntime } from "../field-runtime.ts";
+import { flyttSimulertPosisjon, fortsettSimulertTur, isSimGps, provGpsIgjen, startFieldRuntime } from "../field-runtime.ts";
 import "./gps-status.ts";
 
 const MAP_ID = "kart-felt";
 
 /** Felt: kart med geofence, GPS-status og bunnark «DU ER VED». */
 export class SvvFieldMap extends StoreElement {
-  private static started = false;
   private kart: Map2D | null = null;
   private pos = new GraphicsLayer({ id: "min-posisjon", listMode: "hide" });
   private unsubs: (() => void)[] = [];
@@ -41,9 +40,6 @@ export class SvvFieldMap extends StoreElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    // Lagpanelet dekker for mye på mobil – start lukket
-    if (!SvvFieldMap.started) store.set({ layerPanelOpen: false });
-    SvvFieldMap.started = true;
     void ensureTasks();
     void startFieldRuntime();
   }
@@ -67,7 +63,17 @@ export class SvvFieldMap extends StoreElement {
       this.drawPosition();
       this.setAttribute("data-klar", "");
     });
-    this.unsubs.push(store.select((s) => s.naer, (n) => void this.loadLastInspections(n)));
+    this.unsubs.push(
+      store.select((s) => s.naer, (n) => void this.loadLastInspections(n)),
+      // Ny inspeksjon sendt: «Siste inspeksjon» hentes på nytt
+      store.select(
+        (s) => s.dataVersjon,
+        () => {
+          this.sisteInsp = {};
+          void this.loadLastInspections(store.get().naer);
+        },
+      ),
+    );
   }
 
   override disconnectedCallback(): void {
@@ -82,8 +88,8 @@ export class SvvFieldMap extends StoreElement {
     for (const n of naer.slice(0, 4)) {
       const id = n.objekt.globalid;
       if (this.sisteInsp[id] !== undefined) continue;
-      const insp = await data.getInspections(id);
-      this.sisteInsp[id] = insp[0] ? forrigeTekst(insp[0]) : "ikke inspisert";
+      const insp = await data.getInspections(id).catch(() => null);
+      this.sisteInsp[id] = insp == null ? "ukjent (ingen dekning)" : insp[0] ? forrigeTekst(insp[0]) : "ikke inspisert";
     }
     this.requestUpdate();
   }
@@ -201,7 +207,7 @@ export class SvvFieldMap extends StoreElement {
                       <div class="knapperad knapperad--to">
                         <button
                           class="knapp knapp--sekundar knapp--hoy"
-                          @click=${() => store.set({ selection: { globalids: [n.objekt.globalid], index: 0 } })}
+                          @click=${() => velgObjekter([n.objekt.globalid])}
                         >
                           Info og dokumenter
                         </button>
@@ -224,16 +230,26 @@ export class SvvFieldMap extends StoreElement {
                     `
                   : nothing}
               `
-            : html`<div class="bunnark__tom">
-                <strong>Ingen objekter innenfor ${cfg.geofence.radiusM} m</strong>
-                <span class="sekundar"
-                  >${s.gps.aktiv
-                    ? s.gps.simulert
-                      ? "Gå nærmere et objekt, trykk på et objekt, eller trykk i kartet for å flytte den simulerte posisjonen."
-                      : "Gå nærmere et objekt, eller trykk på et objekt i kartet."
-                    : "Venter på posisjon. Tips: legg til ?simgps=1 i adressen for simulert GPS."}</span
-                >
-              </div>`}
+            : !s.gps.aktiv && s.gps.feil
+              ? html`<div class="bunnark__tom">
+                  <strong>${s.gps.feil}</strong>
+                  <span class="sekundar"
+                    >${s.gps.feil.includes("avslått")
+                      ? "Gi appen tilgang til posisjon i nettleserens innstillinger, og prøv igjen. Du kan fortsatt trykke på objekter i kartet."
+                      : "Du kan fortsatt trykke på objekter i kartet."}</span
+                  >
+                  <button class="knapp knapp--sekundar knapp--hoy" @click=${() => provGpsIgjen()}>Prøv igjen</button>
+                </div>`
+              : html`<div class="bunnark__tom">
+                  <strong>${s.gps.x == null ? "Venter på posisjon …" : `Ingen objekter innenfor ${cfg.geofence.radiusM} m`}</strong>
+                  <span class="sekundar"
+                    >${s.gps.x == null
+                      ? "Trykk på et objekt i kartet for å se informasjon eller starte en inspeksjon."
+                      : s.gps.simulert
+                        ? "Gå nærmere et objekt, trykk på et objekt, eller trykk i kartet for å flytte den simulerte posisjonen."
+                        : "Gå nærmere et objekt, eller trykk på et objekt i kartet."}</span
+                  >
+                </div>`}
         </section>
 
         ${s.selection

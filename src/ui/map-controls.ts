@@ -22,7 +22,7 @@ export class SvvMapControls extends StoreElement {
   declare dim: "2d" | "3d";
 
   private maaleModus: "avstand" | "areal" = "avstand";
-  private maalRef = createRef<HTMLElement & { start(): Promise<void>; clear(): Promise<void> }>();
+  private maalRef = createRef<HTMLElement & { start(): Promise<void>; clear(): Promise<void>; componentOnReady(): Promise<unknown> }>();
 
   private async zoom(dir: 1 | -1) {
     const v = mapContext()?.view;
@@ -53,7 +53,10 @@ export class SvvMapControls extends StoreElement {
   private async startMeasure() {
     document.body.dataset.maaling = "aktiv";
     await this.updateComplete;
-    await this.maalRef.value?.start();
+    // Målekomponenten må være koblet til kartet før målingen startes, ellers avbrytes den
+    const m = this.maalRef.value;
+    await m?.componentOnReady();
+    await m?.start().catch((e: unknown) => console.warn("Kunne ikke starte måling", e));
   }
 
   private stopMeasure() {
@@ -61,8 +64,24 @@ export class SvvMapControls extends StoreElement {
     void this.maalRef.value?.clear();
   }
 
+  private unsubMaaling: (() => void) | null = null;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    // Lukkes måleverktøyet på annen måte (Escape, et annet verktøy), avsluttes målingen
+    this.unsubMaaling = store.select(
+      (s) => s.popover,
+      (p, prev) => {
+        if (prev === "maaling" && p !== "maaling") this.stopMeasure();
+        // Åpnes verktøyet, kan man begynne å klikke i kartet med en gang
+        if (p === "maaling" && prev !== "maaling") void this.startMeasure();
+      },
+    );
+  }
+
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.unsubMaaling?.();
     delete document.body.dataset.maaling;
   }
 
@@ -105,10 +124,7 @@ export class SvvMapControls extends StoreElement {
                   class="kartknapp kartknapp--enkel ${s.popover === "maaling" ? "is-valgt" : ""}"
                   aria-label="Måling"
                   aria-expanded=${s.popover === "maaling"}
-                  @click=${() => {
-                    if (s.popover === "maaling") this.stopMeasure();
-                    togglePopover("maaling");
-                  }}
+                  @click=${() => togglePopover("maaling")}
                 >
                   ${icons.measure()}
                 </button>
@@ -129,7 +145,7 @@ export class SvvMapControls extends StoreElement {
                       ${cfg.printUrl
                         ? html`<arcgis-print reference-element=${elId} print-service-url=${cfg.printUrl} hide-header></arcgis-print>`
                         : html`<p class="popover__hint">
-                              Utskriftstjenesten i Enterprise er ikke satt opp (VITE_PRINT_URL). Du kan skrive ut kartutsnittet som bilde.
+                              Kartutsnittet skrives ut som bilde med målestokk og kilder.${import.meta.env.DEV ? " (Utskriftstjeneste: sett VITE_PRINT_URL.)" : ""}
                             </p>
                             <div class="popover__fot"><button class="knapp knapp--primar" @click=${() => this.printScreenshot()}>Skriv ut kartbilde</button></div>`}
                     </div>`
@@ -164,9 +180,11 @@ export class SvvMapControls extends StoreElement {
             class="segment__valg ${this.maaleModus === m ? "is-valgt" : ""}"
             aria-selected=${this.maaleModus === m}
             @click=${() => {
+              if (this.maaleModus === m) return;
               this.stopMeasure();
               this.maaleModus = m;
               this.requestUpdate();
+              void this.startMeasure();
             }}
           >
             ${m === "avstand" ? "Avstand" : "Areal"}
@@ -215,7 +233,7 @@ export class SvvBasemapPicker extends StoreElement {
             ${available
               ? nothing
               : html`<p class="melding melding--info">
-                  Geodata Online-token mangler. Legg GDO_USERNAME og GDO_PASSWORD i .env.local for å vise bakgrunnskart i mock-modus.
+                  Bakgrunnskartene fra Geodata Online er ikke tilgjengelige akkurat nå.${import.meta.env.DEV ? " Legg GDO_USERNAME og GDO_PASSWORD i .env.local." : ""}
                 </p>`}
             <div class="bakgrunnsgrid" role="radiogroup" aria-label="Velg bakgrunnskart">
               ${cfg.gdo.basemaps.map(
@@ -230,7 +248,9 @@ export class SvvBasemapPicker extends StoreElement {
                 </button>`,
               )}
             </div>
-            <p class="popover__hint">I produksjon hentes kartene via portalens bakgrunnskartgruppe (token håndteres av ArcGIS Enterprise).</p>
+            ${import.meta.env.DEV
+              ? html`<p class="popover__hint">I produksjon hentes kartene via portalens bakgrunnskartgruppe (token håndteres av ArcGIS Enterprise).</p>`
+              : nothing}
           </div>`
         : nothing}
     </div>`;

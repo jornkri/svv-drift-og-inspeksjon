@@ -7,18 +7,50 @@ export function parseHash(hash: string): Route {
   return ROUTES.includes(r) ? r : "kart";
 }
 
-export function navigate(route: Route): void {
-  if (store.get().route !== route) store.set({ route, popover: null });
+const TITLER: Record<Route, string> = {
+  kart: "Kart",
+  "3d": "3D",
+  oppgaver: "Oppgaver",
+  oversikt: "Oversikt",
+  inspeksjon: "Inspeksjon",
+  verktoy: "Verktøy",
+  meg: "Meg",
+  rapport: "Objektrapport",
+};
+
+let erstattNeste = false;
+let forrige: Route | null = null;
+
+/** Bytter visning. `erstatt` bytter ut gjeldende historikkoppføring (f.eks. etter innsending av et skjema). */
+export function navigate(route: Route, opts: { erstatt?: boolean } = {}): void {
+  if (store.get().route === route) return;
+  erstattNeste = !!opts.erstatt;
+  store.set({ route, popover: null });
+}
+
+/** Tilbake til visningen brukeren kom fra (uten å legge en ny oppføring i historikken). */
+export function tilbake(reserve: Route = "kart"): void {
+  const mal = forrige && forrige !== store.get().route ? forrige : reserve;
+  navigate(mal, { erstatt: true });
 }
 
 /** Holder hash-ruten og ?objekt= i URL-en synkronisert med tilstanden. */
 export function startRouter(): void {
   store.set({ route: parseHash(location.hash) });
+  document.title = `${TITLER[store.get().route]} – Drift og inspeksjon`;
   window.addEventListener("hashchange", () => navigate(parseHash(location.hash)));
   store.select(
     (s) => s.route,
-    (route) => {
-      if (parseHash(location.hash) !== route) history.pushState(null, "", `${location.pathname}${location.search}#/${route}`);
+    (route, prev) => {
+      forrige = prev;
+      // Sidetittelen forteller skjermlesere og nettleserhistorikken hvor brukeren er
+      document.title = `${TITLER[route]} – Drift og inspeksjon`;
+      const url = `${location.pathname}${location.search}#/${route}`;
+      if (parseHash(location.hash) !== route) {
+        if (erstattNeste) history.replaceState(null, "", url);
+        else history.pushState(null, "", url);
+      }
+      erstattNeste = false;
     },
   );
 }

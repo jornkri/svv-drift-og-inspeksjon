@@ -4,7 +4,7 @@ import { currentGdoToken } from "../map/basemaps.ts";
 import { lookupVegref, parseVegref, searchAddress, searchAddressGeonorge, type StedTreff } from "../map/search.ts";
 import { services } from "../services.ts";
 import { navigate } from "../state/router.ts";
-import { store } from "../state/store.ts";
+import { store, velgObjekter } from "../state/store.ts";
 import { LightElement } from "./base.ts";
 import { icons } from "./icons.ts";
 
@@ -77,7 +77,8 @@ export class SvvSearchBox extends LightElement {
     const route = store.get().route;
     if (route !== "kart" && route !== "3d") navigate("kart");
     if (t.kind === "objekt") {
-      store.set({ selection: { globalids: [t.t.objekt.globalid], index: 0 }, zoomTil: t.t.objekt.globalid, markor: null });
+      store.set({ markor: null });
+      velgObjekter([t.t.objekt.globalid], { zoom: true });
     } else {
       store.set({ markor: { x: t.t.x, y: t.t.y, tekst: t.t.tekst } });
     }
@@ -159,9 +160,8 @@ export class SvvSearchBox extends LightElement {
           ? html`<ul id="${this.uidPrefix}-liste" class="sok__liste" role="listbox" aria-label="Søkeresultater">
               ${this.group("OBJEKTER", indexed.filter((x) => x.t.kind === "objekt"))}
               ${this.group("VEGREFERANSE (NVDB)", indexed.filter((x) => x.t.kind === "sted" && x.t.t.kilde === "vegreferanse"))}
-              ${this.group("ADRESSER (GEODATA ONLINE)", indexed.filter((x) => x.t.kind === "sted" && x.t.t.kilde === "adresse"))}
+              ${this.group(token ? "ADRESSER (GEODATA ONLINE)" : "ADRESSER (KARTVERKET)", indexed.filter((x) => x.t.kind === "sted" && x.t.t.kilde === "adresse"))}
               ${!this.treff.length && !this.busy ? html`<li role="presentation" class="sok__tom">Ingen treff for «${this.q}»</li>` : nothing}
-              ${!token ? html`<li role="presentation" class="sok__tom">Adressesøk krever Geodata Online-tilgang.</li>` : nothing}
             </ul>`
           : nothing}
         <span class="visually-hidden" role="status" aria-live="polite">${this.open ? `${this.treff.length} treff` : ""}</span>

@@ -46,12 +46,22 @@ export class SvvMapView extends StoreElement {
           <svv-map-controls dim="2d"></svv-map-controls>
           ${s.colorByMmi ? html`<svv-mmi-legend></svv-mmi-legend>` : nothing}
           <svv-coord-bar dim="2d"></svv-coord-bar>
-          ${s.flyfotoAar != null
-            ? html`<div class="flyfotomerke" role="status">
-                Flyfoto ${s.flyfotoAar}
-                <button class="knapp knapp--sekundar knapp--liten" @click=${() => store.set({ flyfotoAar: null })}>Slå av</button>
-              </div>`
-            : nothing}
+          <div class="kartmerker">
+            ${s.markor
+              ? html`<div class="flyfotomerke" role="status">
+                  ${s.markor.tekst}
+                  <button class="knapp knapp--sekundar knapp--liten" aria-label="Fjern markøren for ${s.markor.tekst}" @click=${() => store.set({ markor: null })}>
+                    Fjern
+                  </button>
+                </div>`
+              : nothing}
+            ${s.flyfotoAar != null
+              ? html`<div class="flyfotomerke" role="status">
+                  Flyfoto ${s.flyfotoAar}
+                  <button class="knapp knapp--sekundar knapp--liten" @click=${() => store.set({ flyfotoAar: null })}>Slå av</button>
+                </div>`
+              : nothing}
+          </div>
         </div>
         ${s.selection
           ? html`<svv-object-panel dim="2d"></svv-object-panel>`

@@ -11,9 +11,14 @@ export function reloadTasks(): Promise<void> {
     .catch((e) => {
       console.warn("Kunne ikke hente oppgaver", e);
       store.notify("Kunne ikke hente oppgaver", "feil");
+      // Prøv igjen neste gang oppgavene trengs (f.eks. når dekningen er tilbake)
+      loading = null;
     });
   return loading;
 }
+
+// Oppgavene lastes på nytt når enheten kommer på nett igjen
+if (typeof window !== "undefined") window.addEventListener("online", () => void reloadTasks());
 
 export function ensureTasks(): Promise<void> {
   return loading ?? reloadTasks();

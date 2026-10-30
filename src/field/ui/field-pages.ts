@@ -4,10 +4,21 @@ import { apneNavnDialog } from "../../auth/navn.ts";
 import { services } from "../../services.ts";
 import { navigate } from "../../state/router.ts";
 import { store } from "../../state/store.ts";
-import { StoreElement } from "../../ui/base.ts";
+import { StoreElement, fmtDateTime } from "../../ui/base.ts";
 import { icons } from "../../ui/icons.ts";
 import { isSimGps } from "../field-runtime.ts";
-import { inspectionSync } from "../sync-setup.ts";
+import type { KoElement } from "../offline-queue.ts";
+import { inspectionSync, offlineQueue } from "../sync-setup.ts";
+import { erForbigaende } from "../sync.ts";
+
+/** Adressen med simulert GPS av eller på; andre parametere (f.eks. ?modus=felt) beholdes. */
+function simGpsLenke(paa: boolean): string {
+  const q = new URLSearchParams(location.search);
+  if (paa) q.set("simgps", "1");
+  else q.delete("simgps");
+  const s = q.toString();
+  return `${location.pathname}${s ? `?${s}` : ""}${location.hash}`;
+}
 
 /** Felt: Verktøy */
 export class SvvFieldTools extends StoreElement {
@@ -31,7 +42,7 @@ export class SvvFieldTools extends StoreElement {
           </button>
         </li>
         <li>
-          <a class="feltliste__valg" href=${isSimGps() ? location.pathname + location.hash : `${location.pathname}?simgps=1${location.hash}`}>
+          <a class="feltliste__valg" href=${simGpsLenke(!isSimGps())}>
             ${icons.locate(22)}<span><strong>${isSimGps() ? "Slå av simulert GPS" : "Simulert GPS"}</strong><span>Gå en rute langs E45 Kløfta for testing</span></span>
           </a>
         </li>
@@ -52,6 +63,64 @@ export class SvvFieldTools extends StoreElement {
 
 /** Felt: Meg – bruker, tilkobling og kø */
 export class SvvFieldMe extends StoreElement {
+  private ko: KoElement[] = [];
+  private koVersjon = -1;
+  private sender = false;
+
+  protected override updated(): void {
+    // Lista lastes på nytt når antallet i køen endres
+    const n = this.store.state.koAntall;
+    if (n === this.koVersjon) return;
+    this.koVersjon = n;
+    void offlineQueue()
+      .list()
+      .then((l) => {
+        this.ko = l;
+        this.requestUpdate();
+      })
+      .catch(() => undefined);
+  }
+
+  private async sendNa() {
+    this.sender = true;
+    this.requestUpdate();
+    try {
+      const r = await inspectionSync().flush();
+      if (r.sendt && !r.feilet) store.notify(`${r.sendt} ${r.sendt === 1 ? "inspeksjon er sendt" : "inspeksjoner er sendt"}`, "suksess");
+      else if (r.feilet) store.notify(`${r.sendt} sendt, ${r.feilet} feilet – se feilmeldingen i køen`, "feil");
+    } finally {
+      this.sender = false;
+      this.koVersjon = -1;
+      this.requestUpdate();
+    }
+  }
+
+  private async slett(el: KoElement) {
+    if (!confirm(`Slette inspeksjonen av ${el.inspeksjon.obj_navn ?? "objektet"} fra køen? Den blir ikke sendt.`)) return;
+    await offlineQueue().remove(el.id);
+    await inspectionSync().notify();
+  }
+
+  private renderKo() {
+    if (!this.ko.length) return nothing;
+    return html`<ul class="koliste" aria-label="Inspeksjoner i kø">
+      ${this.ko.map(
+        (el) => html`<li class="koliste__rad">
+          <span
+            ><strong>${el.inspeksjon.obj_navn ?? el.inspeksjon.objekt_globalid}</strong><br /><span class="sekundar liten"
+              >TG ${el.inspeksjon.tilstandsgrad} · ${fmtDateTime(el.opprettet)}${el.bilder.length ? ` · ${el.bilder.length} bilder` : ""}</span
+            >${el.sisteFeil
+              ? html`<br /><span class="koliste__feil">Feilet ${el.forsok} ${el.forsok === 1 ? "gang" : "ganger"}: ${el.sisteFeil}</span>`
+              : nothing}</span
+          >
+          ${el.sisteFeil && !erForbigaende(el.sisteFeil)
+            ? html`<button class="knapp knapp--sekundar knapp--hoy" @click=${() => void this.slett(el)}>Slett</button>`
+            : nothing}
+        </li>`,
+      )}
+    </ul>`;
+  }
+
   protected override render() {
     const s = this.store.state;
     const { data, cfg } = services();
@@ -64,8 +133,11 @@ export class SvvFieldMe extends StoreElement {
       <section class="statusboks ${s.online ? "statusboks--ok" : "statusboks--frakoblet"}" aria-label="Tilkobling">
         <strong>${s.online ? "Tilkoblet" : "Frakoblet"}</strong>
         <span>${s.koAntall} ${s.koAntall === 1 ? "inspeksjon venter" : "inspeksjoner venter"} på å bli sendt.</span>
-        <button class="knapp knapp--sekundar" ?disabled=${!s.online || s.koAntall === 0} @click=${() => void inspectionSync().flush()}>Send nå</button>
+        <button class="knapp knapp--sekundar knapp--hoy" ?disabled=${!s.online || s.koAntall === 0 || this.sender} @click=${() => void this.sendNa()}>
+          ${this.sender ? "Sender …" : "Send nå"}
+        </button>
       </section>
+      ${this.renderKo()}
       <label class="avkrysning">
         <input type="checkbox" .checked=${s.simFrakoblet} @change=${() => store.set({ simFrakoblet: !s.simFrakoblet })} />
         Simuler frakoblet modus (test av køen)

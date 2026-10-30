@@ -10,6 +10,11 @@ export interface SyncOptions {
   onSent?: (el: KoElement) => void;
 }
 
+/** Feil som trolig går over av seg selv (dekning, tidsavbrudd, tjenesten midlertidig nede). */
+export function erForbigaende(melding: string): boolean {
+  return /fetch|network|nettverk|timeout|timed out|tidsavbrudd|load failed|abort|\b50[0234]\b/i.test(melding);
+}
+
 export type InnsendingStatus = { status: "sendt"; resultat: InnsendingResultat } | { status: "i-ko"; grunn: string };
 
 /**
@@ -37,7 +42,10 @@ export class InspectionSync {
     return { status: "i-ko", grunn: "Enheten er frakoblet" };
   }
 
-  /** Sender alt i køen (eldste først). Stopper ved første feil for å bevare rekkefølgen. */
+  /**
+   * Sender alt i køen (eldste først). Stopper ved nettverksfeil (resten ville feilet likt), men en post
+   * tjenesten avviser (f.eks. ugyldig felt) blir liggende med feilmeldingen uten å blokkere de andre.
+   */
   flush(): Promise<{ sendt: number; feilet: number }> {
     if (this.flushing) return this.flushing;
     const run = async () => {
@@ -51,9 +59,10 @@ export class InspectionSync {
           sendt++;
           this.o.onSent?.(el);
         } catch (e) {
-          await this.o.queue.markFailed(el.id, e instanceof Error ? e.message : String(e));
+          const melding = e instanceof Error ? e.message : String(e);
+          await this.o.queue.markFailed(el.id, melding);
           feilet++;
-          break;
+          if (erForbigaende(melding) || !this.o.isOnline()) break;
         }
       }
       return { sendt, feilet };

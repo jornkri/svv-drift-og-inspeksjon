@@ -34,6 +34,8 @@ export class SvvApp extends StoreElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    // Lagpanelet dekker for mye på mobil – start lukket (kan åpnes fra Verktøy)
+    if (this.store.state.felt || this.mobile) store.set({ layerPanelOpen: false });
     MOBILE.addEventListener("change", this.onMedia);
     void import("./field/sync-setup.ts").then((m) => m.startSync());
   }
@@ -106,7 +108,16 @@ export class SvvApp extends StoreElement {
     const { route } = this.store.state;
     const felt = this.store.state.felt || this.mobile;
     return html`
-      <a class="hopp-til" href="#hovedinnhold">Hopp til hovedinnhold</a>
+      <a
+        class="hopp-til"
+        href="#hovedinnhold"
+        @click=${(e: Event) => {
+          // Hash-ruten skal ikke endres (#hovedinnhold ville gitt kartet)
+          e.preventDefault();
+          this.querySelector<HTMLElement>("#hovedinnhold")?.focus();
+        }}
+        >Hopp til hovedinnhold</a
+      >
       <div class="app ${felt ? "app--felt" : "app--kontor"}">
         ${felt ? nothing : html`<svv-topbar></svv-topbar>`}
         <main id="hovedinnhold" class="app__main" tabindex="-1">${this.renderRoute(route, felt)}</main>

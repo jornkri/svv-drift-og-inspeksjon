@@ -5,7 +5,7 @@ import { driftskrav, intervallKort, nesteInspeksjon } from "../handbok/r610.ts";
 import { mmiBadgeText } from "../filters/mmi.ts";
 import { formatUtm } from "../map/coords.ts";
 import { services } from "../services.ts";
-import { navigate, setObjectParam } from "../state/router.ts";
+import { navigate, setObjectParam, tilbake } from "../state/router.ts";
 import { ensureTasks } from "../tasks/task-store.ts";
 import { isOpen } from "../tasks/tasks.ts";
 import { StoreElement, fmtDate, fmtDateTime, fmtNumber } from "../ui/base.ts";
@@ -57,7 +57,7 @@ export class SvvReportView extends StoreElement {
 
   protected override render() {
     if (!this.valgtId) {
-      return html`<div class="rapport"><p class="tom">Velg et objekt i kartet og trykk «Rapport».</p>
+      return html`<div class="rapport"><p class="tom">Velg et objekt i kartet og trykk på utskriftsikonet (Objektrapport) øverst i objektpanelet.</p>
         <button class="knapp knapp--primar" @click=${() => navigate("kart")}>Til kartet</button></div>`;
     }
     const t = this.treff;
@@ -73,7 +73,7 @@ export class SvvReportView extends StoreElement {
 
     return html`<article class="rapport" aria-labelledby="rapport-tittel">
       <div class="rapport__verktoy">
-        <button class="knapp knapp--sekundar" @click=${() => navigate("kart")}>${icons.back(16)} Tilbake til kartet</button>
+        <button class="knapp knapp--sekundar" @click=${() => tilbake()}>${icons.back(16)} Tilbake</button>
         <button class="knapp knapp--primar" @click=${() => window.print()}>${icons.print(16)} Skriv ut / lagre som PDF</button>
       </div>
 

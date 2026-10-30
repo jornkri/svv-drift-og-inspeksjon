@@ -12,7 +12,7 @@ import type { ArcgisMap } from "@arcgis/map-components/components/arcgis-map";
 import type { BasemapId } from "../config.ts";
 import type { PortalDataService } from "../data/PortalDataService.ts";
 import { services } from "../services.ts";
-import { store } from "../state/store.ts";
+import { store, velgObjekter } from "../state/store.ts";
 import { createBasemap, hasGdoAccess, portalBasemaps } from "./basemaps.ts";
 import { setMapContext } from "./map-context.ts";
 import { NvdbObjekterLayer } from "./nvdb-objekter-layer.ts";
@@ -27,6 +27,8 @@ const ZOOMNIVAER = Array.from({ length: 15 }, (_, i) => {
   const scale = 2_560_000 / 2 ** i;
   return new LOD({ level: i, scale, resolution: scale / (96 / 0.0254) });
 });
+
+let sistVistMarkor: unknown = null;
 
 export interface Map2D {
   view: MapView;
@@ -97,6 +99,9 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
   const showMarkor = async (m: { x: number; y: number; tekst: string } | null) => {
     markor.removeAll();
     if (!m) return;
+    // Kartet går til markøren første gang den vises, ikke hver gang kartet åpnes igjen
+    const ny = m !== sistVistMarkor;
+    sistVistMarkor = m;
     const geometry = new Point({ x: m.x, y: m.y, spatialReference: { wkid: cfg.wkid } });
     markor.add(
       new Graphic({
@@ -104,7 +109,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
         symbol: new SimpleMarkerSymbol({ style: "circle", size: 16, color: [255, 150, 0, 1], outline: { color: [68, 79, 85, 1], width: 2 } }),
       }),
     );
-    await objects.goTo(geometry, { scale: 1500 });
+    if (ny) await objects.goTo(geometry, { scale: 1500 });
   };
 
   const consumeZoom = async () => {
@@ -125,7 +130,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
     }
     const ids = await objects.hitTest(e);
     if (ids.length) {
-      store.set({ selection: { globalids: ids, index: 0 }, nvdbValgt: null, temaTreff: null, popover: null });
+      velgObjekter(ids);
       return;
     }
     const nvdbTreff = (await view.hitTest(e, { include: nvdbObj.layers })).results.find((r) => r.type === "graphic");
@@ -150,6 +155,13 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
     store.select((s) => s.zoomTil, () => void consumeZoom()),
     store.select((s) => s.markor, (m) => void showMarkor(m)),
     store.select((s) => s.feltbildeAktiv, (a) => void bilder.marker(view, a)),
+    // Et sidepanel som åpnes eller lukkes, flytter bildeviseren festet til siden
+    store.select(
+      (s) => !!(s.selection || s.nvdbValgt || s.temaTreff),
+      () => {
+        if (store.get().feltbildeAktiv?.dokket) requestAnimationFrame(() => void bilder.marker(view, store.get().feltbildeAktiv));
+      },
+    ),
     store.select((s) => s.dataVersjon, () => void objects.refreshStats()),
   ];
   void consumeZoom();

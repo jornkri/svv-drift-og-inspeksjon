@@ -5,7 +5,7 @@ import { PHASES, phaseRange } from "../filters/mmi.ts";
 import { andelInspisertSiste12, avviksliste, fristerPerFag, latestPerObject, type FristRad, perMaaned, phasePerFag, statusPerFag, tgFordeling } from "../reports/stats.ts";
 import { services } from "../services.ts";
 import { navigate } from "../state/router.ts";
-import { store } from "../state/store.ts";
+import { store, velgObjekter } from "../state/store.ts";
 import { dataChanged, ensureTasks } from "../tasks/task-store.ts";
 import { isOpen, isoDay, taskStats } from "../tasks/tasks.ts";
 import { StoreElement, fmtDate } from "../ui/base.ts";
@@ -22,6 +22,8 @@ export class SvvOverviewView extends StoreElement {
   private insp: Inspeksjon[] = [];
   private navn = new Map<string, ObjektTreff | null>();
   private loadedVersion = -1;
+  /** Objekter med en oppgave som opprettes nå (hindrer dobbeltklikk og duplikater) */
+  private opptatt = new Set<string>();
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -48,13 +50,19 @@ export class SvvOverviewView extends StoreElement {
   private async opprettOppgave(globalid: string, i: Inspeksjon | null) {
     const { data } = services();
     const obj = this.navn.get(globalid)?.objekt;
-    if (!obj) return;
+    if (!obj) {
+      store.notify("Objektet er ikke lastet ennå – prøv igjen om et øyeblikk", "feil");
+      return;
+    }
+    if (this.opptatt.has(globalid)) return;
+    this.opptatt.add(globalid);
+    this.requestUpdate();
     const frist = new Date();
     frist.setDate(frist.getDate() + (i && i.tilstandsgrad >= 3 ? 7 : 14));
     try {
       const id = await data.createTask({
         tittel: `Utbedre avvik: ${i?.avvikstype && i.avvikstype !== "Ingen avvik" ? i.avvikstype.toLowerCase() : "registrert avvik"}`,
-        beskrivelse: i?.kommentar || `Avvik registrert ved inspeksjon ${i ? fmtDate(i.tidspunkt) : ""}.`,
+        beskrivelse: i?.kommentar || (i ? `Avvik registrert ved inspeksjon ${fmtDate(i.tidspunkt)}.` : "Avvik registrert ved inspeksjon."),
         objekt_globalid: globalid,
         fag: obj.fag,
         frist: isoDay(frist),
@@ -67,13 +75,22 @@ export class SvvOverviewView extends StoreElement {
       dataChanged();
     } catch (e) {
       store.notify(`Kunne ikke opprette oppgave: ${e instanceof Error ? e.message : String(e)}`, "feil");
+    } finally {
+      this.opptatt.delete(globalid);
+      this.requestUpdate();
     }
   }
 
   private async planleggInspeksjon(r: FristRad) {
     const { data } = services();
     const obj = this.navn.get(r.globalid)?.objekt;
-    if (!obj) return;
+    if (!obj) {
+      store.notify("Objektet er ikke lastet ennå – prøv igjen om et øyeblikk", "feil");
+      return;
+    }
+    if (this.opptatt.has(r.globalid)) return;
+    this.opptatt.add(r.globalid);
+    this.requestUpdate();
     const idag = new Date();
     const frist = r.frist && r.frist > idag ? r.frist : new Date(idag.getTime() + 14 * 86_400_000);
     try {
@@ -92,6 +109,9 @@ export class SvvOverviewView extends StoreElement {
       dataChanged();
     } catch (e) {
       store.notify(`Kunne ikke opprette oppgave: ${e instanceof Error ? e.message : String(e)}`, "feil");
+    } finally {
+      this.opptatt.delete(r.globalid);
+      this.requestUpdate();
     }
   }
 
@@ -226,7 +246,7 @@ export class SvvOverviewView extends StoreElement {
                       href="?objekt=${o?.objekt_id ?? ""}#/kart"
                       @click=${(e: Event) => {
                         e.preventDefault();
-                        store.set({ selection: { globalids: [r.globalid], index: 0 }, zoomTil: r.globalid });
+                        velgObjekter([r.globalid], { zoom: true });
                         navigate("kart");
                       }}
                       >${o?.navn ?? "…"}</a
@@ -248,7 +268,9 @@ export class SvvOverviewView extends StoreElement {
                           }}
                           >${opg.oppgave_id}</a
                         >`
-                      : html`<button class="knapp knapp--sekundar knapp--liten" @click=${() => this.opprettOppgave(r.globalid, r.siste)}>Opprett oppgave</button>`}
+                      : html`<button class="knapp knapp--sekundar knapp--liten" ?disabled=${this.opptatt.has(r.globalid)} @click=${() => this.opprettOppgave(r.globalid, r.siste)}>
+                          ${this.opptatt.has(r.globalid) ? "Oppretter …" : "Opprett oppgave"}
+                        </button>`}
                   </td>
                 </tr>`;
               })}
@@ -287,7 +309,7 @@ export class SvvOverviewView extends StoreElement {
                       href="?objekt=${o?.objekt_id ?? ""}#/kart"
                       @click=${(e: Event) => {
                         e.preventDefault();
-                        store.set({ selection: { globalids: [r.globalid], index: 0 }, zoomTil: r.globalid });
+                        velgObjekter([r.globalid], { zoom: true });
                         navigate("kart");
                       }}
                       >${o?.navn ?? "…"}</a
@@ -309,7 +331,14 @@ export class SvvOverviewView extends StoreElement {
                           }}
                           >${opg.oppgave_id}</a
                         >`
-                      : html`<button class="knapp knapp--sekundar knapp--liten" aria-label="Planlegg inspeksjon av ${o?.navn ?? r.objekttype}" @click=${() => this.planleggInspeksjon(r)}>Planlegg</button>`}
+                      : html`<button
+                          class="knapp knapp--sekundar knapp--liten"
+                          aria-label="Planlegg inspeksjon av ${o?.navn ?? r.objekttype}"
+                          ?disabled=${this.opptatt.has(r.globalid)}
+                          @click=${() => this.planleggInspeksjon(r)}
+                        >
+                          ${this.opptatt.has(r.globalid) ? "Oppretter …" : "Planlegg"}
+                        </button>`}
                   </td>
                 </tr>`;
               })}

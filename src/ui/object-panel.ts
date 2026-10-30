@@ -46,6 +46,9 @@ export class SvvObjectPanel extends StoreElement {
   private bilder: KobletBilde[] = [];
   /** Objektet ligger innenfor punktskyen i webscenen */
   private iPunktsky = false;
+  /** Objektet finnes ikke (slettet, eller ukjent ID fra en oppgave eller lenke) */
+  private ikkeFunnet = false;
+  private visesId: string | null = null;
 
 
   private get currentId(): string | null {
@@ -68,11 +71,21 @@ export class SvvObjectPanel extends StoreElement {
   }
 
   private async load(id: string) {
-
+    if (id !== this.visesId) {
+      // Nytt objekt: ikke vis det forrige mens det nye lastes
+      this.visesId = id;
+      this.treff = null;
+      this.docs = [];
+      this.insp = [];
+      this.hist = [];
+      this.bilder = [];
+      this.ikkeFunnet = false;
+    }
     const { data } = services();
-    const t = await data.getObject(id);
+    const t = await data.getObject(id).catch(() => null);
     if (this.currentId !== id) return;
     this.treff = t;
+    this.ikkeFunnet = !t;
     if (this.tab === "profil" && t?.geometry.type !== "polyline") this.tab = "oversikt";
     this.bilder = [];
     this.iPunktsky = false;
@@ -87,14 +100,27 @@ export class SvvObjectPanel extends StoreElement {
           this.bilder = b;
           this.requestUpdate();
         });
-      const [docs, insp] = await Promise.all([data.getDocuments(id), data.getInspections(id)]);
+      const [docs, insp] = await Promise.all([data.getDocuments(id).catch(() => []), data.getInspections(id).catch(() => [])]);
       if (this.currentId !== id) return;
       this.docs = docs;
       this.insp = insp;
-      this.hist = await data.getHistory(t.objekt);
+      this.hist = await data.getHistory(t.objekt).catch(() => []);
     }
 
     this.requestUpdate();
+  }
+
+  /** Piltaster, Home og End mellom fanene (fanemønsteret i WAI-ARIA). */
+  private faneTast(e: KeyboardEvent) {
+    const faner = [...this.querySelectorAll<HTMLButtonElement>(".faner--panel [role=tab]")];
+    const i = faner.findIndex((f) => f === document.activeElement);
+    if (i < 0) return;
+    const n = faner.length;
+    const j = e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (j < 0) return;
+    e.preventDefault();
+    faner[j]!.click();
+    faner[j]!.focus();
   }
 
   private async sjekkPunktsky(id: string, geometri: ObjektTreff["geometry"], data: PortalDataService) {
@@ -127,7 +153,14 @@ export class SvvObjectPanel extends StoreElement {
     const t = this.treff;
     if (!sel) return nothing;
     if (!t) {
-      return html`<aside class="objektpanel" aria-label="Objektinformasjon"><div class="laster" role="status">Laster objekt …</div></aside>`;
+      return html`<aside class="objektpanel" aria-label="Objektinformasjon">
+        ${this.ikkeFunnet
+          ? html`<div class="laster" role="alert">
+              <p>Fant ikke objektet. Det kan være slettet fra modellen.</p>
+              <button class="knapp knapp--sekundar" @click=${() => store.set({ selection: null })}>Lukk</button>
+            </div>`
+          : html`<div class="laster" role="status">Laster objekt …</div>`}
+      </aside>`;
     }
     const o = t.objekt;
     const fase = phaseOf(o.mmi);
@@ -142,7 +175,9 @@ export class SvvObjectPanel extends StoreElement {
         <div class="objektpanel__topp">
           <div class="objektpanel__sti">
             <nav aria-label="Plassering i fagstrukturen" class="sti">
-              <span>${o.fag}</span><span aria-hidden="true">›</span><span>${o.fagmodell ?? "–"}</span><span aria-hidden="true">›</span><span>${o.objekttype}</span>
+              ${[o.fag, ...(o.fagmodell && o.fagmodell.toLowerCase() !== o.fag.toLowerCase() ? [o.fagmodell] : []), o.objekttype].map(
+                (del, i) => html`${i ? html`<span aria-hidden="true">›</span>` : nothing}<span>${del}</span>`,
+              )}
             </nav>
             <span class="objektpanel__fyll"></span>
             ${sel.globalids.length > 1
@@ -173,7 +208,15 @@ export class SvvObjectPanel extends StoreElement {
           <button class="knapp knapp--primar knapp--full" @click=${() => startInspection(o.globalid)}>Start inspeksjon</button>
           <div class="knapperad knapperad--tre">
             ${this.dim === "3d"
-              ? html`<button class="knapp knapp--sekundar" @click=${() => navigate("kart")}>Vis i 2D</button>`
+              ? html`<button
+                  class="knapp knapp--sekundar"
+                  @click=${() => {
+                    navigate("kart");
+                    store.set({ zoomTil: o.globalid });
+                  }}
+                >
+                  Vis i 2D
+                </button>`
               : html`<button class="knapp knapp--sekundar" @click=${() => {
                   navigate("3d");
                   store.set({ zoomTil: o.globalid });
@@ -196,7 +239,7 @@ export class SvvObjectPanel extends StoreElement {
             : nothing}
         </div>
 
-        <div role="tablist" class="faner faner--panel" aria-label="Objektdetaljer">
+        <div role="tablist" class="faner faner--panel" aria-label="Objektdetaljer" @keydown=${(e: KeyboardEvent) => this.faneTast(e)}>
           ${(
             [
               ["oversikt", "Oversikt"],

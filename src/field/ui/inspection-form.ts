@@ -4,7 +4,7 @@ import type { Fotovedlegg, ObjektTreff } from "../../data/DataService.ts";
 import { AVVIKSTYPER, TILSTANDSGRADER, type Tilstandsgrad } from "../../data/schema.ts";
 import { formatDistance, formatUtm } from "../../map/coords.ts";
 import { services } from "../../services.ts";
-import { navigate } from "../../state/router.ts";
+import { tilbake } from "../../state/router.ts";
 import { store } from "../../state/store.ts";
 import { dataChanged, ensureTasks } from "../../tasks/task-store.ts";
 import { isOpen } from "../../tasks/tasks.ts";
@@ -12,13 +12,11 @@ import { StoreElement, fmtDateTime } from "../../ui/base.ts";
 import { icons } from "../../ui/icons.ts";
 import { isSimGps, startFieldRuntime } from "../field-runtime.ts";
 import { watchCompass } from "../gps.ts";
-import { autoFields, changeObject, prefill, toInspeksjon, unlock, validate, type InspeksjonUtkast } from "../prefill.ts";
+import { autoFields, changeObject, draftId, prefill, toInspeksjon, unlock, validate, type InspeksjonUtkast } from "../prefill.ts";
 import { inspectionSync, offlineQueue } from "../sync-setup.ts";
 import { KONSEKVENSGRADER, driftskrav, tiltakstid } from "../../handbok/r610.ts";
 import { hentAadt } from "../../nvdb/vegobjekter.ts";
 import { finnObjekt } from "../../nvdb/oppslag.ts";
-
-const draftId = (globalid: string) => `utkast-${globalid}`;
 
 /** Inspeksjonsskjema med autoutfylte felt fra objektet. */
 export class SvvInspectionForm extends StoreElement {
@@ -32,6 +30,9 @@ export class SvvInspectionForm extends StoreElement {
   private urls = new Map<string, string>();
   private ingenObjekt = false;
   private aadt: { globalid: string; verdi: Awaited<ReturnType<typeof hentAadt>> | undefined } | null = null;
+  /** Autolagring av utkastet (ventende tidtaker) */
+  private lagreTimer = 0;
+  private sokNr = 0;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -43,6 +44,8 @@ export class SvvInspectionForm extends StoreElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    // Ventende endringer lagres før skjemaet forlates (tilbake, annen fane i bunnmenyen)
+    if (this.lagreTimer) void this.autolagre();
     this.stopCompass?.();
     this.urls.forEach((u) => URL.revokeObjectURL(u));
   }
@@ -72,17 +75,22 @@ export class SvvInspectionForm extends StoreElement {
     }
     const draft = await offlineQueue().getDraft(draftId(target)).catch(() => undefined);
     if (draft) {
-      this.u = { ...draft, laast: true };
+      // Åpnet fra en oppgave: koblingen til oppgaven går foran den som ble lagret i utkastet
+      this.u = { ...draft, laast: true, oppgaveId: s.inspeksjon?.oppgaveId ?? draft.oppgaveId };
       this.requestUpdate();
       return;
     }
     const { data } = services();
     const hit = await finnObjekt(target).catch(() => null);
     if (!hit) {
-      store.notify("Fant ikke objektet", "feil");
+      // F.eks. uten dekning: la brukeren velge objekt i stedet for et tomt skjema
+      store.notify(store.get().online ? "Fant ikke objektet" : "Kan ikke hente objektet uten dekning", "feil");
+      this.ingenObjekt = true;
+      this.velger = true;
+      this.requestUpdate();
       return;
     }
-    const insp = await data.getInspections(target);
+    const insp = await data.getInspections(target).catch(() => []);
     const naer = s.naer.find((n) => n.objekt.globalid === target);
     this.u = prefill(hit.objekt, insp, {
       id: draftId(target),
@@ -174,14 +182,30 @@ export class SvvInspectionForm extends StoreElement {
     this.u = { ...this.u, ...patch };
     if (this.feil.length) this.feil = validate(this.u);
     this.requestUpdate();
+    // Utkastet lagres fortløpende, så ingenting går tapt ved tilbake, omlasting eller tomt batteri
+    clearTimeout(this.lagreTimer);
+    this.lagreTimer = window.setTimeout(() => void this.autolagre(), 800);
+  }
+
+  private async autolagre() {
+    clearTimeout(this.lagreTimer);
+    this.lagreTimer = 0;
+    if (!this.u || this.sender) return;
+    await offlineQueue()
+      .saveDraft({ ...this.u, posisjon: this.u.posisjon ?? this.posisjon() })
+      .catch((e: unknown) => console.warn("Kunne ikke lagre utkastet", e));
   }
 
   private async velgObjekt(t: ObjektTreff, avstand: number | null) {
     const { data } = services();
-    const insp = await data.getInspections(t.objekt.globalid);
+    const insp = await data.getInspections(t.objekt.globalid).catch(() => []);
     const now = new Date();
     if (this.u) {
+      const gammel = this.u.id;
       this.u = changeObject(this.u, t.objekt, insp, { now, oppgaveId: this.oppgaveFor(t.objekt.globalid), avstand_m: avstand });
+      // Registreringene følger med til det nye objektet; utkastet for det gamle fjernes
+      if (gammel !== this.u.id) void offlineQueue().deleteDraft(gammel).catch(() => undefined);
+      void this.autolagre();
     } else {
       this.u = prefill(t.objekt, insp, {
         id: draftId(t.objekt.globalid),
@@ -228,8 +252,14 @@ export class SvvInspectionForm extends StoreElement {
 
   private async saveDraft() {
     if (!this.u) return;
-    await offlineQueue().saveDraft({ ...this.u, posisjon: this.u.posisjon ?? this.posisjon() });
-    store.notify("Utkastet er lagret på enheten", "suksess");
+    clearTimeout(this.lagreTimer);
+    this.lagreTimer = 0;
+    try {
+      await offlineQueue().saveDraft({ ...this.u, posisjon: this.u.posisjon ?? this.posisjon() });
+      store.notify("Utkastet er lagret på enheten", "suksess");
+    } catch (e) {
+      store.notify(`Kunne ikke lagre utkastet: ${e instanceof Error ? e.message : String(e)}`, "feil");
+    }
   }
 
   private async submit() {
@@ -242,19 +272,35 @@ export class SvvInspectionForm extends StoreElement {
       this.querySelector<HTMLElement>(".feiloppsummering")?.focus();
       return;
     }
+    clearTimeout(this.lagreTimer);
+    this.lagreTimer = 0;
     this.sender = true;
     this.requestUpdate();
     try {
       const r = await inspectionSync().submitOrQueue(toInspeksjon(u, new Date()), u.bilder);
       await offlineQueue().deleteDraft(u.id).catch(() => undefined);
       if (r.status === "sendt") {
-        store.notify(`Inspeksjonen av ${u.objekt.navn} er sendt`, "suksess");
+        const feilet = r.resultat.vedleggFeilet;
+        if (feilet > 0) {
+          store.notify(
+            `Inspeksjonen av ${u.objekt.navn} er sendt, men ${feilet} av ${u.bilder.length} bilder ble ikke lastet opp. Ta dem på nytt i en ny inspeksjon.`,
+            "feil",
+          );
+        } else {
+          store.notify(`Inspeksjonen av ${u.objekt.navn} er sendt`, "suksess");
+        }
         dataChanged();
       } else {
-        store.notify(`Lagret i kø – sendes automatisk når du får dekning (${r.grunn.toLowerCase()})`, "info");
+        store.notify(
+          r.grunn === "Enheten er frakoblet" ? "Lagret i kø – sendes automatisk når du får dekning" : `Lagret i kø og sendes på nytt automatisk. ${r.grunn}.`,
+          "info",
+        );
       }
-      store.set({ inspeksjon: null });
-      navigate("kart");
+      store.set({ inspeksjon: null, selection: null });
+      // Erstatter skjemaet i historikken, så tilbakeknappen ikke åpner et nytt, tomt skjema
+      if (this.isConnected) tilbake();
+    } catch (e) {
+      store.notify(`Kunne ikke sende eller lagre inspeksjonen: ${e instanceof Error ? e.message : String(e)}`, "feil");
     } finally {
       this.sender = false;
       this.requestUpdate();
@@ -262,7 +308,11 @@ export class SvvInspectionForm extends StoreElement {
   }
 
   private async sok(q: string) {
-    this.sokTreff = q.trim().length >= 2 ? await services().data.search(q, 6) : [];
+    const nr = ++this.sokNr;
+    const treff = q.trim().length >= 2 ? await services().data.search(q, 6).catch(() => []) : [];
+    // Et eldre svar skal ikke overskrive et nyere søk
+    if (nr !== this.sokNr) return;
+    this.sokTreff = treff;
     this.requestUpdate();
   }
 
@@ -272,12 +322,12 @@ export class SvvInspectionForm extends StoreElement {
     return html`
       <div class="skjemaside">
         <header class="skjemaside__hode">
-          <button class="ikonknapp ikonknapp--stor" aria-label="Tilbake til kart" @click=${() => navigate("kart")}>${icons.back()}</button>
+          <button class="ikonknapp ikonknapp--stor" aria-label="Tilbake" @click=${() => tilbake()}>${icons.back()}</button>
           <div class="skjemaside__tittel">
             <h1>Inspeksjon${u ? ` · ${u.objekt.objekt_id}` : ""}</h1>
             <span class="sekundar">${u ? [this.skjemanavn(u), u.oppgaveId].filter(Boolean).join(" · ") : "Velg objekt"}</span>
           </div>
-          <span class="merke merke--noytral">Utkast</span>
+          <span class="merke merke--noytral" title="Utkastet lagres automatisk på enheten">Utkast</span>
         </header>
 
         <div class="skjemaside__innhold">
@@ -298,7 +348,7 @@ export class SvvInspectionForm extends StoreElement {
                 <span
                   >Posisjon:
                   ${s.gps.x != null && s.gps.y != null
-                    ? `${formatUtm(s.gps.x, s.gps.y)} (±${Math.round(s.gps.noyaktighet ?? 0)} m)`
+                    ? `${formatUtm(s.gps.x, s.gps.y)}${s.gps.noyaktighet != null ? ` (±${Math.round(s.gps.noyaktighet)} m)` : ""}`
                     : "ikke tilgjengelig"}</span
                 >
               </div>`
@@ -399,7 +449,9 @@ export class SvvInspectionForm extends StoreElement {
                 name="tilstandsgrad"
                 class="visually-hidden"
                 .checked=${u.tilstandsgrad === t.tg}
-                @change=${() => this.set({ tilstandsgrad: t.tg as Tilstandsgrad, ...(t.tg === 0 && !u.avvikstype ? { avvikstype: "Ingen avvik" } : {}) })}
+                @change=${() =>
+                  // TG 0 er «ingen avvik»: avvikstype og konsekvensgrad fra et tidligere valg gjelder ikke lenger
+                  this.set({ tilstandsgrad: t.tg as Tilstandsgrad, ...(t.tg === 0 ? { avvikstype: "Ingen avvik", konsekvensgrad: null } : {}) })}
                 aria-label="TG ${t.tg} – ${t.navn}"
               />
               <span class="tg__nr" aria-hidden="true">${t.tg}</span><span class="tg__navn" aria-hidden="true">${t.navn}</span>

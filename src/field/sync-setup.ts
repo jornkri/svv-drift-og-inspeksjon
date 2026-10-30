@@ -13,6 +13,8 @@ export const isOnline = () => navigator.onLine && !store.get().simFrakoblet;
 export function startSync(): void {
   if (sync) return;
   queue = new OfflineQueue();
+  // Be nettleseren om ikke å rydde bort køen og utkastene ved lite lagringsplass (særlig iOS)
+  void navigator.storage?.persist?.().catch(() => undefined);
   sync = new InspectionSync({
     queue,
     submit: (i, b) => services().data.submitInspection(i, b),

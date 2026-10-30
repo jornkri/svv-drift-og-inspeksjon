@@ -8,7 +8,7 @@ import { services } from "../../services.ts";
 import { navigate } from "../../state/router.ts";
 import { store } from "../../state/store.ts";
 import { ensureTasks } from "../../tasks/task-store.ts";
-import { displayStatus, mobileFilter, sortByDistance, type MobilFilter } from "../../tasks/tasks.ts";
+import { displayStatus, isOpen, mobileFilter, sortByDistance, type MobilFilter } from "../../tasks/tasks.ts";
 import { StoreElement, fmtDate } from "../../ui/base.ts";
 import { statusKlasse } from "../../views/tasks-view.ts";
 import { startFieldRuntime } from "../field-runtime.ts";
@@ -59,12 +59,11 @@ export class SvvMyTasks extends StoreElement {
           <h1>Mine oppgaver</h1>
           <span class="sekundar">Sortert: ${s.gps.x != null ? "nærmest" : "frist (venter på posisjon)"}</span>
         </div>
-        <div class="filterknapper" role="tablist" aria-label="Filtrer oppgaver">
+        <div class="filterknapper" role="group" aria-label="Filtrer oppgaver">
           ${FILTRE.map(
             (f) => html`<button
-              role="tab"
               class="filterknapp ${this.filter === f.id ? "is-valgt" : ""}"
-              aria-selected=${this.filter === f.id}
+              aria-pressed=${this.filter === f.id}
               @click=${() => {
                 this.filter = f.id;
                 this.requestUpdate();
@@ -85,7 +84,8 @@ export class SvvMyTasks extends StoreElement {
               <button
                 class="oppgavekort"
                 @click=${() => {
-                  store.set({ inspeksjon: { globalid: o.objekt_globalid, oppgaveId: o.oppgave_id } });
+                  // En fullført oppgave gjenåpnes ikke: inspeksjonen registreres da uten oppgave
+                  store.set({ inspeksjon: { globalid: o.objekt_globalid, oppgaveId: isOpen(o) ? o.oppgave_id : null } });
                   navigate("inspeksjon");
                 }}
               >
@@ -101,10 +101,10 @@ export class SvvMyTasks extends StoreElement {
         </ul>
         ${list.length ? nothing : html`<p class="tom">Ingen oppgaver i dette utvalget.</p>`}
         <div class="statusboks ${s.online ? "statusboks--ok" : "statusboks--frakoblet"}" role="status">
-          <strong>${s.online ? "Klar for frakoblet bruk" : "Frakoblet"}</strong>
+          <strong>${s.online ? "Tilkoblet" : "Frakoblet"}</strong>
           <span
             >${s.online
-              ? `${mine.length} oppgaver er lastet. Inspeksjoner lagres på enheten og sendes når du får dekning.`
+              ? `${mine.length} oppgaver er lastet. Inspeksjoner du sender uten dekning, lagres på enheten og sendes automatisk senere.`
               : `${s.koAntall} ${s.koAntall === 1 ? "inspeksjon venter" : "inspeksjoner venter"} på dekning.`}</span
           >
         </div>

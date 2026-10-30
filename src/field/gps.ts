@@ -16,26 +16,33 @@ const UTM33 = new SpatialReference({ wkid: 25833 });
 export class BrowserGps implements GpsSource {
   readonly simulert = false;
   private watchId: number | null = null;
+  private stoppet = false;
 
   start(onFix: (f: Fix) => void, onError: (msg: string) => void): void {
     if (!("geolocation" in navigator)) {
       onError("Enheten støtter ikke posisjonering");
       return;
     }
-    void projectOperator.load().then(() => {
-      this.watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const p = projectOperator.execute(new Point({ longitude: pos.coords.longitude, latitude: pos.coords.latitude }), UTM33) as Point | null;
-          if (!p) return;
-          onFix({ x: p.x, y: p.y, accuracy: pos.coords.accuracy, heading: pos.coords.heading, timestamp: pos.timestamp });
-        },
-        (err) => onError(err.code === err.PERMISSION_DENIED ? "Tilgang til posisjon er avslått" : "Fant ikke posisjonen"),
-        { enableHighAccuracy: true, maximumAge: 1000, timeout: 20_000 },
-      );
-    });
+    this.stoppet = false;
+    projectOperator
+      .load()
+      .then(() => {
+        if (this.stoppet) return;
+        this.watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            const p = projectOperator.execute(new Point({ longitude: pos.coords.longitude, latitude: pos.coords.latitude }), UTM33) as Point | null;
+            if (!p) return;
+            onFix({ x: p.x, y: p.y, accuracy: pos.coords.accuracy, heading: pos.coords.heading, timestamp: pos.timestamp });
+          },
+          (err) => onError(err.code === err.PERMISSION_DENIED ? "Tilgang til posisjon er avslått" : "Fant ikke posisjonen"),
+          { enableHighAccuracy: true, maximumAge: 1000, timeout: 20_000 },
+        );
+      })
+      .catch(() => onError("Kunne ikke starte posisjoneringen"));
   }
 
   stop(): void {
+    this.stoppet = true;
     if (this.watchId != null) navigator.geolocation.clearWatch(this.watchId);
     this.watchId = null;
   }

@@ -100,4 +100,15 @@ describe("synkronisering", () => {
     expect(await s.flush()).toEqual({ sendt: 0, feilet: 1 });
     expect(await q.count()).toBe(2);
   });
+
+  it("en post tjenesten avviser, blokkerer ikke resten av køen", async () => {
+    const q = newQueue();
+    const submit = vi.fn().mockRejectedValueOnce(new Error("Feltet kommentar er for langt")).mockResolvedValue({ globalid: "x", vedleggFeilet: 0 });
+    const s = new InspectionSync({ queue: q, submit, isOnline: () => true });
+    await q.enqueue(insp("A"), []);
+    await q.enqueue(insp("B"), []);
+    expect(await s.flush()).toEqual({ sendt: 1, feilet: 1 });
+    const igjen = await q.list();
+    expect(igjen.map((e) => e.sisteFeil)).toEqual(["Feltet kommentar er for langt"]);
+  });
 });

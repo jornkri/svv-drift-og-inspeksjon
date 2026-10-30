@@ -41,6 +41,7 @@ export class SvvNvdbPanel extends StoreElement {
   private lastetFor: string | null = null;
   private objekt: NvdbVegobjekt | null = null;
   private tilstander: Tilstand[] | null = null;
+  private tilstandFeilet = false;
   private feil: string | null = null;
   private ctrl: AbortController | null = null;
   private appInsp: Inspeksjon[] = [];
@@ -76,6 +77,7 @@ export class SvvNvdbPanel extends StoreElement {
     const ctrl = (this.ctrl = new AbortController());
     this.objekt = null;
     this.tilstander = null;
+    this.tilstandFeilet = false;
     this.feil = null;
     this.appInsp = [];
     this.inspVersjon = -1;
@@ -85,9 +87,11 @@ export class SvvNvdbPanel extends StoreElement {
       if (this.lastetFor !== key) return;
       this.objekt = o;
       this.requestUpdate();
-      const t = await hentTilstander(k, o);
+      // Feiler bare tilstandsoppslaget, vises objektet likevel (med melding under «Tilstand i NVDB»)
+      const t = await hentTilstander(k, o).catch(() => null);
       if (this.lastetFor !== key) return;
       this.tilstander = t;
+      this.tilstandFeilet = t == null;
     } catch (e) {
       if (ctrl.signal.aborted) return;
       this.feil = e instanceof Error ? e.message : String(e);
@@ -191,7 +195,7 @@ export class SvvNvdbPanel extends StoreElement {
         <section class="egenskaper" aria-labelledby="nvdb-tilstand">
           <h3 class="kategori" id="nvdb-tilstand">TILSTAND I NVDB</h3>
           ${this.tilstander == null
-            ? html`<p class="sekundar" role="status">Henter tilstandsregistreringer …</p>`
+            ? html`<p class="sekundar" role="status">${this.tilstandFeilet ? "Kunne ikke hente tilstand fra NVDB." : "Henter tilstandsregistreringer …"}</p>`
             : this.tilstander.length
               ? html`<p class="sekundar">${this.tilstander.length} registreringer${sum?.siste ? `, sist kontrollert ${fmtDate(sum.siste)}` : ""}.</p>
                   <table class="tabell tabell--kompakt">

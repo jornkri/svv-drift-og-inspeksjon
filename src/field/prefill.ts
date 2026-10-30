@@ -108,6 +108,9 @@ export function autoFields(u: InspeksjonUtkast): { k: string; v: string }[] {
   ];
 }
 
+/** Nøkkelen et utkast lagres under (ett utkast per objekt). */
+export const draftId = (globalid: string) => `utkast-${globalid}`;
+
 /** «Feil objekt? Velg annet» låser opp de autoutfylte feltene. */
 export function unlock(u: InspeksjonUtkast): InspeksjonUtkast {
   return { ...u, laast: false };
@@ -121,7 +124,7 @@ export function changeObject(
   opts: { oppgaveId?: string | null; avstand_m?: number | null; now: Date },
 ): InspeksjonUtkast {
   const ny = prefill(objekt, tidligere, {
-    id: u.id,
+    id: draftId(objekt.globalid),
     inspektor: u.inspektor,
     now: opts.now,
     posisjon: u.posisjon,
@@ -133,6 +136,7 @@ export function changeObject(
     tilstandsgrad: u.tilstandsgrad,
     avvikstype: u.avvikstype,
     tiltak_behov: u.tiltak_behov,
+    konsekvensgrad: u.konsekvensgrad,
     kommentar: u.kommentar,
     bilder: u.bilder,
   };
@@ -144,6 +148,7 @@ export function validate(u: InspeksjonUtkast): string[] {
   if (u.tilstandsgrad == null) e.push("Velg tilstandsgrad.");
   if (!u.avvikstype) e.push("Velg avvikstype.");
   if (u.tilstandsgrad != null && u.tilstandsgrad >= 1 && u.avvikstype === "Ingen avvik") e.push("Avvikstype må angis når tilstandsgraden er 1 eller høyere.");
+  if (u.tilstandsgrad === 0 && u.avvikstype && u.avvikstype !== "Ingen avvik") e.push("Tilstandsgrad 0 betyr ingen avvik – velg «Ingen avvik» eller en høyere tilstandsgrad.");
   if (u.tiltak_behov == null) e.push("Angi om det er behov for tiltak.");
   if (u.tilstandsgrad != null && u.tilstandsgrad >= 2 && !u.kommentar.trim()) e.push("Beskriv avviket i kommentarfeltet (TG 2–3).");
   if (!u.laast) e.push("Bekreft objektet før innsending.");
@@ -175,7 +180,8 @@ export function toInspeksjon(u: InspeksjonUtkast, now: Date): Inspeksjon {
     obj_lengde_m: o.lengde_m,
     obj_kote_min: o.kote_min,
     obj_kote_max: o.kote_max,
-    konsekvensgrad: u.konsekvensgrad ?? null,
+    // Konsekvensgrad gjelder bare avvik (TG 1–3)
+    konsekvensgrad: u.tilstandsgrad >= 1 ? (u.konsekvensgrad ?? null) : null,
     sjekkliste: sjekklisteTekst(u),
   };
 }

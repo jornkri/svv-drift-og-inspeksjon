@@ -150,7 +150,7 @@ test.describe("felt (mobil)", () => {
     // Mine oppgaver, sortert etter avstand
     await page.getByRole("link", { name: "Oppgaver" }).click();
     await expect(page.getByRole("heading", { name: "Mine oppgaver" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /Denne uka/ })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("button", { name: /Denne uka/ })).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator(".oppgavekort").first()).toContainText(/\d+ m/);
   });
 });

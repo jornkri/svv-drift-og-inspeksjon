@@ -29,7 +29,7 @@ import { setMapContext } from "../map/map-context.ts";
 import { ObjectLayerController } from "../map/object-layers.ts";
 import { NvdbObjekterLayer } from "../map/nvdb-objekter-layer.ts";
 import { services } from "../services.ts";
-import { store } from "../state/store.ts";
+import { store, velgObjekter } from "../state/store.ts";
 import { StoreElement } from "../ui/base.ts";
 import { icons } from "../ui/icons.ts";
 import "../ui/filter-bar.ts";
@@ -85,10 +85,13 @@ export class SvvSceneView extends StoreElement {
   private unsubs: (() => void)[] = [];
   private verktoyRef = createRef<AnalysisEl>();
   private disposed = false;
+  /** Lagpanelets tilstand i 2D, gjenopprettes når 3D forlates */
+  private lagpanel2d = true;
 
   override connectedCallback(): void {
     super.connectedCallback();
     // Terrengpanelet tar venstre side i 3D – lagpanelet åpnes ved behov
+    this.lagpanel2d = store.get().layerPanelOpen;
     store.set({ layerPanelOpen: false });
   }
 
@@ -99,6 +102,7 @@ export class SvvSceneView extends StoreElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.disposed = true;
+    store.set({ layerPanelOpen: this.lagpanel2d });
     this.handles.forEach((h) => h.remove());
     this.unsubs.forEach((u) => u());
     this.objects?.destroy();
@@ -173,11 +177,20 @@ export class SvvSceneView extends StoreElement {
 
     this.objects = new ObjectLayerController(view, "3d", data);
     await this.objects.start();
+    // Brukeren kan ha gått ut av 3D mens lagene lastet
+    if (this.disposed) {
+      this.objects.destroy();
+      return;
+    }
     this.oppdaterModellLag();
     const nvdb = (this.nvdb = new NvdbObjekterLayer(cfg, "3d"));
     map.add(nvdb.group);
     nvdb.attach(view);
     this.fagmodeller = [...new Set((await data.objectStats()).map((s) => s.fagmodell).filter((x): x is string => !!x))];
+    if (this.disposed) {
+      nvdb.detach();
+      return;
+    }
     setMapContext({ dim: "3d", elementId: SCENE_ID, view, objects: this.objects });
 
     this.handles.push(
@@ -185,17 +198,17 @@ export class SvvSceneView extends StoreElement {
         if (this.verktoy !== "naviger" || !this.objects) return;
         const ids = await this.objects.hitTest(e);
         if (ids.length) {
-          store.set({ selection: { globalids: ids, index: 0 }, nvdbValgt: null, popover: null });
+          velgObjekter(ids);
           return;
         }
         const guid = await this.modellTreff(view, e);
         if (guid && (await data.getObject(guid))) {
-          store.set({ selection: { globalids: [guid], index: 0 }, nvdbValgt: null, popover: null });
+          velgObjekter([guid]);
           return;
         }
         const treff = (await view.hitTest(e, { include: nvdb.layers })).results.find((r) => r.type === "graphic");
         const a = treff && "graphic" in treff ? treff.graphic.attributes : null;
-        store.set({ selection: null, nvdbValgt: a ? { typeId: a.type_id as number, id: a.nvdb_id as number } : null, popover: null });
+        store.set({ selection: null, nvdbValgt: a ? { typeId: a.type_id as number, id: a.nvdb_id as number } : null, temaTreff: null, popover: null });
       }),
       reactiveUtils.watch(
         () => view.camera,
@@ -207,7 +220,26 @@ export class SvvSceneView extends StoreElement {
         { initial: true },
       ),
     );
-    this.unsubs.push(store.select((s) => s.zoomTil, () => void this.consumeZoom()));
+    this.unsubs.push(
+      store.select((s) => s.zoomTil, () => void this.consumeZoom()),
+      // Bakgrunnskartvelgeren gjelder også i 3D (ikke for globale webscener, som har sin egen bakgrunn)
+      store.select(
+        (s) => s.basemap,
+        (id) => {
+          const d = cfg.gdo.basemaps.find((b) => b.id === id);
+          if (!this.global && d && hasGdoAccess()) map.basemap = createBasemap(d, "3d");
+        },
+      ),
+      // Søketreff på adresse eller vegreferanse
+      store.select(
+        (s) => s.markor,
+        (m) => {
+          if (!m) return;
+          const p = new Point({ x: m.x, y: m.y, spatialReference: { wkid: cfg.wkid } });
+          void tilSr(p, view.spatialReference).then((t) => view.goTo({ target: t, zoom: 17, tilt: 60 } as never).catch(() => undefined));
+        },
+      ),
+    );
     void this.consumeZoom();
     this.applyVegOpacity();
     void this.lastPunktsky();
@@ -255,7 +287,10 @@ export class SvvSceneView extends StoreElement {
     const hit = await services().data.getObject(id);
     if (!hit) return;
     const g = await tilSr(hit.geometry, this.view.spatialReference);
-    const target = g.extent ? g.extent.clone().expand(3) : g;
+    // Små objekter (kummer, korte rør) får litt omgivelser; lange (vegelementer) vises i sin helhet
+    const e = g.extent;
+    const maks = e ? Math.max(e.width, e.height) : 0;
+    const target = e ? e.clone().expand(maks < 60 ? Math.max(3, 80 / Math.max(maks, 1)) : 1.3) : g;
     await this.view.goTo({ target, tilt: 65 } as never, { duration: 800 }).catch(() => undefined);
   }
 
