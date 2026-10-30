@@ -11,9 +11,11 @@ import SimpleLineSymbol from "@arcgis/core/symbols/SimpleLineSymbol.js";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol.js";
 import type MapView from "@arcgis/core/views/MapView.js";
 import type SceneView from "@arcgis/core/views/SceneView.js";
+import SpatialReference from "@arcgis/core/geometry/SpatialReference.js";
 import type { AppConfig } from "../config.ts";
 import { NVDB_FARGE, NVDB_TYPER, hentVegobjekter, oppsummer, parseWkt, type NvdbType, type NvdbVegobjekt } from "../nvdb/vegobjekter.ts";
 import { store } from "../state/store.ts";
+import { lastProjeksjon, tilSrSync } from "./projeksjon.ts";
 
 /** Vegobjekter hentes bare når kartet er zoomet inn (antall og responstid). */
 export const NVDB_MAKS_SKALA = 25000;
@@ -151,7 +153,11 @@ export class NvdbObjekterLayer {
       store.set({ nvdbAntall: {} });
       return;
     }
-    const e = view.extent;
+    // Global scene (Web Mercator): utsnittet projiseres til UTM33 for NVDB, og geometriene tilbake
+    const utm = new SpatialReference(SR);
+    const annenSr = !!view.spatialReference && !view.spatialReference.equals(utm);
+    if (annenSr) await lastProjeksjon();
+    const e = annenSr ? tilSrSync(view.extent, utm) : view.extent;
     const ex = e.clone().expand(1.5);
     const bbox: [number, number, number, number] = [ex.xmin, ex.ymin, ex.xmax, ex.ymax];
     const typer = NVDB_TYPER.filter((t) => nvdbSynlig(t.id)).filter((t) => {
@@ -170,8 +176,9 @@ export class NvdbObjekterLayer {
           const l = this.lag.get(t.id)!;
           const graphics: Graphic[] = [];
           for (const o of objekter) {
-            const geometry = nvdbGeometri(o);
-            if (!geometry) continue;
+            const g = nvdbGeometri(o);
+            if (!g) continue;
+            const geometry = annenSr ? tilSrSync(g, view.spatialReference) : g;
             if (this.dim === "3d" && !geometry.hasZ) continue;
             this.objekter.set(`${t.id}:${o.id}`, o);
             graphics.push(

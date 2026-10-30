@@ -10,6 +10,7 @@ import type { DataService, ObjectLayerHandle, ObjektStat } from "../data/DataSer
 import { computeCounts } from "../filters/counts.ts";
 import { buildWhere } from "../filters/filters.ts";
 import { store } from "../state/store.ts";
+import { tilSr } from "./projeksjon.ts";
 import { fagRenderer, mmiRenderer, type Dim } from "./renderers.ts";
 
 type View = MapView | SceneView;
@@ -155,7 +156,8 @@ export class ObjectLayerController {
     );
   }
 
-  async goTo(geometry: Geometry, opts: { scale?: number } = {}): Promise<void> {
+  async goTo(geometri: Geometry, opts: { scale?: number } = {}): Promise<void> {
+    const geometry = await tilSr(geometri, this.view.spatialReference);
     const minScale = opts.scale ?? 1200;
     if (geometry.type === "point" || this.dim === "3d") {
       await this.view.goTo({ target: geometry, scale: minScale } as never, { duration: 600 }).catch(() => undefined);

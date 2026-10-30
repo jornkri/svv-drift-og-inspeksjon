@@ -40,7 +40,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
   }
   const basemapFor = (id: BasemapId): Basemap | null => {
     if (basemaps[id]) return basemaps[id]!;
-    if (data.mode === "mock" && !hasGdoAccess()) return null;
+    if (!hasGdoAccess()) return null;
     const def = cfg.gdo.basemaps.find((b) => b.id === id);
     if (!def) return null;
     return (basemaps[id] = createBasemap(def, "2d"));

@@ -58,8 +58,9 @@ async function bootstrap() {
   }
   await data.init();
 
-  // Geodata Online-token: i mock/dev fra Vite-endepunktet, i portalmodus via Enterprise
-  const gdoToken = config.useMock ? await setupGdoToken(config) : null;
+  // Geodata Online-token fra Vite-endepunktet (dev/preview). Uten endepunkt brukes portalens
+  // bakgrunnskartgruppe (VITE_BASEMAP_GROUP_ID) i portalmodus.
+  const gdoToken = await setupGdoToken(config);
   setServices({ cfg: config, data, gdoToken });
 
   if (params.get("diagnose") === "1" && data.mode === "portal") {
@@ -75,6 +76,11 @@ async function bootstrap() {
   await import("./app.ts");
   document.body.append(document.createElement("svv-app"));
   done();
+
+  const lokalt = (data as { lokalt?: string[] }).lokalt ?? [];
+  if (data.mode === "portal" && lokalt.length) {
+    store.notify(`Webkartet har ikke tabell for ${lokalt.join(" og ")}. De lagres foreløpig lokalt i denne nettleseren.`, "info");
+  }
 
   // Dyplenke: ?objekt=<objekt-ID>
   const objektId = params.get("objekt");

@@ -10,12 +10,15 @@ import Extent from "@arcgis/core/geometry/Extent.js";
 import Point from "@arcgis/core/geometry/Point.js";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference.js";
 import ElevationLayer from "@arcgis/core/layers/ElevationLayer.js";
+import type Layer from "@arcgis/core/layers/Layer.js";
 import SceneLayer from "@arcgis/core/layers/SceneLayer.js";
 import type SceneView from "@arcgis/core/views/SceneView.js";
 import type { ArcgisScene } from "@arcgis/map-components/components/arcgis-scene";
 import { html, nothing } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
+import type { PortalDataService } from "../data/PortalDataService.ts";
 import { createBasemap, hasGdoAccess } from "../map/basemaps.ts";
+import { tilSr } from "../map/projeksjon.ts";
 import { setMapContext } from "../map/map-context.ts";
 import { ObjectLayerController } from "../map/object-layers.ts";
 import { NvdbObjekterLayer } from "../map/nvdb-objekter-layer.ts";
@@ -51,7 +54,9 @@ export class SvvSceneView extends StoreElement {
   private view: SceneView | null = null;
   private objects: ObjectLayerController | null = null;
   private nvdb: NvdbObjekterLayer | null = null;
-  private sceneLayers: { navn: string; layer: SceneLayer }[] = [];
+  private sceneLayers: { navn: string; layer: Layer }[] = [];
+  /** Webscenen er global (ikke UTM33): bakgrunn og terreng kommer fra webscenen */
+  private global = false;
   private fagmodeller: string[] = [];
   private verktoy: Verktoy = "naviger";
   private underBakken = true;
@@ -89,30 +94,50 @@ export class SvvSceneView extends StoreElement {
     const el = this.querySelector<ArcgisScene>("arcgis-scene")!;
     await customElements.whenDefined("arcgis-scene");
 
-    const gdo = hasGdoAccess() || data.mode === "portal";
-    this.harTerreng = gdo;
-    const def = cfg.gdo.basemaps.find((b) => b.id === store.get().basemap) ?? cfg.gdo.basemaps[0]!;
-    const ground = new Ground({
-      layers: gdo ? [new ElevationLayer({ url: cfg.gdo.elevationUrl })] : [],
-      navigationConstraint: { type: this.underBakken ? "none" : "stay-above" },
-      opacity: gdo ? 1 - this.terrengGjennomsiktig / 100 : 0,
-    });
-    const map = new EsriMap({ ...(gdo ? { basemap: createBasemap(def, "3d") } : {}), ground });
+    // Webscenen fra portalen (VITE_WEBSCENE_ID). Er den i UTM33, legges lagene i vår lokale
+    // scene. Er den global (vanlig i ArcGIS Online), brukes dens koordinatsystem, bakgrunn og terreng.
+    const ws = data.mode === "portal" ? await (data as PortalDataService).webscene() : null;
+    const wsSr = ws?.initialViewProperties?.spatialReference ?? null;
+    this.global = !!ws && !!wsSr && wsSr.wkid !== cfg.wkid;
+    const wsLag = ws ? await (data as PortalDataService).sceneLag() : [];
 
-    // Fagmodeller fra IFC/BIM som i3s-scenelag (portal), ellers fagmodellene i objektlagene
-    this.sceneLayers = cfg.sceneLayers.map((s) => ({ navn: s.navn, layer: new SceneLayer({ url: s.url, title: s.navn }) }));
+    const gdo = hasGdoAccess() && !this.global;
+    const def = cfg.gdo.basemaps.find((b) => b.id === store.get().basemap) ?? cfg.gdo.basemaps[0]!;
+    const ground = this.global
+      ? ws!.ground.clone()
+      : new Ground({ layers: gdo ? [new ElevationLayer({ url: cfg.gdo.elevationUrl })] : [] });
+    ground.navigationConstraint = { type: this.underBakken ? "none" : "stay-above" } as never;
+    this.harTerreng = this.global ? ground.layers.length > 0 : gdo;
+    ground.opacity = this.harTerreng ? 1 - this.terrengGjennomsiktig / 100 : 0;
+    const basemap = this.global ? ws!.basemap?.clone() : gdo ? createBasemap(def, "3d") : null;
+    const map = new EsriMap({ ...(basemap ? { basemap } : {}), ground });
+
+    // Fagmodeller fra IFC/BIM som i3s-scenelag (konfig) og lagene i webscenen
+    this.sceneLayers = [
+      ...cfg.sceneLayers.map((s) => ({ navn: s.navn, layer: new SceneLayer({ url: s.url, title: s.navn }) as Layer })),
+      ...wsLag.map((l) => ({ navn: l.title ?? "Lag", layer: l })),
+    ];
     map.addMany(this.sceneLayers.map((s) => s.layer));
 
     const [cx, cy] = cfg.prosjekt.senter;
-    el.viewingMode = "local";
-    el.spatialReference = new SpatialReference({ wkid: cfg.wkid });
-    el.clippingArea = new Extent({ xmin: cx - 1500, ymin: cy - 1500, xmax: cx + 1500, ymax: cy + 1500, spatialReference: { wkid: cfg.wkid } });
-    el.map = map;
-    el.camera = {
-      position: new Point({ x: cx + 380, y: cy - 520, z: 520, spatialReference: { wkid: cfg.wkid } }),
-      heading: 330,
-      tilt: 62,
-    } as never;
+    if (this.global) {
+      el.viewingMode = ws!.initialViewProperties?.viewingMode ?? "global";
+      el.spatialReference = wsSr!;
+      el.map = map;
+      const kamera = ws!.initialViewProperties?.viewpoint?.camera;
+      if (kamera) el.camera = kamera.clone();
+      else el.center = await tilSr(new Point({ x: cx, y: cy, spatialReference: { wkid: cfg.wkid } }), wsSr);
+    } else {
+      el.viewingMode = "local";
+      el.spatialReference = new SpatialReference({ wkid: cfg.wkid });
+      el.clippingArea = new Extent({ xmin: cx - 1500, ymin: cy - 1500, xmax: cx + 1500, ymax: cy + 1500, spatialReference: { wkid: cfg.wkid } });
+      el.map = map;
+      el.camera = {
+        position: new Point({ x: cx + 380, y: cy - 520, z: 520, spatialReference: { wkid: cfg.wkid } }),
+        heading: 330,
+        tilt: 62,
+      } as never;
+    }
     await el.viewOnReady();
     if (this.disposed) return;
     const view = (this.view = el.view as SceneView);
@@ -161,8 +186,8 @@ export class SvvSceneView extends StoreElement {
     store.set({ zoomTil: null });
     const hit = await services().data.getObject(id);
     if (!hit) return;
-    const ext = hit.geometry.extent;
-    const target = ext ? ext.clone().expand(3) : hit.geometry;
+    const g = await tilSr(hit.geometry, this.view.spatialReference);
+    const target = g.extent ? g.extent.clone().expand(3) : g;
     await this.view.goTo({ target, tilt: 65 } as never, { duration: 800 }).catch(() => undefined);
   }
 
@@ -254,7 +279,7 @@ export class SvvSceneView extends StoreElement {
             </label>
             ${this.harTerreng ? nothing : html`<p class="melding melding--info">Terreng krever Geodata Online-tilgang. Objektene vises i riktig høyde (NN2000).</p>`}
             <fieldset class="fagmodeller">
-              <legend class="kategori">${this.sceneLayers.length ? "FAGMODELLER (I3S)" : "FAGMODELLER"}</legend>
+              <legend class="kategori">${this.sceneLayers.length ? "LAG I WEBSCENEN" : "FAGMODELLER"}</legend>
               ${this.sceneLayers.length
                 ? this.sceneLayers.map(
                     (sl) => html`<label class="avkrysning avkrysning--tett">
@@ -289,8 +314,11 @@ export class SvvSceneView extends StoreElement {
 
           <div class="koordlinje">
             <span>Kamera: høyde ${this.kamera.hoyde.toLocaleString("nb-NO")} m · tilt ${this.kamera.tilt}°</span>
-            <span>EUREF89 UTM33 · NN2000 · lokal scene</span>
-            <span class="koordlinje__kilde">Terreng: ${this.harTerreng ? "Geodata Online høydemodell" : "mangler"} · BIM: ${this.sceneLayers.length ? "i3s fra IFC" : "objektlag"}</span>
+            <span>${this.global ? "Webscene (global) · objekter i NN2000" : "EUREF89 UTM33 · NN2000 · lokal scene"}</span>
+            <span class="koordlinje__kilde"
+              >Terreng: ${this.harTerreng ? (this.global ? "fra webscenen" : "Geodata Online høydemodell") : "mangler"} · BIM:
+              ${this.sceneLayers.length ? "lag i webscenen" : "objektlag"}</span
+            >
           </div>
         </div>
         ${s.selection

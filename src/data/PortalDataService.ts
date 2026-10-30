@@ -3,7 +3,9 @@ import type Layer from "@arcgis/core/layers/Layer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import type Portal from "@arcgis/core/portal/Portal.js";
 import WebMap from "@arcgis/core/WebMap.js";
+import WebScene from "@arcgis/core/WebScene.js";
 import type { AppConfig, LayerRef } from "../config.ts";
+import { fagFraTittel, finnLag, manglendeFelt, tilpassFelt, type AutoMapping, type LagInfo } from "./auto-mapping.ts";
 import {
   deriveHistory,
   type DataService,
@@ -35,6 +37,49 @@ interface ResolvedLayer {
   url: string;
   title: string;
   kind: GeometryKind;
+  /** Utvalg når ett lag inneholder flere fag */
+  where?: string;
+}
+
+export interface DiagnoseRad {
+  tittel: string;
+  type: string;
+  url: string;
+  rolle: string;
+  redigerbar: boolean;
+  wkid: number | null;
+  felt: string[];
+  /** Logiske felt i mappingen som laget mangler */
+  mangler: string[];
+}
+
+/** Lokal lagring når webkartet mangler inspeksjons- eller oppgavetabell (demo/pilot). */
+const LOKAL_INSP = "svv-di-portal-inspeksjoner";
+const LOKAL_OPPG = "svv-di-portal-oppgaver";
+
+function lesLokalt<T>(key: string): T[] {
+  try {
+    return JSON.parse(localStorage.getItem(key) ?? "[]") as T[];
+  } catch {
+    return [];
+  }
+}
+
+function skrivLokalt<T>(key: string, v: T[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(v));
+  } catch {
+    /* full eller blokkert lagring – posten finnes fortsatt i minnet */
+  }
+}
+
+function lagUrl(l: FeatureLayer | null | undefined): string {
+  if (!l?.url) return "";
+  return /\/\d+$/.test(l.url) || l.layerId == null ? l.url : `${l.url}/${l.layerId}`;
+}
+
+function geometriType(l: FeatureLayer): GeometryKind {
+  return l.geometryType === "point" || l.geometryType === "multipoint" ? "point" : l.geometryType === "polygon" ? "polygon" : "polyline";
 }
 
 const initialsOf = (name: string) =>
@@ -46,27 +91,38 @@ const initialsOf = (name: string) =>
     .join("");
 
 /**
- * Implementasjon mot SVVs ekte feature-tjenester i ArcGIS Enterprise.
+ * Implementasjon mot ekte feature-tjenester i portalen (ArcGIS Enterprise eller ArcGIS Online).
  *
- * TODO(SVV): Lagene, tabellene og feltnavnene må kartlegges mot webkartet
- * (VITE_WEBMAP_ID) – bruk ?diagnose=1 etter innlogging for å se lag og felt.
+ * Lagene hentes fra VITE_LAYERS_* og tabell-variablene. Er ingen av dem satt, kartlegges
+ * webkartet automatisk ut fra feltene (se auto-mapping.ts). Mangler inspeksjons- eller
+ * oppgavetabell, lagres postene lokalt i nettleseren. Se ?diagnose=1 for lag og felt.
  */
 export class PortalDataService implements DataService {
   readonly mode = "portal" as const;
   user: UserInfo = { navn: "", brukernavn: "", initialer: "", team: [] };
-  readonly objektFields: AppConfig["fields"]["objekt"];
+  objektFields: AppConfig["fields"]["objekt"];
+  /** Resultatet av automatisk kartlegging (null når lagene er konfigurert) */
+  auto: AutoMapping | null = null;
+  /** Tabeller som mangler i webkartet, og som derfor lagres lokalt */
+  lokalt: ("inspeksjoner" | "oppgaver")[] = [];
 
+  private fields: AppConfig["fields"];
   private webmap: WebMap | null = null;
+  private webscenePromise: Promise<WebScene | null> | null = null;
   private resolved: ResolvedLayer[] = [];
   private queryLayers: FeatureLayer[] = [];
+  private objektFeltFinnes = new Set<string>();
   private inspTable: FeatureLayer | null = null;
   private dokTable: FeatureLayer | null = null;
   private oppgaveLayer: FeatureLayer | null = null;
+  private lokalInsp = lesLokalt<Inspeksjon>(LOKAL_INSP);
+  private lokalOppg = lesLokalt<OppgaveMedLogg>(LOKAL_OPPG);
 
   constructor(
     private readonly cfg: AppConfig,
     readonly portal: Portal,
   ) {
+    this.fields = { ...cfg.fields };
     this.objektFields = cfg.fields.objekt;
   }
 
@@ -86,36 +142,111 @@ export class PortalDataService implements DataService {
       await this.webmap.loadAll();
     }
 
-    for (const fag of FAG) {
-      for (const ref of this.cfg.layers[fag]) {
-        const layer = await this.resolveFeatureLayer(ref);
-        if (!layer) continue;
-        await layer.load();
-        this.resolved.push({
-          fag,
-          url: layer.url + (layer.layerId != null ? `/${layer.layerId}` : ""),
-          title: layer.title ?? fag,
-          kind: layer.geometryType === "point" || layer.geometryType === "multipoint" ? "point" : layer.geometryType === "polygon" ? "polygon" : "polyline",
-        });
+    const konfigurert = FAG.some((f) => this.cfg.layers[f].length) || !!(this.cfg.inspeksjonTable || this.cfg.oppgaveLayer || this.cfg.dokumentTable);
+    if (konfigurert || !this.webmap) {
+      for (const fag of FAG) {
+        for (const ref of this.cfg.layers[fag]) {
+          const layer = await this.resolveFeatureLayer(ref);
+          if (!layer) continue;
+          await layer.load();
+          this.resolved.push({ fag, url: lagUrl(layer), title: layer.title ?? fag, kind: geometriType(layer) });
+        }
+      }
+      this.inspTable = this.cfg.inspeksjonTable ? await this.resolveFeatureLayer(this.cfg.inspeksjonTable) : null;
+      this.dokTable = this.cfg.dokumentTable ? await this.resolveFeatureLayer(this.cfg.dokumentTable) : null;
+      this.oppgaveLayer = this.cfg.oppgaveLayer ? await this.resolveFeatureLayer(this.cfg.oppgaveLayer) : null;
+    } else {
+      await this.autoKartlegg();
+    }
+    await Promise.all([this.inspTable?.load(), this.dokTable?.load(), this.oppgaveLayer?.load()]);
+
+    // Feltnavn med andre store/små bokstaver enn mappingen (vanlig i ArcGIS Online)
+    const forste = this.resolved[0] ? new FeatureLayer({ url: this.resolved[0].url }) : null;
+    await forste?.load().catch(() => undefined);
+    const feltnavn = (l: FeatureLayer | null) => (l?.fields ?? []).map((f) => f.name);
+    if (forste?.fields) this.fields.objekt = tilpassFelt(this.fields.objekt, feltnavn(forste));
+    if (this.inspTable?.fields) this.fields.inspeksjon = tilpassFelt(this.fields.inspeksjon, feltnavn(this.inspTable));
+    if (this.dokTable?.fields) this.fields.dokument = tilpassFelt(this.fields.dokument, feltnavn(this.dokTable));
+    if (this.oppgaveLayer?.fields) this.fields.oppgave = tilpassFelt(this.fields.oppgave, feltnavn(this.oppgaveLayer));
+    this.objektFields = this.fields.objekt;
+    this.objektFeltFinnes = new Set(feltnavn(forste));
+
+    this.queryLayers = this.resolved.map((r) => new FeatureLayer({ url: r.url, outFields: ["*"], ...(r.where ? { definitionExpression: r.where } : {}) }));
+    this.lokalt = [...(this.inspTable ? [] : (["inspeksjoner"] as const)), ...(this.oppgaveLayer ? [] : (["oppgaver"] as const))];
+  }
+
+  /** Lag og tabeller i webkartet med felt (for automatisk kartlegging og diagnose). */
+  private async lagIWebkartet(): Promise<{ info: LagInfo; layer: FeatureLayer }[]> {
+    if (!this.webmap) return [];
+    const alle = [...this.webmap.allLayers.toArray(), ...this.webmap.allTables.toArray()].filter((l) => l.type === "feature") as FeatureLayer[];
+    const ut = await Promise.all(
+      alle.map(async (l) => {
+        await l.load().catch(() => undefined);
+        if (!l.loaded || !l.url) return null;
+        const info: LagInfo = {
+          tittel: l.title ?? "(uten tittel)",
+          type: l.isTable || !l.geometryType ? "table" : "layer",
+          url: lagUrl(l),
+          felt: (l.fields ?? []).map((f) => f.name),
+        };
+        return { info, layer: l };
+      }),
+    );
+    return ut.filter((x): x is { info: LagInfo; layer: FeatureLayer } => !!x);
+  }
+
+  private async autoKartlegg() {
+    const lag = await this.lagIWebkartet();
+    const m = (this.auto = finnLag(lag.map((l) => l.info)));
+    for (const info of m.objektlag) {
+      const l = lag.find((x) => x.info === info)!.layer;
+      const kind = geometriType(l);
+      const fagFelt = l.fields?.find((f) => f.name.toLowerCase() === this.cfg.fields.objekt.fag.toLowerCase())?.name;
+      let fager: Fag[] = [];
+      if (fagFelt) {
+        const fs = await l.queryFeatures({ where: "1=1", outFields: [fagFelt], returnDistinctValues: true, returnGeometry: false }).catch(() => null);
+        fager = (fs?.features ?? []).map((g) => g.attributes[fagFelt] as Fag).filter((v) => FAG.includes(v));
+      }
+      if (fager.length <= 1) {
+        this.resolved.push({ fag: fager[0] ?? fagFraTittel(info.tittel), url: info.url, title: info.tittel, kind });
+      } else {
+        for (const fag of fager) {
+          this.resolved.push({ fag, url: info.url, title: `${info.tittel} – ${fag}`, kind, where: `${fagFelt} = ${sqlString(fag)}` });
+        }
       }
     }
-    this.queryLayers = this.resolved.map((r) => new FeatureLayer({ url: r.url, outFields: ["*"] }));
-    this.inspTable = this.cfg.inspeksjonTable ? await this.resolveFeatureLayer(this.cfg.inspeksjonTable) : null;
-    this.dokTable = this.cfg.dokumentTable ? await this.resolveFeatureLayer(this.cfg.dokumentTable) : null;
-    this.oppgaveLayer = this.cfg.oppgaveLayer ? await this.resolveFeatureLayer(this.cfg.oppgaveLayer) : null;
-    await Promise.all([this.inspTable?.load(), this.dokTable?.load(), this.oppgaveLayer?.load()]);
+    const tabell = (i: LagInfo | null) => (i ? new FeatureLayer({ url: i.url, outFields: ["*"] }) : null);
+    this.inspTable = tabell(m.inspeksjon);
+    this.oppgaveLayer = tabell(m.oppgave);
+    this.dokTable = tabell(m.dokument);
+  }
+
+  /** Webscenen (VITE_WEBSCENE_ID) for 3D, lastet én gang. */
+  webscene(): Promise<WebScene | null> {
+    if (!this.cfg.websceneId) return Promise.resolve(null);
+    this.webscenePromise ??= (async () => {
+      const ws = new WebScene({ portalItem: { id: this.cfg.websceneId, portal: this.portal } });
+      await ws.loadAll();
+      return ws;
+    })().catch((e: unknown) => {
+      console.warn("Webscenen kunne ikke lastes", e);
+      return null;
+    });
+    return this.webscenePromise;
   }
 
   private async resolveFeatureLayer(ref: LayerRef): Promise<FeatureLayer | null> {
     if (ref.kind === "url") return new FeatureLayer({ url: ref.url, outFields: ["*"] });
     const all = [...(this.webmap?.allLayers.toArray() ?? []), ...(this.webmap?.allTables.toArray() ?? [])];
     const hit = all.find((l) => l.title?.trim().toLowerCase() === ref.title.toLowerCase());
-    if (hit && hit.type === "feature") {
-      const fl = hit as FeatureLayer;
-      return new FeatureLayer({ url: `${fl.url}/${fl.layerId}`, outFields: ["*"] });
-    }
+    if (hit && hit.type === "feature") return new FeatureLayer({ url: lagUrl(hit as FeatureLayer), outFields: ["*"] });
     console.warn(`Fant ikke laget «${ref.title}» i webkartet`);
     return null;
+  }
+
+  /** URL-ene til objektlagene og tabellene (de vises ikke som referanselag). */
+  private brukteUrler(): Set<string> {
+    return new Set([...this.resolved.map((r) => r.url), lagUrl(this.inspTable), lagUrl(this.oppgaveLayer), lagUrl(this.dokTable)].filter(Boolean));
   }
 
   createObjectLayers(): ObjectLayerHandle[] {
@@ -124,22 +255,41 @@ export class PortalDataService implements DataService {
       fag: r.fag,
       geometryKind: r.kind,
       title: r.title,
-      layer: new FeatureLayer({ url: r.url, outFields: ["*"], popupEnabled: false, elevationInfo: { mode: "absolute-height" } }),
+      layer: new FeatureLayer({
+        url: r.url,
+        outFields: ["*"],
+        popupEnabled: false,
+        elevationInfo: { mode: "absolute-height" },
+        ...(r.where ? { definitionExpression: r.where } : {}),
+      }),
     }));
   }
 
   async createReferenceLayers(): Promise<Layer[]> {
     if (!this.webmap) return [];
-    const objectUrls = new Set(this.resolved.map((r) => r.url));
+    const brukt = this.brukteUrler();
     return this.webmap.layers
       .toArray()
-      .filter((l) => !(l.type === "feature" && objectUrls.has(`${(l as FeatureLayer).url}/${(l as FeatureLayer).layerId}`)))
+      .filter((l) => !(l.type === "feature" && brukt.has(lagUrl(l as FeatureLayer))))
+      .map((l) => (l as unknown as { clone(): Layer }).clone());
+  }
+
+  /** Operative lag i webscenen som ikke er objektlag (fagmodeller, bygg, mesh osv.). */
+  async sceneLag(): Promise<Layer[]> {
+    const ws = await this.webscene();
+    if (!ws) return [];
+    const brukt = this.brukteUrler();
+    return ws.layers
+      .toArray()
+      .filter((l) => !(l.type === "feature" && brukt.has(lagUrl(l as FeatureLayer))))
       .map((l) => (l as unknown as { clone(): Layer }).clone());
   }
 
   async objectStats(): Promise<ObjektStat[]> {
     const f = this.objektFields;
-    const outFields = [f.globalid, f.fag, f.objekttype, f.mmi, f.status_inspeksjon, f.revisjon, f.modellfil, f.rev_dato, f.fagmodell];
+    const alle = [f.globalid, f.fag, f.objekttype, f.mmi, f.status_inspeksjon, f.revisjon, f.modellfil, f.rev_dato, f.fagmodell];
+    // Felt laget ikke har, gir feil i spørringen
+    const outFields = this.objektFeltFinnes.size ? alle.filter((x) => this.objektFeltFinnes.has(x)) : alle;
     const out: ObjektStat[] = [];
     for (const layer of this.queryLayers) {
       const pageSize = layer.capabilities?.query.maxRecordCount ?? 1000;
@@ -149,12 +299,20 @@ export class PortalDataService implements DataService {
         if (!fs.exceededTransferLimit) break;
       }
     }
-    return out;
+    return out.map((o) => this.medLokalStatus(o));
+  }
+
+  /** Status fra lokale inspeksjoner (når inspeksjonstabellen mangler). */
+  private medLokalStatus<T extends Pick<Objekt, "globalid" | "status_inspeksjon">>(o: T): T {
+    if (!this.lokalInsp.length) return o;
+    const siste = this.lokalInsp.filter((i) => i.objekt_globalid === o.globalid).sort((a, b) => b.tidspunkt.localeCompare(a.tidspunkt))[0];
+    return siste ? { ...o, status_inspeksjon: siste.tilstandsgrad >= 2 ? "Avvik" : "OK" } : o;
   }
 
   async getObject(globalid: string): Promise<ObjektTreff | null> {
     const hits = await queryLayersWhere(this.queryLayers, this.objektFields, `${this.objektFields.globalid} = ${sqlString(globalid)}`, 1);
-    return hits[0] ?? null;
+    const t = hits[0];
+    return t ? { ...t, objekt: this.medLokalStatus(t.objekt) } : null;
   }
 
   async findByObjektId(objektId: string): Promise<ObjektTreff | null> {
@@ -177,14 +335,14 @@ export class PortalDataService implements DataService {
 
   async getDocuments(globalid: string): Promise<Dokument[]> {
     if (!this.dokTable) return [];
-    const f = this.cfg.fields.dokument;
+    const f = this.fields.dokument;
     const fs = await this.dokTable.queryFeatures({ where: `${f.objekt_globalid} = ${sqlString(globalid)}`, outFields: ["*"] });
     return fs.features.map((g) => fromAttributes<Dokument>(g.attributes, f));
   }
 
   async getInspections(globalid: string): Promise<Inspeksjon[]> {
-    if (!this.inspTable) return [];
-    const f = this.cfg.fields.inspeksjon;
+    if (!this.inspTable) return this.lokalInsp.filter((i) => i.objekt_globalid === globalid);
+    const f = this.fields.inspeksjon;
     const fs = await this.inspTable.queryFeatures({
       where: `${f.objekt_globalid} = ${sqlString(globalid)}`,
       outFields: ["*"],
@@ -203,8 +361,8 @@ export class PortalDataService implements DataService {
   }
 
   async allInspections(): Promise<Inspeksjon[]> {
-    if (!this.inspTable) return [];
-    const f = this.cfg.fields.inspeksjon;
+    if (!this.inspTable) return [...this.lokalInsp];
+    const f = this.fields.inspeksjon;
     const out: Inspeksjon[] = [];
     const pageSize = this.inspTable.capabilities?.query.maxRecordCount ?? 1000;
     for (let start = 0; ; start += pageSize) {
@@ -220,16 +378,23 @@ export class PortalDataService implements DataService {
   }
 
   async getTasks(): Promise<OppgaveMedLogg[]> {
-    if (!this.oppgaveLayer) return [];
-    const f = this.cfg.fields.oppgave;
+    if (!this.oppgaveLayer) return this.lokalOppg.map((o) => ({ ...o, logg: [...o.logg] }));
+    const f = this.fields.oppgave;
     const fs = await this.oppgaveLayer.queryFeatures({ where: "1=1", outFields: ["*"], returnGeometry: false });
     // TODO(SVV): logg for oppgaver (f.eks. relatert tabell eller editor tracking)
     return fs.features.map((g) => ({ ...fromAttributes<Oppgave>(g.attributes, f), logg: [] }));
   }
 
-  private async updateTask(oppgaveId: string, patch: Partial<Oppgave>) {
-    if (!this.oppgaveLayer) throw new Error("Oppgavelaget er ikke konfigurert");
-    const f = this.cfg.fields.oppgave;
+  private async updateTask(oppgaveId: string, patch: Partial<Oppgave>, loggTekst: string) {
+    if (!this.oppgaveLayer) {
+      const o = this.lokalOppg.find((x) => x.oppgave_id === oppgaveId);
+      if (!o) throw new Error(`Fant ikke oppgave ${oppgaveId}`);
+      Object.assign(o, patch);
+      o.logg.push({ tidspunkt: new Date().toISOString(), tekst: loggTekst });
+      skrivLokalt(LOKAL_OPPG, this.lokalOppg);
+      return;
+    }
+    const f = this.fields.oppgave;
     const fs = await this.oppgaveLayer.queryFeatures({ where: `${f.oppgave_id} = ${sqlString(oppgaveId)}`, outFields: [this.oppgaveLayer.objectIdField] });
     const feat = fs.features[0];
     if (!feat) throw new Error(`Fant ikke oppgave ${oppgaveId}`);
@@ -240,18 +405,24 @@ export class PortalDataService implements DataService {
   }
 
   reassignTask(oppgaveId: string, tildelt: string) {
-    return this.updateTask(oppgaveId, { tildelt });
+    return this.updateTask(oppgaveId, { tildelt }, `Tildelt ${tildelt}`);
   }
 
   setTaskStatus(oppgaveId: string, status: OppgaveStatus) {
-    return this.updateTask(oppgaveId, { status });
+    return this.updateTask(oppgaveId, { status }, `Status endret til ${status}`);
   }
 
   async createTask(o: Omit<Oppgave, "oppgave_id">): Promise<string> {
-    if (!this.oppgaveLayer) throw new Error("Oppgavelaget er ikke konfigurert");
+    if (!this.oppgaveLayer) {
+      const max = Math.max(1000, ...this.lokalOppg.map((x) => Number(x.oppgave_id.replace(/\D/g, "")) || 0));
+      const oppgave_id = `OPG-${max + 1}`;
+      this.lokalOppg.push({ ...o, oppgave_id, logg: [{ tidspunkt: new Date().toISOString(), tekst: `Opprettet av ${this.user.navn}` }] });
+      skrivLokalt(LOKAL_OPPG, this.lokalOppg);
+      return oppgave_id;
+    }
     // TODO(SVV): oppgave-ID bør genereres av tjenesten (Attribute Rule / sekvens). Midlertidig lokal ID.
     const oppgave_id = `OPG-${Date.now().toString(36).toUpperCase()}`;
-    const attributes = toAttributes<Oppgave>({ ...o, oppgave_id }, this.cfg.fields.oppgave);
+    const attributes = toAttributes<Oppgave>({ ...o, oppgave_id }, this.fields.oppgave);
     const res = await this.oppgaveLayer.applyEdits({ addFeatures: [new Graphic({ attributes })] });
     const err = res.addFeatureResults[0]?.error;
     if (err) throw new Error(err.message);
@@ -259,9 +430,16 @@ export class PortalDataService implements DataService {
   }
 
   async submitInspection(insp: Inspeksjon, bilder: Fotovedlegg[]): Promise<InnsendingResultat> {
-    if (!this.inspTable) throw new Error("Inspeksjonstabellen er ikke konfigurert");
+    if (!this.inspTable) {
+      // Bilder er for store for nettleserlagringen og regnes som ikke lastet opp.
+      const globalid = `{${crypto.randomUUID().toUpperCase()}}`;
+      this.lokalInsp.push({ ...insp, globalid, antall_bilder: 0 });
+      skrivLokalt(LOKAL_INSP, this.lokalInsp);
+      if (insp.oppgave_id) await this.setTaskStatus(insp.oppgave_id, "Klar for kontroll").catch(() => undefined);
+      return { globalid, vedleggFeilet: bilder.length };
+    }
     const { antall_bilder: _n, globalid: _g, ...rest } = insp;
-    const alle = toAttributes<Inspeksjon>(rest, this.cfg.fields.inspeksjon);
+    const alle = toAttributes<Inspeksjon>(rest, this.fields.inspeksjon);
     // Felt tabellen ikke har (f.eks. konsekvensgrad/sjekkliste før tjenesten er utvidet) utelates.
     const finnes = new Set((this.inspTable.fields ?? []).map((f) => f.name.toLowerCase()));
     const attributes = finnes.size ? Object.fromEntries(Object.entries(alle).filter(([k]) => finnes.has(k.toLowerCase()))) : alle;
@@ -285,21 +463,36 @@ export class PortalDataService implements DataService {
     return { globalid: add.globalId ?? String(add.objectId), vedleggFeilet };
   }
 
-  /** Oversikt over lag, tabeller og felt i webkartet (for ?diagnose=1). */
-  async diagnose(): Promise<{ tittel: string; type: string; url: string; felt: string[] }[]> {
-    if (!this.webmap) return [];
-    const items = [...this.webmap.allLayers.toArray(), ...this.webmap.allTables.toArray()];
-    return Promise.all(
-      items.map(async (l) => {
-        await l.load().catch(() => undefined);
-        const fl = l as FeatureLayer;
-        return {
-          tittel: l.title ?? "(uten tittel)",
-          type: l.type,
-          url: fl.url ? `${fl.url}${fl.layerId != null ? `/${fl.layerId}` : ""}` : "",
-          felt: (fl.fields ?? []).map((f) => `${f.name} (${f.type})`),
-        };
-      }),
-    );
+  /** Oversikt over lag, tabeller og felt i webkartet, med rollen hvert lag har fått (for ?diagnose=1). */
+  async diagnose(): Promise<DiagnoseRad[]> {
+    const lag = await this.lagIWebkartet();
+    const rolle = (url: string): string => {
+      const r = this.resolved.filter((x) => x.url === url);
+      if (r.length) return `Objektlag (${r.map((x) => x.fag).join(", ")})`;
+      if (url === lagUrl(this.inspTable)) return "Inspeksjoner";
+      if (url === lagUrl(this.oppgaveLayer)) return "Oppgaver";
+      if (url === lagUrl(this.dokTable)) return "Dokumenter";
+      return "Referanselag";
+    };
+    const mangler = (r: string, felt: string[]): string[] => {
+      if (r.startsWith("Objektlag")) return manglendeFelt(this.cfg.fields.objekt, felt);
+      if (r === "Inspeksjoner") return manglendeFelt(this.cfg.fields.inspeksjon, felt).filter((k) => k !== "globalid" && k !== "antall_bilder");
+      if (r === "Oppgaver") return manglendeFelt(this.cfg.fields.oppgave, felt);
+      if (r === "Dokumenter") return manglendeFelt(this.cfg.fields.dokument, felt);
+      return [];
+    };
+    return lag.map(({ info, layer }) => {
+      const r = rolle(info.url);
+      return {
+        tittel: info.tittel,
+        type: info.type === "table" ? "tabell" : (layer.geometryType ?? "lag"),
+        url: info.url,
+        rolle: r,
+        redigerbar: !!layer.capabilities?.operations?.supportsAdd,
+        wkid: layer.spatialReference?.wkid ?? null,
+        felt: (layer.fields ?? []).map((f) => `${f.name} (${f.type.replace("esriFieldType", "")})`),
+        mangler: mangler(r, info.felt),
+      };
+    });
   }
 }

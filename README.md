@@ -119,6 +119,22 @@ Se `.env.example`. De viktigste variablene:
 | `VITE_NVDB_CLIENT` | Verdi for `X-Client`-headeren mot NVDB |
 | `VITE_GPS_MAX_ACCURACY_M`, `VITE_GEOFENCE_RADIUS_M` | Geofence (standard 10 m og 15 m) |
 
+### Pilot på ArcGIS Online
+
+Piloten kjører mot ArcGIS Online-organisasjonen `geodata.maps.arcgis.com`, med webkart `d41d15c2c72b4498992d7b6428d7f23e` og webscene `87fcf27968834310a7da2fda6b637d05`. Appen ser fortsatt ut som SVV-appen. Bare `VITE_PORTAL_URL`, `VITE_APP_ID` og ID-ene er forskjellige, og samme kode fungerer mot `kart.vegvesen.no/portal`.
+
+- **App-registrering:** gå til **Innhold → Nytt element → Utviklerlegitimasjon → OAuth 2.0-legitimasjon**. Legg inn redirect-URL-ene `http://localhost:5180/` og `http://localhost:4180/`. Client ID settes i `VITE_APP_ID`. Client Secret skal ikke brukes.
+- **Automatisk kartlegging:** når `VITE_LAYERS_*` og tabellvariablene er tomme, kjenner appen igjen lagene i webkartet ut fra feltene:
+  - `objekt_id` gir objektlag. Har laget et `fag`-felt med flere verdier, deles det per fag.
+  - `tilstandsgrad` og `objekt_globalid` gir inspeksjoner.
+  - `oppgave_id` gir oppgaver.
+  - `objekt_globalid` og `url` gir dokumenter.
+
+  Det spiller ingen rolle om feltnavnene har store eller små bokstaver.
+- **Manglende tabeller:** mangler inspeksjons- eller oppgavetabell, lagres postene lokalt i nettleseren, og brukeren får beskjed.
+- **3D:** er webscenen global (Web Mercator), brukes webscenens bakgrunn, terreng og kamera. App-objektene og NVDB projiseres inn. Er den i UTM33, legges lagene inn i den lokale scenen med Geodata Online-terreng.
+- **Uten innlogging:** `npm run dev:mock` kjører mock-modus (`.env.mock`).
+
 **Feltmapping:** De logiske feltnavnene ligger i `src/data/schema.ts`. Mappingen til SVVs tjenester justeres i `src/config.ts` (`fields`). Kjør appen i portalmodus med `?diagnose=1` for å se lag og felt i webkartet.
 
 ## Ekte data og fagkunnskap
