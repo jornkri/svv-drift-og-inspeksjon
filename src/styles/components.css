@@ -1779,18 +1779,97 @@ svv-login {
 }
 
 /* Gruppeavkrysning og tegnforklaring for temalag */
-.laggruppe__undertittel--valg {
+/* Temalag: sammenleggbare grupper */
+.lenkeknapp {
+  border: 0;
+  background: none;
+  padding: 2px 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--svv-link, #005f9e);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.temagruppe__hode {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-right: 12px;
+}
+.temagruppe__hode:hover {
+  background: var(--svv-gray-light);
+}
+.temagruppe__knapp {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 0 0 8px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: inherit;
+  text-align: left;
   cursor: pointer;
 }
-.lagrad--innrykk {
-  padding-left: 20px;
+.temaikon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--svv-gray-dark);
 }
-.lagrad__legende {
+.tegnforklaring__lag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.temagruppe__pil {
+  display: inline-flex;
+  transition: transform 0.15s ease;
+  color: var(--svv-gray-dark);
+}
+.temagruppe.is-apen .temagruppe__pil {
+  transform: rotate(90deg);
+}
+.temagruppe__navn {
+  flex: 1;
+}
+.temagruppe__antall {
+  font-size: 12px;
+  color: var(--svv-grey-dark-80);
+  min-width: 2.5em;
+  text-align: right;
+}
+.temagruppe__antall.is-aktiv {
+  color: var(--svv-gray-dark);
+  font-weight: 600;
+}
+.temagruppe__lag {
+  margin: 0 12px 6px 19px;
+  padding-left: 8px;
+  border-left: 1px solid var(--svv-gray-regular-dark);
+}
+.temarad {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 2px 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.temarad:hover {
+  background: var(--svv-gray-light);
+}
+.temarad__legende {
   display: block;
-  padding: 0 0 6px 46px;
+  padding: 0 0 6px 28px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .temagruppe__pil {
+    transition: none;
+  }
 }
 .tegnforklaring__lag {
   margin: 10px 0 4px;

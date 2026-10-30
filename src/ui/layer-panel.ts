@@ -13,6 +13,7 @@ import { hasGdoAccess } from "../map/basemaps.ts";
 import { NVDB_FARGE, NVDB_TYPER, type NvdbType } from "../nvdb/vegobjekter.ts";
 import type { TemalagDef } from "../config.ts";
 import "./tema-legende.ts";
+import { gruppeIkon, temaIkon } from "./tema-ikoner.ts";
 
 /** Avkrysning for en gruppe: på når alle er på, delvis når noen er på. */
 function gruppeBoks(paa: number, totalt: number, navn: string, sett: (paa: boolean) => void) {
@@ -43,6 +44,8 @@ export function nvdbSwatch(t: NvdbType) {
 /** Flytende lagpanel med fanene Lag og Tegnforklaring. */
 export class SvvLayerPanel extends StoreElement {
   private types: Record<string, string[]> = {};
+  /** Åpne/lukkede temagrupper (brukerens valg mens panelet er åpent) */
+  private temaApne = new Map<string, boolean>();
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -180,31 +183,57 @@ export class SvvLayerPanel extends StoreElement {
     const grupper = [...new Set(cfg.gdo.temalag.map((t) => t.gruppe))];
     const paa = (l: TemalagDef[]) => l.filter((t) => s.referanse[`tema:${t.id}`]).length;
     const sett = (l: TemalagDef[], v: boolean) => store.set({ referanse: { ...s.referanse, ...Object.fromEntries(l.map((t) => [`tema:${t.id}`, v])) } });
+    const totaltPaa = paa(cfg.gdo.temalag);
     return html`<div class="laggruppe">
-        <label class="laggruppe__hode">
-          ${gruppeBoks(paa(cfg.gdo.temalag), cfg.gdo.temalag.length, "temalag", (v) => sett(cfg.gdo.temalag, v))}
+        <div class="laggruppe__hode laggruppe__hode--tekst" title="Klikk i kartet for å se informasjon fra temalagene som er slått på.">
           <span class="kategori">TEMA</span>
-          <span class="laggruppe__antall">${paa(cfg.gdo.temalag) ? `${paa(cfg.gdo.temalag)} på` : ""}</span>
-        </label>
+          ${totaltPaa
+            ? html`<button class="lenkeknapp" @click=${() => sett(cfg.gdo.temalag, false)}>Slå av alle (${totaltPaa})</button>`
+            : html`<span class="laggruppe__antall">${cfg.gdo.temalag.length} lag</span>`}
+        </div>
         ${grupper.map((g) => {
           const lag = cfg.gdo.temalag.filter((t) => t.gruppe === g);
-          return html`<label class="laggruppe__undertittel laggruppe__undertittel--valg">
-              ${gruppeBoks(paa(lag), lag.length, g, (v) => sett(lag, v))}
-              <span>${g}</span>
-            </label>
-            ${lag.map(
-              (t) => html`<label class="lagrad lagrad--innrykk" title=${t.beskrivelse}>
-                  <input
-                    type="checkbox"
-                    .checked=${!!s.referanse[`tema:${t.id}`]}
-                    @change=${() => store.set({ referanse: { ...s.referanse, [`tema:${t.id}`]: !s.referanse[`tema:${t.id}`] } })}
-                  />
-                  <span class="lagrad__navn">${t.navn}</span>
-                </label>
-                ${s.referanse[`tema:${t.id}`] ? html`<svv-tema-legende class="lagrad__legende" .def=${t} kompakt></svv-tema-legende>` : nothing}`,
-            )}`;
+          const n = paa(lag);
+          // Grupper med aktive lag er åpne; brukerens valg huskes mens panelet er åpent
+          const apen = this.temaApne.get(g) ?? n > 0;
+          const id = `temagruppe-${grupper.indexOf(g)}`;
+          // Knapp (åpne/lukke) og avkrysning ligger ved siden av hverandre – ikke nestet
+          return html`<div class="temagruppe ${apen ? "is-apen" : ""}">
+            <div class="temagruppe__hode">
+              <button
+                class="temagruppe__knapp"
+                aria-expanded=${apen}
+                aria-controls=${id}
+                @click=${() => {
+                  this.temaApne.set(g, !apen);
+                  this.requestUpdate();
+                }}
+              >
+                <span class="temagruppe__pil" aria-hidden="true">${icons.chevronRight(16)}</span>
+                <span class="temaikon" aria-hidden="true">${gruppeIkon(g)}</span>
+                <span class="temagruppe__navn">${g}</span>
+                <span class="temagruppe__antall ${n ? "is-aktiv" : ""}">${n ? `${n} av ${lag.length}` : lag.length}</span>
+              </button>
+              ${gruppeBoks(n, lag.length, g, (v) => sett(lag, v))}
+            </div>
+            ${apen
+              ? html`<div class="temagruppe__lag" id=${id}>
+                  ${lag.map(
+                    (t) => html`<label class="temarad" title=${t.beskrivelse}>
+                        <input
+                          type="checkbox"
+                          .checked=${!!s.referanse[`tema:${t.id}`]}
+                          @change=${() => store.set({ referanse: { ...s.referanse, [`tema:${t.id}`]: !s.referanse[`tema:${t.id}`] } })}
+                        />
+                        <span class="temaikon" aria-hidden="true">${temaIkon(t)}</span>
+                        <span class="lagrad__navn">${t.navn}</span>
+                      </label>
+                      ${s.referanse[`tema:${t.id}`] ? html`<svv-tema-legende class="temarad__legende" .def=${t} kompakt></svv-tema-legende>` : nothing}`,
+                  )}
+                </div>`
+              : nothing}
+          </div>`;
         })}
-        <p class="laggruppe__merknad">Klikk i kartet for å se informasjon fra temalagene som er slått på.</p>
       </div>
       <div class="laggruppe">
         <label class="laggruppe__hode laggruppe__hode--tekst" for="flyfoto-aar"><span class="kategori">HISTORISKE FLYFOTO</span></label>
@@ -228,7 +257,10 @@ export class SvvLayerPanel extends StoreElement {
     const aktive = services().cfg.gdo.temalag.filter((t) => s.referanse[`tema:${t.id}`]);
     if (!aktive.length) return nothing;
     return html`<h3 class="kategori">TEMADATA</h3>
-      ${aktive.map((t) => html`<h4 class="tegnforklaring__lag">${t.navn}</h4><svv-tema-legende .def=${t}></svv-tema-legende>`)}`;
+      ${aktive.map(
+        (t) => html`<h4 class="tegnforklaring__lag"><span class="temaikon" aria-hidden="true">${temaIkon(t)}</span>${t.navn}</h4>
+          <svv-tema-legende .def=${t}></svv-tema-legende>`,
+      )}`;
   }
 
   private nvdbLegend() {
