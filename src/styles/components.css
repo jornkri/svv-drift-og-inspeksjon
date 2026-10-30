@@ -1201,6 +1201,14 @@ input[type="radio"] {
 }
 
 /* ---------- Objektpanel ---------- */
+/* Panelene ligger i egne elementer; de må begrense høyden, ellers ruller ikke innholdet */
+svv-object-panel,
+svv-nvdb-panel,
+svv-tema-panel {
+  display: flex;
+  min-height: 0;
+  max-height: 100%;
+}
 .objektpanel {
   flex: 0 0 400px;
   width: 400px;
