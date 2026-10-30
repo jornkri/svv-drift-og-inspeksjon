@@ -90,7 +90,7 @@ export const initialState: AppState = {
   layerPanelOpen: true,
   layerPanelTab: "lag",
   popover: null,
-  basemap: "graatone",
+  basemap: "kanvas",
   referanse: { nvdb: true },
   counts: null,
   selection: null,

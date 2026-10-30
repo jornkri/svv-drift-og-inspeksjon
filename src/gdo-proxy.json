@@ -11,5 +11,11 @@
   "Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer": "https://utility.arcgis.com/usrsvcs/servers/c41398b80aef4454a5dde4286a0e07db/rest/services/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer",
   "Geocache_UTM33_EUREF89/GeocacheHelning/MapServer": "https://utility.arcgis.com/usrsvcs/servers/d0c5ae97462047ec8afa5b1a8f90435e/rest/services/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer",
   "Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer": "https://utility.arcgis.com/usrsvcs/servers/f926ccb8ffe341f798726453702a7181/rest/services/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer",
-  "GeocacheVector/GeocacheHoydekurver/VectorTileServer": "direkte"
+  "GeocacheVector/GeocacheHoydekurver/VectorTileServer": "direkte",
+  "GeocacheVector/GeocacheKanvas/VectorTileServer": "direkte",
+  "GeocacheVector/GeocacheKanvasMork/VectorTileServer": "direkte",
+  "GeocacheVector/GeocacheTrafikk/VectorTileServer": "direkte",
+  "Geocache_UTM33_EUREF89/GeocacheTerrengskygge/MapServer": "direkte",
+  "Geocache_UTM33_EUREF89/GeocacheBilder/MapServer": "direkte",
+  "Geocache_UTM33_EUREF89/GeocacheHybrid/MapServer": "direkte"
 }

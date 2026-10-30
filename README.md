@@ -158,6 +158,7 @@ Piloten kjører mot ArcGIS Online-organisasjonen `geodata.maps.arcgis.com`, med 
   - objektet ligger i kameraets synsfelt (±35°, inntil 150 m)
 
   Kilden ligger bak grensesnittet `FeltbildeKilde` (`src/data/feltbilder.ts`), slik at Trimble Connect kan erstatte den senere.
+- **Bakgrunnskart:** standard er Kanvas (Geodata Online) med Terrengskygge blandet inn (multiply, 45 %). I tillegg finnes Gråtone, Basis, Bilder, Bilder hybrid, Landskap, Mørk kanvas og NVDB-cache. NVDB-cache er SVVs «NVDB-cache Vektor (UTM33)» (`GeocacheTrafikk`). Åpne GDO-tjenester er merket `direkte` i `src/gdo-proxy.json`. De andre går via proxy i AGOL.
 - **Punktsky:** et punktskylag i webscenen (i piloten `E45_dense_point_cloud`) får egne kontroller i 3D:
   - farge etter ekte farger (RGB) eller høyde (ELEVATION, spenn fra tjenestens statistikk)
   - punktstørrelse og detaljnivå

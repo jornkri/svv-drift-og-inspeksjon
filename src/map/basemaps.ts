@@ -56,14 +56,18 @@ export function currentGdoToken(): string | null {
 
 export function createBasemap(def: BasemapDef, dim: "2d" | "3d"): Basemap {
   const defs = dim === "2d" ? def.layers : def.layers3d;
-  const layers = defs.map((l) => (l.type === "vector" ? new VectorTileLayer({ url: l.url }) : new TileLayer({ url: l.url })));
-  // Hybrid: bildelaget er bakgrunn, referanselaget legges oppå
-  const [base, ...reference] = layers;
+  const layers = defs.map((l) => {
+    const felles = { url: l.url, ...(l.opacity != null ? { opacity: l.opacity } : {}), ...(l.blend ? { blendMode: l.blend } : {}) };
+    return l.type === "vector" ? new VectorTileLayer(felles) : new TileLayer(felles);
+  });
+  // Første lag er bakgrunn; lag som blandes inn (terrengskygge) hører også til bakgrunnen.
+  // Øvrige lag (hybrid) er referanselag oppå kartlagene.
+  const base = layers.filter((_, i) => i === 0 || !!defs[i]!.blend);
   return new Basemap({
     id: `${def.id}-${dim}`,
     title: def.navn,
-    baseLayers: base ? [base] : [],
-    referenceLayers: reference,
+    baseLayers: base,
+    referenceLayers: layers.filter((l) => !base.includes(l)),
   });
 }
 

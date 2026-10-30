@@ -106,7 +106,7 @@ export class SvvTasksView extends StoreElement {
     if (!this.miniView || (el.view as MapView | undefined) !== this.miniView) {
       await customElements.whenDefined("arcgis-map");
       const { cfg } = services();
-      const def = cfg.gdo.basemaps.find((b) => b.id === "graatone") ?? cfg.gdo.basemaps[0];
+      const def = cfg.gdo.basemaps.find((b) => b.id === "kanvas") ?? cfg.gdo.basemaps[0];
       const map = new EsriMap(def && hasGdoAccess() ? { basemap: createBasemap(def, "2d") } : {});
       this.miniLayer = new GraphicsLayer();
       map.add(this.miniLayer);

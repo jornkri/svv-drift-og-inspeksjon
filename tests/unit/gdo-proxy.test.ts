@@ -37,6 +37,16 @@ describe("bakgrunnskart via proxy", () => {
     expect(b.basemaps[0]!.layers3d).toEqual(b.basemaps[0]!.layers);
   });
 
+  it("åpne tjenester («direkte») brukes uten proxy: Kanvas med terrengskygge først", () => {
+    const proxy = {
+      "GeocacheVector/GeocacheKanvas/VectorTileServer": "direkte",
+      "Geocache_UTM33_EUREF89/GeocacheTerrengskygge/MapServer": "direkte",
+    };
+    const b = begrensTilProxy(brukGdoProxy(parseConfig({}, {}).gdo, proxy));
+    expect(b.basemaps.map((m) => m.id)).toEqual(["kanvas"]);
+    expect(b.basemaps[0]!.layers.map((l) => l.blend ?? "")).toEqual(["", "multiply"]);
+  });
+
   it("VITE_ELEVATION_URL overstyrer høydemodellen", () => {
     const u = "https://tiles.arcgis.com/tiles/x/arcgis/rest/services/Terreng/ImageServer";
     expect(begrensTilProxy(parseConfig({ VITE_ELEVATION_URL: u }, {}).gdo).elevationUrl).toBe(u);

@@ -29,13 +29,21 @@ export interface BasemapDef {
   id: BasemapId;
   navn: string;
   /** Tjenester i UTM33 (EUREF89). Første lag bestemmer flisskjemaet. */
-  layers: { type: "vector" | "tile"; url: string }[];
+  layers: BasemapLag[];
   /** Rasterutgave for 3D (lokal scene) */
-  layers3d: { type: "vector" | "tile"; url: string }[];
+  layers3d: BasemapLag[];
   thumb: string;
 }
 
-export type BasemapId = "graatone" | "basis" | "bilder" | "bilder_hybrid" | "landskap" | "mork_kanvas";
+export interface BasemapLag {
+  type: "vector" | "tile";
+  url: string;
+  /** Blandes inn i bakgrunnen (f.eks. terrengskygge over Kanvas) i stedet for å legges oppå som referanselag */
+  blend?: "multiply";
+  opacity?: number;
+}
+
+export type BasemapId = "kanvas" | "graatone" | "basis" | "bilder" | "bilder_hybrid" | "landskap" | "mork_kanvas" | "nvdb_cache";
 
 export interface AppConfig {
   useMock: boolean;
@@ -182,6 +190,17 @@ const GDO_VT = "https://vector.services.geodataonline.no/arcgis/rest/services/Ge
  */
 export const GDO_BASEMAPS: BasemapDef[] = [
   {
+    // Nedtonet vektorkart med terrengskygge blandet inn (multiply); i 3D gir terrenget skyggen
+    id: "kanvas",
+    navn: "Kanvas",
+    layers: [
+      { type: "vector", url: `${GDO_VT}/GeocacheKanvas/VectorTileServer` },
+      { type: "tile", url: `${GDO}/Geocache_UTM33_EUREF89/GeocacheTerrengskygge/MapServer`, blend: "multiply", opacity: 0.45 },
+    ],
+    layers3d: [{ type: "vector", url: `${GDO_VT}/GeocacheKanvas/VectorTileServer` }],
+    thumb: "#efeeea",
+  },
+  {
     id: "graatone",
     navn: "Gråtone",
     layers: [{ type: "vector", url: `${GDO_VT}/GeocacheGraatone/VectorTileServer` }],
@@ -228,6 +247,14 @@ export const GDO_BASEMAPS: BasemapDef[] = [
     layers: [{ type: "vector", url: `${GDO_VT}/GeocacheKanvasMork/VectorTileServer` }],
     layers3d: [{ type: "tile", url: `${GDO}/Geocache_UTM33_EUREF89/GeocacheGraatone/MapServer` }],
     thumb: "#444f55",
+  },
+  {
+    // SVVs «NVDB-cache Vektor (UTM33)» (kart.vegvesen.no, element 7c30806c6942449bba5a429323084374)
+    id: "nvdb_cache",
+    navn: "NVDB-cache",
+    layers: [{ type: "vector", url: `${GDO_VT}/GeocacheTrafikk/VectorTileServer` }],
+    layers3d: [{ type: "vector", url: `${GDO_VT}/GeocacheTrafikk/VectorTileServer` }],
+    thumb: "#eceeed",
   },
 ];
 
