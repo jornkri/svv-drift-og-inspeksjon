@@ -83,11 +83,13 @@ export class SvvReportView extends StoreElement {
           <h1 id="rapport-tittel">${o.navn}</h1>
           <p class="sekundar">${o.objekt_id} · ${o.fag} · ${o.objekttype} · ${mmiBadgeText(o.mmi)}</p>
         </div>
-        <dl class="rapport__meta">
+        <div>
           <img class="rapport__logo" src="/svv-logo-print.svg" alt="Statens vegvesen" width="110" height="58" />
-          ${rad("Utskrevet", fmtDateTime(new Date().toISOString()))}
-          ${rad("Av", data.user.navn)}
-        </dl>
+          <dl class="rapport__meta">
+            ${rad("Utskrevet", fmtDateTime(new Date().toISOString()))}
+            ${rad("Av", data.user.navn)}
+          </dl>
+        </div>
       </header>
 
       <div class="rapport__grid">
