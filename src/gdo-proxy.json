@@ -3,5 +3,7 @@
   "GeocacheVector/GeocacheBasis/VectorTileServer": "https://utility.arcgis.com/usrsvcs/servers/291b09c85ba947e889e8517b58516ab9/rest/services/GeocacheVector/GeocacheBasis/VectorTileServer",
   "Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer": "direkte",
   "Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer": "https://utility.arcgis.com/usrsvcs/servers/3f0d17482f814edeb9c40eb6ada4ead3/rest/services/Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer",
-  "Geomap_UTM33_EUREF89/GeomapDrenering/MapServer": "https://utility.arcgis.com/usrsvcs/servers/5e7942f93cf54e929883915f8c291cc6/rest/services/Geomap_UTM33_EUREF89/GeomapDrenering/MapServer"
+  "Geomap_UTM33_EUREF89/GeomapDrenering/MapServer": "https://utility.arcgis.com/usrsvcs/servers/5e7942f93cf54e929883915f8c291cc6/rest/services/Geomap_UTM33_EUREF89/GeomapDrenering/MapServer",
+  "Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer": "https://utility.arcgis.com/usrsvcs/servers/5210d600b8e24689a6805cf854dc10f9/rest/services/Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer",
+  "Geomap_UTM33_EUREF89/GeomapDOKGeologi/MapServer": "https://utility.arcgis.com/usrsvcs/servers/3247d80ab9194250ad04188c9d0a3130/rest/services/Geomap_UTM33_EUREF89/GeomapDOKGeologi/MapServer"
 }
