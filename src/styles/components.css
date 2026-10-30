@@ -275,7 +275,22 @@ input[type="radio"] {
   scrollbar-width: none;
 }
 .faner--panel .fane {
-  padding: 0 9px;
+  padding: 0 8px;
+}
+/* Mange faner i objektpanelet (profil, bilder …): bryt til to linjer i stedet for å skjule dem */
+.faner--panel {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+.fane__antall {
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--svv-gray-light);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
 }
 .segment {
   display: grid;
@@ -1933,4 +1948,146 @@ svv-login {
   margin: 2px 0;
   font-size: 12px;
   color: var(--svv-gray-dark);
+}
+
+/* Feltbilder: galleri i objektpanelet */
+.bildegalleri__hint {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--svv-gray-dark);
+}
+.bildegalleri {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.bildegalleri__knapp {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--svv-gray-regular-dark);
+  background: var(--svv-white);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.bildegalleri__knapp:hover {
+  border-color: var(--svv-gray-dark);
+}
+.bildegalleri__knapp img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--svv-gray-light);
+}
+.bildegalleri__tekst {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px 8px;
+}
+.bildegalleri__tittel {
+  font-size: 13px;
+  font-weight: 600;
+}
+.bildegalleri__meta {
+  font-size: 12px;
+  color: var(--svv-gray-dark);
+}
+
+/* Feltbilder: bildeviser (modal) */
+.bildeviser {
+  width: min(1100px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 0;
+  background: var(--svv-white);
+  color: inherit;
+}
+.bildeviser::backdrop {
+  background: rgb(0 0 0 / 0.7);
+}
+.bildeviser__hode {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 16px;
+}
+.bildeviser__hode h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 16px;
+}
+.bildeviser__teller {
+  font-size: 13px;
+  color: var(--svv-gray-dark);
+}
+.bildeviser__flate {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  background: #1c2124;
+}
+.bildeviser__flate img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 220px);
+  object-fit: contain;
+}
+.bildeviser__bla {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: rgb(255 255 255 / 0.85);
+  color: var(--svv-gray-dark);
+  cursor: pointer;
+}
+.bildeviser__bla--forrige {
+  left: 8px;
+}
+.bildeviser__bla--neste {
+  right: 8px;
+}
+.bildeviser__fot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px 16px;
+}
+.bildeviser__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin: 0;
+  font-size: 13px;
+}
+.bildeviser__meta dt {
+  font-size: 12px;
+  color: var(--svv-gray-dark);
+}
+.bildeviser__meta dd {
+  margin: 0;
+}
+.bildeviser__knapper {
+  display: flex;
+  gap: 8px;
+}
+.bildeviser__knapper .knapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
 }

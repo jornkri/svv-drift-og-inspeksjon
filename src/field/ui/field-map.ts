@@ -57,7 +57,7 @@ export class SvvFieldMap extends StoreElement {
       if (isSimGps()) {
         // Simulert GPS: trykk i kartet (utenfor objektene og NVDB-objektene) flytter posisjonen dit
         const h = k.view.on("click", async (e) => {
-          if ((await k.objects.hitTest(e)).length) return;
+          if ((await k.objects.hitTest(e)).length || (await k.feltbilder.treff(k.view, e)) != null) return;
           if ((await k.view.hitTest(e, { include: k.nvdbObjekter.layers })).results.some((r) => r.type === "graphic")) return;
           const p = await tilSr(e.mapPoint, new SpatialReference({ wkid: 25833 }));
           flyttSimulertPosisjon(p.x, p.y);

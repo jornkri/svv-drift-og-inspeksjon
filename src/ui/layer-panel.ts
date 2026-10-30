@@ -13,6 +13,7 @@ import { hasGdoAccess } from "../map/basemaps.ts";
 import { NVDB_FARGE, NVDB_TYPER, type NvdbFag, type NvdbType } from "../nvdb/vegobjekter.ts";
 import type { TemalagDef } from "../config.ts";
 import "./tema-legende.ts";
+import { feltbilder } from "../data/feltbilder.ts";
 import { fagIkon, gruppeIkon, temaIkon } from "./tema-ikoner.ts";
 
 const NVDB_FAG: NvdbFag[] = ["VA", "Elektro", "Veg", "Kontekst"];
@@ -48,12 +49,15 @@ export class SvvLayerPanel extends StoreElement {
   private types: Record<string, string[]> = {};
   /** Åpne/lukkede grupper (brukerens valg mens panelet er åpent) */
   private apne = new Map<string, boolean>();
+  private antallBilder = 0;
 
   override async connectedCallback() {
     super.connectedCallback();
     const stats = await services().data.objectStats();
 
     this.types = typesByFag(stats);
+    this.requestUpdate();
+    this.antallBilder = (await feltbilder()).length;
     this.requestUpdate();
   }
 
@@ -234,8 +238,33 @@ export class SvvLayerPanel extends StoreElement {
           ? html`<p class="laggruppe__merknad">Zoom inn til 1:${NVDB_MAKS_SKALA.toLocaleString("nb-NO")} eller nærmere for å hente vegobjekter.</p>`
           : nothing}
       </div>
-      ${this.renderTema()}
+      ${this.renderFeltbilder()} ${this.renderTema()}
     `;
+  }
+
+  private renderFeltbilder() {
+    if (!this.antallBilder) return nothing;
+    const paa = this.store.state.referanse.feltbilder ?? true;
+    return html`<div class="laggruppe">
+      <div class="laggruppe__hode laggruppe__hode--tekst" title="Klikk på et bilde i kartet for å se det. Bildene kobles også automatisk til objektene (fanen Bilder).">
+        <span class="kategori">FELTBILDER</span>
+      </div>
+      <label class="temagruppe__hode temagruppe__enkel">
+        <span class="temagruppe__pil" aria-hidden="true"></span>
+        <span class="temaikon" aria-hidden="true">${icons.camera(16)}</span>
+        <span class="temagruppe__navn">Bilder fra mobil og drone</span>
+        <span class="temagruppe__antall">${this.antallBilder}</span>
+        <input type="checkbox" .checked=${paa} @change=${() => store.set({ referanse: { ...this.store.state.referanse, feltbilder: !paa } })} />
+      </label>
+    </div>`;
+  }
+
+  private bildeLegend() {
+    if (!this.antallBilder || !(this.store.state.referanse.feltbilder ?? true)) return nothing;
+    return html`<h3 class="kategori">FELTBILDER</h3>
+      <div class="tegnforklaring__rad"><span class="symbol symbol--punkt symbol--fylt" style="--c:rgb(0,95,158)" aria-hidden="true"></span> Bilde fra mobil</div>
+      <div class="tegnforklaring__rad"><span class="symbol symbol--trekant" style="--c:rgb(0,95,158)" aria-hidden="true"></span> Bilde fra drone</div>
+      <div class="tegnforklaring__rad"><span class="symbol symbol--flate" style="--c:rgb(0,95,158)" aria-hidden="true"></span> Synsfelt (kameraretning)</div>`;
   }
 
   private renderTema() {
@@ -329,7 +358,7 @@ export class SvvLayerPanel extends StoreElement {
           (p) => html`<div class="tegnforklaring__rad"><span class="farge" style="background:${p.farge}" aria-hidden="true"></span>${p.navn} (${phaseRange(p)})</div>`,
         )}
         <p class="tegnforklaring__hint">Symbolformen viser fag: linje (VA), stiplet linje (elektro), flate (veg).</p>
-        ${this.nvdbLegend()} ${this.temaLegend()}
+        ${this.nvdbLegend()} ${this.bildeLegend()} ${this.temaLegend()}
       </div>`;
     }
     return html`<div class="tegnforklaring">
@@ -337,7 +366,7 @@ export class SvvLayerPanel extends StoreElement {
         (fag) => html`<h3 class="kategori">${fag.toUpperCase()}</h3>
           ${(this.types[fag] ?? []).map((t) => html`<div class="tegnforklaring__rad">${swatch(fag, t)} ${t}</div>`)}`,
       )}
-      ${this.nvdbLegend()} ${this.temaLegend()}
+      ${this.nvdbLegend()} ${this.bildeLegend()} ${this.temaLegend()}
     </div>`;
   }
 }

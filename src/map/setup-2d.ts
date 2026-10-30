@@ -18,12 +18,15 @@ import { NvdbObjekterLayer } from "./nvdb-objekter-layer.ts";
 import { TemaLayers } from "./tema-layers.ts";
 import { NvdbVegnettLayer } from "./nvdb-layer.ts";
 import { ObjectLayerController } from "./object-layers.ts";
+import { FeltbildeLag } from "./feltbilde-lag.ts";
+import { apneFeltbilder } from "../ui/feltbilde-viser.ts";
 
 export interface Map2D {
   view: MapView;
   map: EsriMap;
   objects: ObjectLayerController;
   nvdbObjekter: NvdbObjekterLayer;
+  feltbilder: FeltbildeLag;
   dispose(): void;
 }
 
@@ -69,6 +72,11 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
 
   const objects = new ObjectLayerController(view, "2d", data);
   await objects.start();
+  // Feltbilder over objektlagene, så punktene kan klikkes
+  const bilder = new FeltbildeLag();
+  bilder.layer.visible = store.get().referanse.feltbilder ?? true;
+  map.add(bilder.layer);
+  void bilder.last(view);
   const markor = new GraphicsLayer({ id: "markor", listMode: "hide" });
   map.add(markor);
   nvdb.attach(view);
@@ -98,6 +106,11 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
 
   const click = view.on("click", async (e) => {
     if (document.body.dataset.maaling === "aktiv") return;
+    const bilde = await bilder.treff(view, e);
+    if (bilde != null) {
+      apneFeltbilder(bilder.bilder, bilde);
+      return;
+    }
     const ids = await objects.hitTest(e);
     if (ids.length) {
       store.set({ selection: { globalids: ids, index: 0 }, nvdbValgt: null, temaTreff: null, popover: null });
@@ -120,6 +133,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
     }),
     store.select((s) => s.referanse, (r) => {
       nvdb.layer.visible = r.nvdb ?? true;
+      bilder.layer.visible = r.feltbilder ?? true;
     }),
     store.select((s) => s.zoomTil, () => void consumeZoom()),
     store.select((s) => s.markor, (m) => void showMarkor(m)),
@@ -133,6 +147,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
     map,
     objects,
     nvdbObjekter: nvdbObj,
+    feltbilder: bilder,
     dispose() {
       unsubs.forEach((u) => u());
       click.remove();

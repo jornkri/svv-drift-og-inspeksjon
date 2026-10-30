@@ -152,6 +152,12 @@ Piloten kjører mot ArcGIS Online-organisasjonen `geodata.maps.arcgis.com`, med 
 - **Manglende tabeller:** mangler inspeksjons- eller oppgavetabell, lagres postene lokalt i nettleseren, og brukeren får beskjed. For å lagre i ArcGIS Online legger du til en tabell med feltene i `INSPEKSJON_FIELDS` i webkartet. Den blir da funnet automatisk.
 - **3D-klikk:** klikk på et scenelag velger objektet når scenelaget har IFC `GlobalId` per element. Vegmodellen i piloten er publisert som ett samlet 3D-objekt, så der gjelder ikke dette.
 - **3D:** er webscenen global (Web Mercator), brukes webscenens bakgrunn, terreng og kamera. App-objektene og NVDB projiseres inn. Er den i UTM33, legges lagene inn i den lokale scenen med Geodata Online-terreng.
+- **Feltbilder:** `VITE_LAYER_FELTBILDER` peker på et punktlag med bildene som vedlegg (`SVV_Drift_og_inspeksjon/FeatureServer/2`). Hvert punkt har ett vedlegg i full størrelse og en miniatyr (`*_mini.jpg`). Felter: `kilde` (Mobil/Drone), `tatt`, `retning` (grader fra nord) og eventuelt `objekt_globalid` for manuell kobling. Bildene kobles automatisk til objekter (`src/data/feltbilde-kobling.ts`):
+  - manuelt via `objekt_globalid`
+  - tatt innenfor 20 m
+  - objektet ligger i kameraets synsfelt (±35°, inntil 150 m)
+
+  Kilden ligger bak grensesnittet `FeltbildeKilde` (`src/data/feltbilder.ts`), slik at Trimble Connect kan erstatte den senere.
 - **Uten innlogging:** `npm run dev:mock` kjører mock-modus (`.env.mock`).
 
 **Feltmapping:** De logiske feltnavnene ligger i `src/data/schema.ts`. Mappingen til SVVs tjenester justeres i `src/config.ts` (`fields`). Kjør appen i portalmodus med `?diagnose=1` for å se lag og felt i webkartet.

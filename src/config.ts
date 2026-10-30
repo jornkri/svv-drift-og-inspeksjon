@@ -49,6 +49,8 @@ export interface AppConfig {
   inspeksjonTable: LayerRef | null;
   oppgaveLayer: LayerRef | null;
   dokumentTable: LayerRef | null;
+  /** Punktlag med feltbilder som vedlegg (ArcGIS). TODO: Trimble Connect som kilde senere. */
+  feltbilderUrl: string;
   sceneLayers: SceneLayerRef[];
   basemapGroupId: string;
   printUrl: string;
@@ -271,6 +273,7 @@ export function parseConfig(env: Record<string, string | boolean | undefined>, g
     inspeksjonTable: parseLayerRefs(s("VITE_TABLE_INSPEKSJONER"))[0] ?? null,
     oppgaveLayer: parseLayerRefs(s("VITE_LAYER_OPPGAVER"))[0] ?? null,
     dokumentTable: parseLayerRefs(s("VITE_TABLE_DOKUMENTER"))[0] ?? null,
+    feltbilderUrl: s("VITE_LAYER_FELTBILDER") ?? "",
     sceneLayers: parseSceneLayers(s("VITE_SCENE_LAYERS")),
     basemapGroupId: s("VITE_BASEMAP_GROUP_ID") ?? "",
     printUrl: s("VITE_PRINT_URL") ?? "",

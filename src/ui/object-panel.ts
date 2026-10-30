@@ -11,8 +11,11 @@ import { icons } from "./icons.ts";
 import { kildeFraTreff } from "./lengdeprofil.ts";
 import "./nvdb-naer.ts";
 import "./driftskrav.ts";
+import { bilderForObjekt, type KobletBilde } from "../data/feltbilder.ts";
+import { koblingTekst } from "../data/feltbilde-kobling.ts";
+import { apneFeltbilder } from "./feltbilde-viser.ts";
 
-type Tab = "oversikt" | "profil" | "dokumenter" | "inspeksjoner" | "historikk";
+type Tab = "oversikt" | "profil" | "bilder" | "dokumenter" | "inspeksjoner" | "historikk";
 
 export const TG_FARGE = ["#1d7721", "#e27500", "#e27500", "#b63434"] as const;
 export const tgTekst = (tg: number) => (tg === 0 ? "OK" : tg === 1 ? "Mindre avvik" : tg === 2 ? "Avvik" : "Alvorlig avvik");
@@ -38,6 +41,7 @@ export class SvvObjectPanel extends StoreElement {
   private docs: Dokument[] = [];
   private insp: Inspeksjon[] = [];
   private hist: HistorikkPost[] = [];
+  private bilder: KobletBilde[] = [];
 
 
   private get currentId(): string | null {
@@ -66,8 +70,17 @@ export class SvvObjectPanel extends StoreElement {
     if (this.currentId !== id) return;
     this.treff = t;
     if (this.tab === "profil" && t?.geometry.type !== "polyline") this.tab = "oversikt";
+    this.bilder = [];
     if (t) {
       setObjectParam(t.objekt.objekt_id);
+      // Feltbilder kobles på posisjon og retning; lastes ved siden av resten
+      void bilderForObjekt(id, t.geometry)
+        .catch(() => [])
+        .then((b) => {
+          if (this.currentId !== id) return;
+          this.bilder = b;
+          this.requestUpdate();
+        });
       const [docs, insp] = await Promise.all([data.getDocuments(id), data.getInspections(id)]);
       if (this.currentId !== id) return;
       this.docs = docs;
@@ -161,12 +174,13 @@ export class SvvObjectPanel extends StoreElement {
             [
               ["oversikt", "Oversikt"],
               ...(t.geometry.type === "polyline" ? [["profil", "Profil"]] : []),
-              ["dokumenter", `Dokumenter ${this.docs.length}`],
-              ["inspeksjoner", `Inspeksjoner ${this.insp.length}`],
+              ...(services().cfg.feltbilderUrl ? [["bilder", "Bilder", this.bilder.length]] : []),
+              ["dokumenter", "Dokumenter", this.docs.length],
+              ["inspeksjoner", "Inspeksjoner", this.insp.length],
               ["historikk", "Historikk"],
-            ] as [Tab, string][]
+            ] as [Tab, string, number?][]
           ).map(
-            ([id, label]) => html`<button
+            ([id, label, antall]) => html`<button
               role="tab"
               id="objfane-${id}"
               class="fane ${this.tab === id ? "is-valgt" : ""}"
@@ -178,13 +192,14 @@ export class SvvObjectPanel extends StoreElement {
                 this.requestUpdate();
               }}
             >
-              ${label}
+              ${label}${antall != null ? html` <span class="fane__antall">${antall}</span>` : nothing}
             </button>`,
           )}
         </div>
         <div id="objektpanel-fane" class="objektpanel__fane" role="tabpanel" aria-labelledby="objfane-${this.tab}">
           ${this.tab === "oversikt" ? html`<svv-driftskrav .objekt=${o} .insp=${this.insp}></svv-driftskrav>${this.renderOversikt(o)}<svv-nvdb-naer .treff=${t}></svv-nvdb-naer>` : nothing}
           ${this.tab === "profil" && t.geometry.type === "polyline" ? html`<svv-lengdeprofil .kilde=${kildeFraTreff(t)}></svv-lengdeprofil>` : nothing}
+          ${this.tab === "bilder" ? this.renderBilder() : nothing}
           ${this.tab === "dokumenter" ? this.renderDocs() : nothing}
           ${this.tab === "inspeksjoner" ? this.renderInsp() : nothing}
           ${this.tab === "historikk" ? this.renderHist() : nothing}
@@ -236,6 +251,24 @@ export class SvvObjectPanel extends StoreElement {
         </dl>
       </section>`,
     )}`;
+  }
+
+  private renderBilder() {
+    if (!this.bilder.length) return html`<p class="tom">Ingen feltbilder er tatt nær objektet.</p>`;
+    return html`<p class="bildegalleri__hint">Bilder tatt innenfor 20 m, eller med objektet i kameraets synsfelt. Nærmeste først.</p>
+      <ul class="bildegalleri">
+        ${this.bilder.map(
+          (b, i) => html`<li>
+            <button class="bildegalleri__knapp" @click=${() => apneFeltbilder(this.bilder, i)}>
+              <img src=${b.miniUrl} alt="" loading="lazy" />
+              <span class="bildegalleri__tekst">
+                <span class="bildegalleri__tittel">${b.tittel}</span>
+                <span class="bildegalleri__meta">${koblingTekst(b.kobling)}</span>
+              </span>
+            </button>
+          </li>`,
+        )}
+      </ul>`;
   }
 
   private renderDocs() {
