@@ -31,7 +31,7 @@ export interface BasemapDef {
   /** Tjenester i UTM33 (EUREF89). Første lag bestemmer flisskjemaet. */
   layers: { type: "vector" | "tile"; url: string }[];
   /** Rasterutgave for 3D (lokal scene) */
-  layers3d: { type: "tile"; url: string }[];
+  layers3d: { type: "vector" | "tile"; url: string }[];
   thumb: string;
 }
 
@@ -66,6 +66,8 @@ export interface AppConfig {
     adresseSokUrl: string;
     temalag: TemalagDef[];
     flyfoto: { url: string; aar: number[] };
+    /** Tjenestesti → proxy-URL i ArcGIS Online (src/gdo-proxy.json) */
+    proxy: import("./map/gdo-proxy.ts").GdoProxy;
   };
   nvdb: {
     baseUrl: string;
@@ -202,7 +204,7 @@ const num = (v: string | undefined, fallback: number) => {
   return v && Number.isFinite(n) ? n : fallback;
 };
 
-export function parseConfig(env: Record<string, string | boolean | undefined>): AppConfig {
+export function parseConfig(env: Record<string, string | boolean | undefined>, gdoProxy: GdoProxy = GDO_PROXY): AppConfig {
   const s = (k: string) => (typeof env[k] === "string" ? (env[k] as string) : undefined);
   return {
     useMock: s("VITE_USE_MOCK") !== "false",
@@ -232,11 +234,12 @@ export function parseConfig(env: Record<string, string | boolean | undefined>): 
     gdo: brukGdoProxy({
       tokenEndpoint: "/api/gdo-token",
       basemaps: GDO_BASEMAPS,
-      elevationUrl: `${GDO}/Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer`,
+      // Kan overstyres, f.eks. med prosjektets egen (offentlige) terrengmodell i piloten
+      elevationUrl: s("VITE_ELEVATION_URL") || `${GDO}/Geocache_UTM33_EUREF89/GeocacheTerreng/ImageServer`,
       adresseSokUrl: `${GDO}/ProxyServices/search/adresse`,
       temalag: GDO_TEMALAG,
       flyfoto: { url: `${GDO}/Geomap_UTM33_EUREF89/GeomapBilder3/ImageServer`, aar: [1958, 1966, 1968, 2005, 2006, 2009, 2011, 2013, 2015, 2024] },
-    }, GDO_PROXY),
+    }, gdoProxy),
     nvdb: {
       baseUrl: "https://nvdbapiles.atlas.vegvesen.no",
       client: s("VITE_NVDB_CLIENT") || "svv-drift-og-inspeksjon",

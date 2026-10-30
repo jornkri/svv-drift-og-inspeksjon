@@ -17,11 +17,27 @@ describe("GDO via AGOL-proxy", () => {
   });
 
   it("uten token beholdes bare tjenester bak proxy", () => {
-    const gdo = brukGdoProxy(parseConfig({}).gdo, PROXY);
+    const gdo = brukGdoProxy(parseConfig({}, {}).gdo, PROXY);
     const b = begrensTilProxy(gdo);
     expect(b.elevationUrl).toContain("utility.arcgis.com");
     expect(b.temalag).toEqual([]);
     expect(b.flyfoto.aar).toEqual([]);
     expect(b.basemaps.every((m) => m.layers.every((l) => l.url.includes("utility.arcgis.com")))).toBe(true);
+  });
+});
+
+describe("bakgrunnskart via proxy", () => {
+  it("bruker vektorflisene også i 3D når rasterutgaven mangler proxy", () => {
+    const proxy = {
+      "GeocacheVector/GeocacheGraatone/VectorTileServer": "https://utility.arcgis.com/usrsvcs/servers/ccc/rest/services/GeocacheVector/GeocacheGraatone/VectorTileServer",
+    };
+    const b = begrensTilProxy(brukGdoProxy(parseConfig({}, {}).gdo, proxy));
+    expect(b.basemaps.map((m) => m.id)).toEqual(["graatone"]);
+    expect(b.basemaps[0]!.layers3d).toEqual(b.basemaps[0]!.layers);
+  });
+
+  it("VITE_ELEVATION_URL overstyrer høydemodellen", () => {
+    const u = "https://tiles.arcgis.com/tiles/x/arcgis/rest/services/Terreng/ImageServer";
+    expect(begrensTilProxy(parseConfig({ VITE_ELEVATION_URL: u }, {}).gdo).elevationUrl).toBe(u);
   });
 });

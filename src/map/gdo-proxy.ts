@@ -26,7 +26,7 @@ export function proxyUrl(url: string, proxy: GdoProxy): string {
 export const kreverGdoToken = (url: string) => GDO_HOST.test(url);
 
 /** Bytter alle GDO-URL-er i konfigurasjonen til proxy-URL-er der det finnes en. */
-export function brukGdoProxy(gdo: AppConfig["gdo"], proxy: GdoProxy): AppConfig["gdo"] {
+export function brukGdoProxy(gdo: Omit<AppConfig["gdo"], "proxy">, proxy: GdoProxy): AppConfig["gdo"] {
   const p = (u: string) => proxyUrl(u, proxy);
   return {
     ...gdo,
@@ -34,7 +34,17 @@ export function brukGdoProxy(gdo: AppConfig["gdo"], proxy: GdoProxy): AppConfig[
     elevationUrl: p(gdo.elevationUrl),
     temalag: gdo.temalag.map((t) => ({ ...t, url: p(t.url) })),
     flyfoto: { ...gdo.flyfoto, url: p(gdo.flyfoto.url) },
+    proxy,
   };
+}
+
+/**
+ * URL for et lag fra webkart/webscene: via proxy når den finnes. Null når laget går direkte mot
+ * Geodata Online uten at appen har token (laget ville ellers utløst en innloggingsdialog).
+ */
+export function lagUrlUtenToken(url: string, proxy: GdoProxy, harToken: boolean): string | null {
+  const p = proxyUrl(url, proxy);
+  return kreverGdoToken(p) && !harToken ? null : p;
 }
 
 /**
@@ -45,7 +55,10 @@ export function begrensTilProxy(gdo: AppConfig["gdo"]): AppConfig["gdo"] {
   const ok = (u: string) => !!u && !kreverGdoToken(u);
   return {
     ...gdo,
-    basemaps: gdo.basemaps.filter((b) => b.layers.every((l) => ok(l.url)) && b.layers3d.every((l) => ok(l.url))),
+    // 3D bruker 2D-lagene (vektorfliser i UTM33) når rasterutgaven ikke går via proxy
+    basemaps: gdo.basemaps
+      .filter((b) => b.layers.every((l) => ok(l.url)))
+      .map((b) => (b.layers3d.every((l) => ok(l.url)) ? b : { ...b, layers3d: b.layers })),
     elevationUrl: ok(gdo.elevationUrl) ? gdo.elevationUrl : "",
     temalag: gdo.temalag.filter((t) => ok(t.url)),
     flyfoto: ok(gdo.flyfoto.url) ? gdo.flyfoto : { ...gdo.flyfoto, aar: [] },

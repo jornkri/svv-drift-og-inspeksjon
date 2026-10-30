@@ -7,6 +7,8 @@ import WebMap from "@arcgis/core/WebMap.js";
 import WebScene from "@arcgis/core/WebScene.js";
 import type { AppConfig, LayerRef } from "../config.ts";
 import { bimTilObjekter, erBimLag, fagFraTittel, finnLag, manglendeFelt, tilpassFelt, type AutoMapping, type LagInfo } from "./auto-mapping.ts";
+import { currentGdoToken } from "../map/basemaps.ts";
+import { lagUrlUtenToken } from "../map/gdo-proxy.ts";
 import { objekttypeRenderer, registrerKildeSymboler } from "../map/kildestil.ts";
 import { lagretNavn } from "../auth/navn.ts";
 import { hentVegreferanse } from "../nvdb/vegobjekter.ts";
@@ -85,13 +87,20 @@ function lagUrl(l: FeatureLayer | null | undefined): string {
 }
 
 /** Enkeltlag (grupper flates ut) som ikke er objektlag eller tabeller, klonet for en ny visning. */
-function referanselag(alle: Layer[], brukt: Set<string>): Layer[] {
+function referanselag(alle: Layer[], brukt: Set<string>, gdoUrl: (url: string) => string | null): Layer[] {
   return alle
     .filter((l) => l.type !== "group")
     .filter((l) => !(l.type === "feature" && brukt.has(lagUrl(l as FeatureLayer))))
     .flatMap((l) => {
-      const k = l as unknown as { clone?: () => Layer };
-      return typeof k.clone === "function" ? [k.clone()] : [];
+      const k = l as unknown as { clone?: () => Layer; url?: string };
+      if (typeof k.clone !== "function") return [];
+      if (!k.url) return [k.clone()];
+      // Geodata Online-lag: via proxy, eller utelatt når appen mangler token
+      const url = gdoUrl(k.url);
+      if (!url) return [];
+      const kopi = k.clone() as Layer & { url?: string };
+      if (url !== k.url) kopi.url = url;
+      return [kopi];
     });
 }
 
@@ -182,6 +191,12 @@ export class PortalDataService implements DataService {
     if (this.cfg.inspeksjonTable) this.inspTable = await this.resolveFeatureLayer(this.cfg.inspeksjonTable);
     if (this.cfg.dokumentTable) this.dokTable = await this.resolveFeatureLayer(this.cfg.dokumentTable);
     if (this.cfg.oppgaveLayer) this.oppgaveLayer = await this.resolveFeatureLayer(this.cfg.oppgaveLayer);
+    if (this.anonym) {
+      // Uten innlogging: tabeller som ikke er delt offentlig, ville ventet på en innlogging som aldri kommer
+      this.inspTable = await this.apen(this.inspTable);
+      this.dokTable = await this.apen(this.dokTable);
+      this.oppgaveLayer = await this.apen(this.oppgaveLayer);
+    }
     await Promise.all([this.inspTable?.load(), this.dokTable?.load(), this.oppgaveLayer?.load()]);
 
     if (this.klient) {
@@ -308,6 +323,16 @@ export class PortalDataService implements DataService {
     }
   }
 
+  /** Laget hvis det kan leses uten innlogging, ellers null (med advarsel). */
+  private async apen(l: FeatureLayer | null): Promise<FeatureLayer | null> {
+    const url = lagUrl(l);
+    if (!l || !url) return l;
+    const j = (await fetch(`${url}?f=json`).then((r) => r.json()).catch(() => ({ error: true }))) as { error?: unknown };
+    if (!j.error) return l;
+    console.warn(`${url} er ikke delt offentlig – lagres lokalt i stedet`);
+    return null;
+  }
+
   /** Webscenen (VITE_WEBSCENE_ID) for 3D, lastet én gang. */
   webscene(): Promise<WebScene | null> {
     if (!this.cfg.websceneId) return Promise.resolve(null);
@@ -330,6 +355,9 @@ export class PortalDataService implements DataService {
     console.warn(`Fant ikke laget «${ref.title}» i webkartet`);
     return null;
   }
+
+  /** Lag-URL via GDO-proxy, eller null når laget krever GDO-token appen ikke har. */
+  readonly gdoUrl = (url: string) => lagUrlUtenToken(url, this.cfg.gdo.proxy, currentGdoToken() !== null);
 
   /** URL-ene til objektlagene og tabellene (de vises ikke som referanselag). */
   private brukteUrler(): Set<string> {
@@ -361,14 +389,14 @@ export class PortalDataService implements DataService {
 
   async createReferenceLayers(): Promise<Layer[]> {
     if (!this.webmap) return [];
-    return referanselag(this.webmap.allLayers.toArray(), this.brukteUrler());
+    return referanselag(this.webmap.allLayers.toArray(), this.brukteUrler(), this.gdoUrl);
   }
 
   /** Operative lag i webscenen som ikke er objektlag (fagmodeller, bygg, mesh osv.). */
   async sceneLag(): Promise<Layer[]> {
     const ws = await this.webscene();
     if (!ws) return [];
-    return referanselag(ws.allLayers.toArray(), this.brukteUrler());
+    return referanselag(ws.allLayers.toArray(), this.brukteUrler(), this.gdoUrl);
   }
 
   async objectStats(): Promise<ObjektStat[]> {

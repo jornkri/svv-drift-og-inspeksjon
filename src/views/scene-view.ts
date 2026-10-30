@@ -105,10 +105,16 @@ export class SvvSceneView extends StoreElement {
     const def = cfg.gdo.basemaps.find((b) => b.id === store.get().basemap) ?? cfg.gdo.basemaps[0];
     const gdo = hasGdoAccess() && !this.global && !!def && !!cfg.gdo.elevationUrl;
     // Terreng fra webscenen (f.eks. prosjektets terrengmodell) når den har det, ellers Geodata Online
-    const ground = ws?.ground?.layers.length
-      ? ws.ground.clone()
+    // Terreng fra webscenen; lag mot Geodata Online går via proxy eller utelates uten token
+    const wsTerreng = (ws?.ground?.layers.toArray() ?? []).flatMap((l) => {
+      const url = (l as ElevationLayer).url;
+      const ny = url ? (data as PortalDataService).gdoUrl(url) : null;
+      return ny ? [new ElevationLayer({ url: ny, title: l.title ?? undefined })] : [];
+    });
+    const ground = wsTerreng.length
+      ? new Ground({ layers: wsTerreng })
       : new Ground({ layers: gdo ? [new ElevationLayer({ url: cfg.gdo.elevationUrl })] : [] });
-    this.terrengKilde = ws?.ground?.layers.length ? ws.ground.layers.map((l) => l.title).filter(Boolean).join(", ") || "webscenen" : gdo ? "Geodata Online høydemodell" : "";
+    this.terrengKilde = wsTerreng.length ? wsTerreng.map((l) => l.title).filter(Boolean).join(", ") || "webscenen" : gdo ? "Geodata Online høydemodell" : "";
     ground.navigationConstraint = { type: this.underBakken ? "none" : "stay-above" } as never;
     this.harTerreng = ground.layers.length > 0;
     ground.opacity = this.harTerreng ? 1 - this.terrengGjennomsiktig / 100 : 0;
