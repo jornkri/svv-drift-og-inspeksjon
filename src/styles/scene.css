@@ -129,3 +129,51 @@
     left: 12px;
   }
 }
+
+/* Punktsky: farge, størrelse, detaljnivå og sammenligning med modellen */
+.punktsky {
+  border: 0;
+  border-top: 1px solid var(--svv-gray-regular-dark);
+  margin: 0;
+  padding: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.punktsky legend {
+  float: left;
+  width: 100%;
+  padding-bottom: 4px;
+}
+.segment--punktsky {
+  margin: 0;
+}
+.segment__valg:disabled {
+  color: var(--svv-grey-dark-65);
+  cursor: not-allowed;
+}
+.punktsky__skala {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.punktsky__rampe {
+  display: block;
+  height: 10px;
+}
+.punktsky__verdier {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--svv-gray-dark);
+}
+.punktsky__knapper {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+.punktsky__hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--svv-gray-dark);
+}

@@ -158,6 +158,12 @@ Piloten kjører mot ArcGIS Online-organisasjonen `geodata.maps.arcgis.com`, med 
   - objektet ligger i kameraets synsfelt (±35°, inntil 150 m)
 
   Kilden ligger bak grensesnittet `FeltbildeKilde` (`src/data/feltbilder.ts`), slik at Trimble Connect kan erstatte den senere.
+- **Punktsky:** et punktskylag i webscenen (i piloten `E45_dense_point_cloud`) får egne kontroller i 3D:
+  - farge etter ekte farger (RGB) eller høyde (ELEVATION, spenn fra tjenestens statistikk)
+  - punktstørrelse og detaljnivå
+  - «Sammenlign»: vegmodellen blir halvgjennomsiktig
+
+  «Kontroller mot punktsky» i objektpanelet vises når objektet ligger innenfor punktskyen. Knappen åpner 3D zoomet til objektet. Høydeprofilen kan ikke sample punktskyer (begrensning i ArcGIS), så den sammenligner terreng og 3D-modell. For punktskyen brukes Snitt.
 - **Uten innlogging:** `npm run dev:mock` kjører mock-modus (`.env.mock`).
 
 **Feltmapping:** De logiske feltnavnene ligger i `src/data/schema.ts`. Mappingen til SVVs tjenester justeres i `src/config.ts` (`fields`). Kjør appen i portalmodus med `?diagnose=1` for å se lag og felt i webkartet.

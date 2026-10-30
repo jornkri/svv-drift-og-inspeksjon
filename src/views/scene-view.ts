@@ -11,6 +11,12 @@ import Point from "@arcgis/core/geometry/Point.js";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference.js";
 import ElevationLayer from "@arcgis/core/layers/ElevationLayer.js";
 import type Layer from "@arcgis/core/layers/Layer.js";
+import type PointCloudLayer from "@arcgis/core/layers/PointCloudLayer.js";
+import PointCloudRGBRenderer from "@arcgis/core/renderers/PointCloudRGBRenderer.js";
+import PointCloudStretchRenderer from "@arcgis/core/renderers/PointCloudStretchRenderer.js";
+import ElevationProfileLineGround from "@arcgis/core/analysis/ElevationProfile/ElevationProfileLineGround.js";
+import ElevationProfileLineInput from "@arcgis/core/analysis/ElevationProfile/ElevationProfileLineInput.js";
+import ElevationProfileLineScene from "@arcgis/core/analysis/ElevationProfile/ElevationProfileLineScene.js";
 import SceneLayer from "@arcgis/core/layers/SceneLayer.js";
 import type SceneView from "@arcgis/core/views/SceneView.js";
 import type { ArcgisScene } from "@arcgis/map-components/components/arcgis-scene";
@@ -43,7 +49,11 @@ const VERKTOY: { id: Verktoy; navn: string }[] = [
   { id: "sikt", navn: "Siktlinje" },
 ];
 
-type AnalysisEl = HTMLElement & { start(): Promise<void>; clear(): Promise<void> };
+type AnalysisEl = HTMLElement & { start(): Promise<void>; clear(): Promise<void>; profiles?: unknown };
+
+type PunktFarge = "rgb" | "hoyde";
+/** Høydefarger for punktskyen, lav → høy (perseptuelt jevn, lesbar for fargeblinde) */
+const HOYDE_FARGER = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
 
 /**
  * Kontor: 3D-scene. Lokal scene i EUREF89 UTM33 (samme koordinatsystem og Geodata Online-cache
@@ -63,6 +73,12 @@ export class SvvSceneView extends StoreElement {
   private underBakken = true;
   private terrengGjennomsiktig = 40;
   private vegGjennomsiktig = 0;
+  /** Punktsky fra webscenen (f.eks. dronefotogrammetri), om den finnes */
+  private punktsky: PointCloudLayer | null = null;
+  private punktFarge: PunktFarge = "rgb";
+  private punktStorrelse = 100;
+  private punktTetthet = 15;
+  private hoydeSpenn: [number, number] | null = null;
   private harTerreng = false;
   private kamera = { hoyde: 0, tilt: 0 };
   private handles: { remove(): void }[] = [];
@@ -128,6 +144,7 @@ export class SvvSceneView extends StoreElement {
     ];
     // Scenelag (IFC-modeller) kobles til objektene via IFC GlobalId ved klikk
     for (const s of this.sceneLayers) if (s.layer.type === "scene") (s.layer as SceneLayer).outFields = ["*"];
+    this.punktsky = (this.sceneLayers.find((s) => s.layer.type === "point-cloud")?.layer as PointCloudLayer | undefined) ?? null;
     map.addMany(this.sceneLayers.map((s) => s.layer));
 
     const [cx, cy] = cfg.prosjekt.senter;
@@ -193,6 +210,7 @@ export class SvvSceneView extends StoreElement {
     this.unsubs.push(store.select((s) => s.zoomTil, () => void this.consumeZoom()));
     void this.consumeZoom();
     this.applyVegOpacity();
+    void this.lastPunktsky();
     this.setAttribute("data-klar", "");
     this.requestUpdate();
   }
@@ -230,11 +248,52 @@ export class SvvSceneView extends StoreElement {
     const id = store.get().zoomTil;
     if (!id || !this.view) return;
     store.set({ zoomTil: null });
+    if (store.get().punktskyFokus) {
+      store.set({ punktskyFokus: false });
+      this.sammenlignMedPunktsky();
+    }
     const hit = await services().data.getObject(id);
     if (!hit) return;
     const g = await tilSr(hit.geometry, this.view.spatialReference);
     const target = g.extent ? g.extent.clone().expand(3) : g;
     await this.view.goTo({ target, tilt: 65 } as never, { duration: 800 }).catch(() => undefined);
+  }
+
+  /** Høydespenn (ELEVATION) fra punktskyens bufrede statistikk, og startfarge (ekte farger når RGB finnes). */
+  private async lastPunktsky() {
+    const pc = this.punktsky;
+    if (!pc) return;
+    await pc.load().catch(() => undefined);
+    if (!pc.fields?.some((f) => f.name === "RGB")) this.punktFarge = "hoyde";
+    const st = (await pc.queryCachedStatistics("ELEVATION").catch(() => null)) as { stats?: { min: number; max: number } } | null;
+    if (st?.stats) this.hoydeSpenn = [st.stats.min, st.stats.max];
+    this.oppdaterPunktsky();
+    this.requestUpdate();
+  }
+
+  private oppdaterPunktsky() {
+    const pc = this.punktsky;
+    if (!pc) return;
+    const felles = { pointsPerInch: this.punktTetthet, pointSizeAlgorithm: { type: "splat" as const, scaleFactor: this.punktStorrelse / 100 } };
+    const spenn = this.hoydeSpenn;
+    pc.renderer =
+      this.punktFarge === "hoyde" && spenn
+        ? new PointCloudStretchRenderer({
+            field: "ELEVATION",
+            stops: HOYDE_FARGER.map((color, i) => ({ value: spenn[0] + ((spenn[1] - spenn[0]) * i) / (HOYDE_FARGER.length - 1), color })),
+            ...felles,
+          })
+        : new PointCloudRGBRenderer({ field: "RGB", ...felles });
+  }
+
+  /** Punktskyen på og vegmodellen halvgjennomsiktig, for å kontrollere modellen mot det som er bygget. */
+  private sammenlignMedPunktsky() {
+    if (!this.punktsky) return;
+    this.punktsky.visible = true;
+    this.vegGjennomsiktig = Math.max(this.vegGjennomsiktig, 50);
+    this.applyVegOpacity();
+    this.oppdaterModellLag();
+    this.requestUpdate();
   }
 
   private applyVegOpacity() {
@@ -256,7 +315,24 @@ export class SvvSceneView extends StoreElement {
     this.requestUpdate();
     if (v === "naviger") return;
     await this.updateComplete;
-    await this.verktoyRef.value?.start().catch(() => undefined);
+    const el = this.verktoyRef.value;
+    // Komponenten må være klar før start(), ellers starter ikke tegningen
+    await (el as (AnalysisEl & { componentOnReady?: () => Promise<unknown> }) | undefined)?.componentOnReady?.();
+    if (v === "profil" && el) {
+      // Terreng mot 3D-modellene (scenelag) langs samme linje. Punktskyer kan ikke samples i
+      // høydeprofilen (begrensning i ArcGIS); for dem brukes Snitt.
+      const modeller = this.sceneLayers.map((s) => s.layer).filter((l) => l.type === "scene" && l.visible);
+      el.profiles = [
+        new ElevationProfileLineGround({ title: "Terreng" }),
+        new ElevationProfileLineInput({ title: "Tegnet linje" }),
+        new ElevationProfileLineScene(
+          modeller.length
+            ? { title: "3D-modell", include: modeller, color: "#3b528b" }
+            : { title: "Synlig i 3D", color: "#3b528b" },
+        ),
+      ];
+    }
+    await el?.start().catch(() => undefined);
   }
 
   protected override render() {
@@ -323,6 +399,7 @@ export class SvvSceneView extends StoreElement {
                 }}
               />
             </label>
+            ${this.punktsky ? this.renderPunktsky(this.punktsky) : nothing}
             ${!this.hasAttribute("data-klar")
               ? html`<p class="melding melding--info" role="status">Laster 3D-scenen …</p>`
               : this.harTerreng
@@ -379,6 +456,91 @@ export class SvvSceneView extends StoreElement {
             : nothing}
       </div>
     `;
+  }
+
+  private renderPunktsky(pc: PointCloudLayer) {
+    const spenn = this.hoydeSpenn;
+    const fmt = (v: number) => `${v.toLocaleString("nb-NO", { maximumFractionDigits: 0 })} m`;
+    const valg = (id: PunktFarge, navn: string, av = false) => html`<button
+      type="button"
+      role="radio"
+      class="segment__valg ${this.punktFarge === id ? "is-valgt" : ""}"
+      aria-checked=${this.punktFarge === id}
+      ?disabled=${av}
+      @click=${() => {
+        this.punktFarge = id;
+        this.oppdaterPunktsky();
+        this.requestUpdate();
+      }}
+    >
+      ${navn}
+    </button>`;
+    return html`<fieldset class="punktsky">
+      <legend class="kategori">PUNKTSKY</legend>
+      <label class="avkrysning avkrysning--tett">
+        <input
+          type="checkbox"
+          .checked=${pc.visible}
+          @change=${() => {
+            pc.visible = !pc.visible;
+            this.requestUpdate();
+          }}
+        />
+        ${pc.title ?? "Punktsky"}
+      </label>
+      ${pc.visible
+        ? html`<div class="segment segment--punktsky" role="radiogroup" aria-label="Farge på punktene">
+              ${valg("rgb", "Ekte farger", !pc.fields?.some((f) => f.name === "RGB"))} ${valg("hoyde", "Høyde", !spenn)}
+            </div>
+            ${this.punktFarge === "hoyde" && spenn
+              ? html`<div class="punktsky__skala">
+                  <span class="punktsky__rampe" style="background:linear-gradient(90deg, ${HOYDE_FARGER.join(", ")})" aria-hidden="true"></span>
+                  <span class="punktsky__verdier"><span>${fmt(spenn[0])}</span><span>NN2000</span><span>${fmt(spenn[1])}</span></span>
+                </div>`
+              : nothing}
+            <label class="glider">
+              <span class="glider__etikett"><span>Punktstørrelse</span><strong>${this.punktStorrelse} %</strong></span>
+              <input
+                type="range"
+                min="50"
+                max="300"
+                step="25"
+                .value=${String(this.punktStorrelse)}
+                @input=${(e: Event) => {
+                  this.punktStorrelse = Number((e.target as HTMLInputElement).value);
+                  this.oppdaterPunktsky();
+                  this.requestUpdate();
+                }}
+              />
+            </label>
+            <label class="glider">
+              <span class="glider__etikett"><span>Detaljnivå</span><strong>${this.punktTetthet <= 10 ? "Lavt" : this.punktTetthet <= 25 ? "Middels" : "Høyt"}</strong></span>
+              <input
+                type="range"
+                min="5"
+                max="40"
+                step="5"
+                aria-valuetext="${this.punktTetthet} punkter per tomme"
+                .value=${String(this.punktTetthet)}
+                @input=${(e: Event) => {
+                  this.punktTetthet = Number((e.target as HTMLInputElement).value);
+                  this.oppdaterPunktsky();
+                  this.requestUpdate();
+                }}
+              />
+            </label>
+            <div class="punktsky__knapper">
+              <button class="knapp knapp--sekundar" @click=${() => this.sammenlignMedPunktsky()} title="Vegmodellen halvgjennomsiktig over punktskyen">Sammenlign</button>
+              <button
+                class="knapp knapp--sekundar"
+                @click=${() => pc.fullExtent && void this.view?.goTo({ target: pc.fullExtent, tilt: 60 } as never).catch(() => undefined)}
+              >
+                Gå til
+              </button>
+            </div>
+            <p class="punktsky__hint">Tips: bruk <strong>Snitt</strong> for å se et tverrsnitt av punktskyen mot vegmodellen.</p>`
+        : nothing}
+    </fieldset>`;
   }
 
   private renderVerktoy() {

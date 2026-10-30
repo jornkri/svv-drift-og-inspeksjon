@@ -98,7 +98,8 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
 
   const consumeZoom = async () => {
     const id = store.get().zoomTil;
-    if (!id) return;
+    // Ved bytte til 3D («Vis i 3D») er forespørselen til scenen, som monteres etterpå
+    if (!id || store.get().route !== "kart") return;
     store.set({ zoomTil: null });
     const hit = await data.getObject(id);
     if (hit) await objects.goTo(hit.geometry);

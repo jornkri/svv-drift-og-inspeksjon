@@ -1,4 +1,5 @@
 import Graphic from "@arcgis/core/Graphic.js";
+import type Extent from "@arcgis/core/geometry/Extent.js";
 import type Geometry from "@arcgis/core/geometry/Geometry.js";
 import type Layer from "@arcgis/core/layers/Layer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
@@ -390,6 +391,12 @@ export class PortalDataService implements DataService {
   async createReferenceLayers(): Promise<Layer[]> {
     if (!this.webmap) return [];
     return referanselag(this.webmap.allLayers.toArray(), this.brukteUrler(), this.gdoUrl);
+  }
+
+  /** Utbredelsen til punktskyen i webscenen (første punktskylag), eller null. */
+  async punktskyOmfang(): Promise<Extent | null> {
+    const ws = await this.webscene();
+    return ws?.allLayers.find((l) => l.type === "point-cloud")?.fullExtent ?? null;
   }
 
   /** Operative lag i webscenen som ikke er objektlag (fagmodeller, bygg, mesh osv.). */

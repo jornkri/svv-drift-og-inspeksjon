@@ -58,6 +58,8 @@ export interface AppState {
   meldinger: { id: number; tekst: string; type: "info" | "suksess" | "feil" }[];
   /** Forespørsel om å zoome til et objekt (globalid) – konsumeres av aktiv visning */
   zoomTil: string | null;
+  /** 3D: vis punktskyen og gjør vegmodellen halvgjennomsiktig ved neste zoom (kontroll mot punktsky) */
+  punktskyFokus: boolean;
   /** Søkeresultat som ikke er et objekt (vegreferanse, adresse) */
   markor: { x: number; y: number; tekst: string } | null;
   /** Økes når data er endret (ny inspeksjon o.l.) slik at visninger kan laste på nytt */
@@ -101,6 +103,7 @@ export const initialState: AppState = {
   oppgaveValgt: null,
   meldinger: [],
   zoomTil: null,
+  punktskyFokus: false,
   markor: null,
   dataVersjon: 0,
   oppgaver: [],

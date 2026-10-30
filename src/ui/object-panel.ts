@@ -14,6 +14,8 @@ import "./driftskrav.ts";
 import { bilderForObjekt, type KobletBilde } from "../data/feltbilder.ts";
 import { koblingTekst } from "../data/feltbilde-kobling.ts";
 import { apneFeltbilder } from "./feltbilde-viser.ts";
+import type { PortalDataService } from "../data/PortalDataService.ts";
+import { tilSr } from "../map/projeksjon.ts";
 
 type Tab = "oversikt" | "profil" | "bilder" | "dokumenter" | "inspeksjoner" | "historikk";
 
@@ -42,6 +44,8 @@ export class SvvObjectPanel extends StoreElement {
   private insp: Inspeksjon[] = [];
   private hist: HistorikkPost[] = [];
   private bilder: KobletBilde[] = [];
+  /** Objektet ligger innenfor punktskyen i webscenen */
+  private iPunktsky = false;
 
 
   private get currentId(): string | null {
@@ -71,6 +75,8 @@ export class SvvObjectPanel extends StoreElement {
     this.treff = t;
     if (this.tab === "profil" && t?.geometry.type !== "polyline") this.tab = "oversikt";
     this.bilder = [];
+    this.iPunktsky = false;
+    if (t && data.mode === "portal") void this.sjekkPunktsky(id, t.geometry, data as PortalDataService);
     if (t) {
       setObjectParam(t.objekt.objekt_id);
       // Feltbilder kobles på posisjon og retning; lastes ved siden av resten
@@ -88,6 +94,14 @@ export class SvvObjectPanel extends StoreElement {
       this.hist = await data.getHistory(t.objekt);
     }
 
+    this.requestUpdate();
+  }
+
+  private async sjekkPunktsky(id: string, geometri: ObjektTreff["geometry"], data: PortalDataService) {
+    const omfang = await data.punktskyOmfang().catch(() => null);
+    if (!omfang || this.currentId !== id) return;
+    const g = await tilSr(geometri, omfang.spatialReference);
+    this.iPunktsky = omfang.intersects((g.extent ?? g) as never);
     this.requestUpdate();
   }
 
@@ -161,12 +175,25 @@ export class SvvObjectPanel extends StoreElement {
             ${this.dim === "3d"
               ? html`<button class="knapp knapp--sekundar" @click=${() => navigate("kart")}>Vis i 2D</button>`
               : html`<button class="knapp knapp--sekundar" @click=${() => {
-                  store.set({ zoomTil: o.globalid });
                   navigate("3d");
+                  store.set({ zoomTil: o.globalid });
                 }}>Vis i 3D</button>`}
             <button class="knapp knapp--sekundar" @click=${() => store.set({ zoomTil: o.globalid })}>Zoom til</button>
             <button class="knapp knapp--sekundar" @click=${() => this.share(o)}>${icons.link(16)} Del lenke</button>
           </div>
+          ${this.iPunktsky
+            ? html`<button
+                class="knapp knapp--sekundar knapp--full"
+                title="Åpner 3D med punktskyen og vegmodellen halvgjennomsiktig, for å kontrollere modellen mot det som er bygget"
+                @click=${() => {
+                  // Ruten først, så 2D-kartet ikke tar zoom-forespørselen
+                  if (this.dim !== "3d") navigate("3d");
+                  store.set({ zoomTil: o.globalid, punktskyFokus: true });
+                }}
+              >
+                Kontroller mot punktsky
+              </button>`
+            : nothing}
         </div>
 
         <div role="tablist" class="faner faner--panel" aria-label="Objektdetaljer">
