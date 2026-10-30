@@ -20,7 +20,8 @@ describe("GDO via AGOL-proxy", () => {
     const gdo = brukGdoProxy(parseConfig({}, {}).gdo, PROXY);
     const b = begrensTilProxy(gdo);
     expect(b.elevationUrl).toContain("utility.arcgis.com");
-    expect(b.temalag).toEqual([]);
+    // Bare åpne tjenester (ikke GDO) uten proxy
+    expect(b.temalag.map((t) => t.id)).toEqual(["grunnforurensning"]);
     expect(b.flyfoto.aar).toEqual([]);
     expect(b.basemaps.every((m) => m.layers.every((l) => l.url.includes("utility.arcgis.com")))).toBe(true);
   });

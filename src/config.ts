@@ -131,7 +131,17 @@ export const GDO_TEMALAG: TemalagDef[] = [
   { id: "regulering", navn: "Reguleringsplaner", gruppe: "Eiendom og plan", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer`, beskrivelse: "Vedtatte reguleringsplaner.", opasitet: 0.6 },
   { id: "natur", navn: "Naturvern og vannforekomster", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer`, sublag: [809, 813, 807, 837, 828, 861], beskrivelse: "Verneområder, vernede vassdrag, viktige naturtyper, arter og anadrom laksefisk (DOK).", opasitet: 0.6 },
   { id: "kulturminner", navn: "Kulturminner", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapKulturminner/MapServer`, beskrivelse: "Kulturminner med sikringssoner (Askeladden)." },
-  { id: "stoy", navn: "Støysoner fra veg", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapForurensning/MapServer`, sublag: [2], beskrivelse: "Beregnede støysoner langs veg.", opasitet: 0.5 },
+  {
+    id: "grunnforurensning",
+    navn: "Grunnforurensning",
+    gruppe: "Natur, kultur og miljø",
+    type: "map-image",
+    // Miljødirektoratets åpne tjeneste (ingen token): forurenset grunn med tilstand, punkt i oversikt og flate fra 1:11 000
+    url: "https://kart.miljodirektoratet.no/arcgis/rest/services/grunnforurensning2/MapServer",
+    sublag: [2, 3],
+    beskrivelse: "Lokaliteter med forurenset grunn og påvirkningsgrad (Miljødirektoratet).",
+    opasitet: 0.8,
+  },
   { id: "hoydekurver", navn: "Høydekurver", gruppe: "Terreng", type: "vector-tile", url: `${GDO_VEKTOR}/GeocacheHoydekurver/VectorTileServer`, beskrivelse: "Høydekurver fra Geodata Online." },
   { id: "helning", navn: "Terrenghelning", gruppe: "Terreng", type: "tile", url: `${GDO}/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer`, beskrivelse: "Helningskart fra terrengmodellen.", opasitet: 0.5 },
   { id: "ulykker", navn: "Trafikkulykker (NVDB)", gruppe: "Trafikk", type: "feature", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer/20`, beskrivelse: "Politirapporterte trafikkulykker med personskade fra NVDB." },
