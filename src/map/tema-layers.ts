@@ -43,7 +43,7 @@ export class TemaLayers {
     if (def.type === "feature" && def.sublag) {
       // Flere lag fra samme FeatureServer, f.eks. eiendomsgrenser og teiger med gnr/bnr
       l = new GroupLayer({ ...felles, layers: def.sublag.map((id) => featureLag(def, `${def.url}/${id}`)) });
-    } else if (def.type === "feature") l = featureLag(def, def.url);
+    } else if (def.type === "feature") l = featureLag(def, def.url, felles);
     else if (def.type === "vector-tile") l = new VectorTileLayer({ ...felles, url: def.url });
     else if (def.type === "tile") l = new TileLayer({ ...felles, url: def.url });
     else l = new MapImageLayer({ ...felles, url: def.url, ...(def.sublag ? { sublayers: def.sublag.map((id) => ({ id, visible: true })) } : {}) });
@@ -124,8 +124,9 @@ export class TemaLayers {
   }
 }
 
-function featureLag(def: TemalagDef, url: string): FeatureLayer {
+function featureLag(def: TemalagDef, url: string, felles: { id?: string; title?: string } = {}): FeatureLayer {
   return new FeatureLayer({
+    ...felles,
     url,
     outFields: ["*"],
     opacity: def.opasitet ?? 1,
