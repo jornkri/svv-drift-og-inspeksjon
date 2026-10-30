@@ -7,6 +7,7 @@ import WebMap from "@arcgis/core/WebMap.js";
 import WebScene from "@arcgis/core/WebScene.js";
 import type { AppConfig, LayerRef } from "../config.ts";
 import { bimTilObjekter, erBimLag, fagFraTittel, finnLag, manglendeFelt, tilpassFelt, type AutoMapping, type LagInfo } from "./auto-mapping.ts";
+import { objekttypeRenderer, registrerKildeSymboler } from "../map/kildestil.ts";
 import { hentVegreferanse } from "../nvdb/vegobjekter.ts";
 import { lagKlientLag, type KlientLagDef, type KlientObjekt } from "./klientlag.ts";
 import {
@@ -275,7 +276,10 @@ export class PortalDataService implements DataService {
       if (!egne.length) continue;
       objekter.push(...egne);
       const fag = FAG.map((f) => [f, egne.filter((o) => o.objekt.fag === f).length] as const).sort((a, b) => b[1] - a[1])[0]![0];
-      defs.push({ key, fag, kind: geometriType(layer), title: info.tittel.replace(/\s*2D$/i, "") });
+      // Symbolisering som i webkartet (unike verdier på Objekttype)
+      const renderer = objekttypeRenderer(layer.renderer);
+      if (renderer) registrerKildeSymboler(fag, renderer);
+      defs.push({ key, fag, kind: geometriType(layer), title: info.tittel.replace(/\s*2D$/i, ""), ...(renderer ? { renderer } : {}) });
     }
     // Objekt-ID-er må være unike på tvers av lagene
     const sett = new Map<string, number>();

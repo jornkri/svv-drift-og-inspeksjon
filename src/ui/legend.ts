@@ -1,9 +1,16 @@
 import { html } from "lit";
 import type { Fag } from "../data/schema.ts";
+import { kildeSymbol } from "../map/kildestil.ts";
 import { FAG_STIL } from "../map/renderers.ts";
 
 /** Tegnforklaringssymbol i CSS for en objekttype (samme stil som fagsymbolikken i kartet). */
 export function swatch(fag: Fag, type: string | null, color?: string) {
+  // Symbol fra webkartet når laget er symbolisert der (og ikke farget etter MMI)
+  const k = color ? undefined : kildeSymbol(fag, type);
+  if (k) {
+    const kls = `symbol symbol--flate symbol--kilde${k.skravert ? " symbol--skravert" : ""}${k.stiplet ? " symbol--kantstiplet" : ""}`;
+    return html`<span class=${kls} style="--c:${k.fyll};--k:${k.kant}" aria-hidden="true"></span>`;
+  }
   const c = color ?? FAG_STIL[fag].farge;
   const cls = (() => {
     if (fag === "Veg" && (type === "Vegoverbygning" || type === "Grøft" || type === null)) return "flate";

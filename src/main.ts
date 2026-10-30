@@ -70,6 +70,8 @@ async function bootstrap() {
     return;
   }
 
+  // Lag med egen symbolisering i webkartet vises slik som der (MMI-farger kan slås på)
+  if (data.mode === "portal" && (await import("./map/kildestil.ts")).harKildeSymboler()) store.set({ colorByMmi: false });
   store.set({ felt: params.get("modus") === "felt" });
   startRouter();
 

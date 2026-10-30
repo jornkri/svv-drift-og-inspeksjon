@@ -20,6 +20,8 @@ export interface ObjectLayerHandle {
   geometryKind: GeometryKind;
   title: string;
   layer: FeatureLayer;
+  /** Symbolisering fra kilden (webkartet), unike verdier på objekttype */
+  kildeRenderer?: import("@arcgis/core/renderers/UniqueValueRenderer.js").default;
 }
 
 export interface ObjektTreff {

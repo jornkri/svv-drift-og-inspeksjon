@@ -150,6 +150,7 @@ export class SvvSceneView extends StoreElement {
 
     this.objects = new ObjectLayerController(view, "3d", data);
     await this.objects.start();
+    this.oppdaterModellLag();
     const nvdb = (this.nvdb = new NvdbObjekterLayer(cfg, "3d"));
     map.add(nvdb.group);
     nvdb.attach(view);
@@ -188,6 +189,17 @@ export class SvvSceneView extends StoreElement {
     this.applyVegOpacity();
     this.setAttribute("data-klar", "");
     this.requestUpdate();
+  }
+
+  /**
+   * Objektlag som også finnes som 3D-modell i webscenen (samme modellnavn, f.eks. «m f veg MMI400»),
+   * tegnes nesten usynlig så modellen vises slik som i webscenen. Objektene kan fortsatt velges.
+   */
+  private oppdaterModellLag() {
+    const norm = (t: string) => t.toLowerCase().replace(/[_-]+/g, " ").replace(/\b(svv|e45|2d|3d)\b/g, "").replace(/\s+/g, " ").trim();
+    const modeller = this.sceneLayers.filter((s) => s.layer.visible).map((s) => norm(s.navn));
+    const keys = (this.objects?.handles ?? []).filter((h) => modeller.some((m) => m && m === norm(h.title))).map((h) => h.key);
+    this.objects?.settModellLag(keys);
   }
 
   /** IFC GlobalId for et klikk på et scenelag (3D-modell) i webscenen, eller null. */
@@ -320,6 +332,7 @@ export class SvvSceneView extends StoreElement {
                         .checked=${sl.layer.visible}
                         @change=${() => {
                           sl.layer.visible = !sl.layer.visible;
+                          this.oppdaterModellLag();
                           this.requestUpdate();
                         }}
                       />

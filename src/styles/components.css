@@ -1730,3 +1730,17 @@ svv-login {
   font-weight: 600;
   z-index: 3;
 }
+
+/* Tegnforklaring med symboler fra webkartet */
+.symbol--kilde {
+  outline: 1px solid var(--k, var(--svv-gray-dark));
+}
+.symbol--kantstiplet {
+  outline-style: dashed;
+}
+.symbol--skravert {
+  background-color: var(--c);
+  background-image:
+    repeating-linear-gradient(0deg, #999999 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, #999999 0 1px, transparent 1px 4px);
+}

@@ -2,6 +2,7 @@ import Graphic from "@arcgis/core/Graphic.js";
 import type Geometry from "@arcgis/core/geometry/Geometry.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import type Field from "@arcgis/core/layers/support/Field.js";
+import type UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer.js";
 import type { GeometryKind, ObjectLayerHandle } from "./DataService.ts";
 import type { Fag, Objekt } from "./schema.ts";
 
@@ -45,6 +46,8 @@ export interface KlientLagDef {
   fag: Fag;
   kind: GeometryKind;
   title: string;
+  /** Symbolisering fra kilden (webkartet) */
+  renderer?: UniqueValueRenderer;
 }
 
 export function objektAttributter(o: Objekt, oid: number): Record<string, unknown> {
@@ -81,6 +84,6 @@ export function lagKlientLag(defs: KlientLagDef[], objekter: KlientObjekt[]): Ob
         ? { mode: "absolute-height" }
         : { mode: "absolute-height", featureExpressionInfo: { expression: "($feature.kote_min + $feature.kote_max) / 2" } },
     });
-    return { key: def.key, fag: def.fag, geometryKind: def.kind, title: def.title, layer };
+    return { key: def.key, fag: def.fag, geometryKind: def.kind, title: def.title, layer, ...(def.renderer ? { kildeRenderer: def.renderer } : {}) };
   });
 }

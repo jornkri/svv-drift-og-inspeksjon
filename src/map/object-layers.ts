@@ -3,6 +3,8 @@ import type Geometry from "@arcgis/core/geometry/Geometry.js";
 import type Graphic from "@arcgis/core/Graphic.js";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import FeatureFilter from "@arcgis/core/layers/support/FeatureFilter.js";
+import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer.js";
+import PolygonSymbol3D from "@arcgis/core/symbols/PolygonSymbol3D.js";
 import type FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView.js";
 import type MapView from "@arcgis/core/views/MapView.js";
 import type SceneView from "@arcgis/core/views/SceneView.js";
@@ -10,10 +12,15 @@ import type { DataService, ObjectLayerHandle, ObjektStat } from "../data/DataSer
 import { computeCounts } from "../filters/counts.ts";
 import { buildWhere } from "../filters/filters.ts";
 import { store } from "../state/store.ts";
+import { kildeRenderer } from "./kildestil.ts";
 import { tilSr } from "./projeksjon.ts";
 import { fagRenderer, mmiRenderer, type Dim } from "./renderers.ts";
 
 type View = MapView | SceneView;
+
+const USYNLIG_3D = new SimpleRenderer({
+  symbol: new PolygonSymbol3D({ symbolLayers: [{ type: "fill", material: { color: [255, 255, 255, 0.02] }, outline: { color: [0, 0, 0, 0], size: 0 } }] }),
+});
 type Highlight = { remove(): void };
 
 /**
@@ -72,7 +79,22 @@ export class ObjectLayerController {
   private applyRenderer(): void {
     const fields = this.data.objektFields;
     const byMmi = store.get().colorByMmi;
-    for (const h of this.handles) h.layer.renderer = byMmi ? mmiRenderer(h, fields, this.dim) : fagRenderer(h, fields, this.dim);
+    for (const h of this.handles) {
+      if (this.dim === "3d" && this.skjulteFlater.has(h.key)) h.layer.renderer = USYNLIG_3D.clone();
+      else if (byMmi) h.layer.renderer = mmiRenderer(h, fields, this.dim);
+      else h.layer.renderer = h.kildeRenderer ? kildeRenderer(h.kildeRenderer, fields.objekttype, this.dim) : fagRenderer(h, fields, this.dim);
+    }
+  }
+
+  private skjulteFlater = new Set<string>();
+
+  /**
+   * 3D: lag som vises som egen 3D-modell (scenelag i webscenen) tegnes nesten usynlig, men kan
+   * fortsatt velges og utheves. Kalles med nøklene til lagene som har synlig modell.
+   */
+  settModellLag(keys: string[]): void {
+    this.skjulteFlater = new Set(keys);
+    this.applyRenderer();
   }
 
   private async layerView(layer: FeatureLayer): Promise<FeatureLayerView | null> {
