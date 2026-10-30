@@ -7,9 +7,11 @@ import type Layer from "@arcgis/core/layers/Layer.js";
 import MapImageLayer from "@arcgis/core/layers/MapImageLayer.js";
 import TileLayer from "@arcgis/core/layers/TileLayer.js";
 import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
+import LabelClass from "@arcgis/core/layers/support/LabelClass.js";
 import MosaicRule from "@arcgis/core/layers/support/MosaicRule.js";
 import * as identify from "@arcgis/core/rest/identify.js";
 import IdentifyParameters from "@arcgis/core/rest/support/IdentifyParameters.js";
+import TextSymbol from "@arcgis/core/symbols/TextSymbol.js";
 import type MapView from "@arcgis/core/views/MapView.js";
 import type { AppConfig, TemalagDef } from "../config.ts";
 import { store } from "../state/store.ts";
@@ -38,7 +40,10 @@ export class TemaLayers {
     let l = this.lag.get(def.id);
     if (l) return l;
     const felles = { id: `tema-${def.id}`, title: def.navn, opacity: def.opasitet ?? 1 };
-    if (def.type === "feature") l = new FeatureLayer({ ...felles, url: def.url, outFields: ["*"] });
+    if (def.type === "feature" && def.sublag) {
+      // Flere lag fra samme FeatureServer, f.eks. eiendomsgrenser og teiger med gnr/bnr
+      l = new GroupLayer({ ...felles, layers: def.sublag.map((id) => featureLag(def, `${def.url}/${id}`)) });
+    } else if (def.type === "feature") l = featureLag(def, def.url);
     else if (def.type === "vector-tile") l = new VectorTileLayer({ ...felles, url: def.url });
     else if (def.type === "tile") l = new TileLayer({ ...felles, url: def.url });
     else l = new MapImageLayer({ ...felles, url: def.url, ...(def.sublag ? { sublayers: def.sublag.map((id) => ({ id, visible: true })) } : {}) });
@@ -81,16 +86,13 @@ export class TemaLayers {
       aktive.map(async (d) => {
         try {
           if (d.type === "feature") {
-            const fl = this.lagFor(d) as FeatureLayer;
+            const l = this.lagFor(d);
+            const lag = l.type === "group" ? ((l as GroupLayer).layers.toArray() as FeatureLayer[]) : [l as FeatureLayer];
             const tol = view.resolution * 8;
-            const res = await fl.queryFeatures({
-              geometry: punkt,
-              distance: tol,
-              units: "meters",
-              outFields: ["*"],
-              returnGeometry: false,
-            });
-            for (const f of res.features.slice(0, 5)) ut.push({ lag: d.navn, tema: d.navn, attributter: rens(f.attributes) });
+            for (const fl of lag) {
+              const res = await fl.queryFeatures({ geometry: punkt, distance: tol, units: "meters", outFields: ["*"], returnGeometry: false });
+              for (const f of res.features.slice(0, 5)) ut.push({ lag: fl.title ?? d.navn, tema: d.navn, attributter: rens(f.attributes, d.felt) });
+            }
             return;
           }
           const params = new IdentifyParameters({
@@ -114,7 +116,31 @@ export class TemaLayers {
   }
 }
 
-function rens(a: Record<string, unknown>): [string, string][] {
+function featureLag(def: TemalagDef, url: string): FeatureLayer {
+  return new FeatureLayer({
+    url,
+    outFields: ["*"],
+    opacity: def.opasitet ?? 1,
+    popupEnabled: false,
+    ...(def.etikett
+      ? {
+          labelingInfo: [
+            new LabelClass({
+              labelExpressionInfo: { expression: def.etikett },
+              symbol: new TextSymbol({ color: "#444f55", haloColor: "#ffffff", haloSize: 1.5, font: { size: 9, family: "Arial" } }),
+            }),
+          ],
+        }
+      : {}),
+  });
+}
+
+function rens(a: Record<string, unknown>, felt?: string[]): [string, string][] {
+  if (felt) {
+    return felt
+      .filter((k) => a[k] != null && a[k] !== "" && String(a[k]).trim() !== "")
+      .map((k) => [k, verdi(k, a[k])] as [string, string]);
+  }
   return Object.entries(a)
     .filter(([k, v]) => !SKJULTE.test(k) && v != null && v !== "" && v !== "Null" && String(v).trim() !== "")
     .map(([k, v]) => [k, verdi(k, v)] as [string, string])

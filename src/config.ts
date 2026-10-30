@@ -101,8 +101,12 @@ export interface TemalagDef {
   gruppe: "Vann og drenering" | "Skred og grunn" | "Eiendom og plan" | "Natur, kultur og miljø" | "Terreng" | "Trafikk";
   type: "map-image" | "feature" | "vector-tile" | "tile";
   url: string;
-  /** Underlag i MapServer som vises (map-image) */
+  /** Underlag som vises: i MapServer (map-image) eller lag-ID-er i FeatureServer (feature) */
   sublag?: number[];
+  /** Feature: feltene som vises ved klikk, i rekkefølge (ellers alle meningsfulle felt) */
+  felt?: string[];
+  /** Feature: etikett (Arcade), f.eks. gnr/bnr */
+  etikett?: string;
   beskrivelse: string;
   opasitet?: number;
 }
@@ -112,7 +116,18 @@ export const GDO_TEMALAG: TemalagDef[] = [
   { id: "flom", navn: "Flom – aktsomhet", gruppe: "Vann og drenering", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer`, sublag: [1149, 1159], beskrivelse: "NVEs aktsomhetskart for flom (DOK).", opasitet: 0.7 },
   { id: "skred", navn: "Skred – aktsomhet og hendelser", gruppe: "Skred og grunn", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKSamfunnssikkerhet/MapServer`, sublag: [1113, 1119, 1125, 1191], beskrivelse: "Jord- og flomskred, steinsprang, snøskred (S3) og registrerte skredhendelser (DOK).", opasitet: 0.7 },
   { id: "geologi", navn: "Løsmasser og grunnundersøkelser", gruppe: "Skred og grunn", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKGeologi/MapServer`, sublag: [408, 427, 422], beskrivelse: "NGUs løsmassekart, grunnundersøkelser og mulig marin leire (DOK).", opasitet: 0.6 },
-  { id: "eiendom", navn: "Eiendomsgrenser", gruppe: "Eiendom og plan", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapEiendom2/MapServer`, sublag: [1, 3], beskrivelse: "Eiendomsgrenser og gårds-/bruksnummer fra matrikkelen." },
+  {
+    id: "eiendom",
+    navn: "Eiendomsgrenser",
+    gruppe: "Eiendom og plan",
+    type: "feature",
+    url: `${GDO}/Geomap_UTM33_EUREF89/GeomapEiendom2/FeatureServer`,
+    // 1 Eiendomsgrense, 3 Eiendomsident (teig med gnr/bnr); synlige fra 1:5 000
+    sublag: [1, 3],
+    felt: ["gids", "bruksnavn", "adresse", "matrikkeltype", "kommunenavn", "grensetype", "malemetodebeskr", "noyaktighet"],
+    etikett: "$feature.gids",
+    beskrivelse: "Eiendomsgrenser og gårds-/bruksnummer fra matrikkelen (vises fra 1:5 000).",
+  },
   { id: "regulering", navn: "Reguleringsplaner", gruppe: "Eiendom og plan", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer`, beskrivelse: "Vedtatte reguleringsplaner.", opasitet: 0.6 },
   { id: "natur", navn: "Naturvern og vannforekomster", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer`, sublag: [809, 813, 807, 837, 828, 861], beskrivelse: "Verneområder, vernede vassdrag, viktige naturtyper, arter og anadrom laksefisk (DOK).", opasitet: 0.6 },
   { id: "kulturminner", navn: "Kulturminner", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapKulturminner/MapServer`, beskrivelse: "Kulturminner med sikringssoner (Askeladden)." },
