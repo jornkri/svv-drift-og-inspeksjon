@@ -144,7 +144,30 @@ export const GDO_TEMALAG: TemalagDef[] = [
   },
   { id: "hoydekurver", navn: "Høydekurver", gruppe: "Terreng", type: "vector-tile", url: `${GDO_VEKTOR}/GeocacheHoydekurver/VectorTileServer`, beskrivelse: "Høydekurver fra Geodata Online." },
   { id: "helning", navn: "Terrenghelning", gruppe: "Terreng", type: "tile", url: `${GDO}/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer`, beskrivelse: "Helningskart fra terrengmodellen.", opasitet: 0.5 },
-  { id: "ulykker", navn: "Trafikkulykker (NVDB)", gruppe: "Trafikk", type: "feature", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer/20`, beskrivelse: "Politirapporterte trafikkulykker med personskade fra NVDB." },
+  {
+    id: "ulykker",
+    navn: "Trafikkulykker (NVDB)",
+    gruppe: "Trafikk",
+    type: "feature",
+    url: `${GDO}/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer/20`,
+    felt: [
+      "ulykkesdato",
+      "ulykkesklokkeslett",
+      "alvorlighetsgrad",
+      "ulykkestype__ny_",
+      "ulykkeskode",
+      "antall_drepte_i_ulykken",
+      "antall_meget_alvorlig_skadet",
+      "antall_alvorlig_skadet",
+      "antall_lettere_skadet",
+      "føreforhold",
+      "værforhold",
+      "lysforhold",
+      "fartsgrense",
+      "ådt__ny_",
+    ],
+    beskrivelse: "Politirapporterte trafikkulykker med personskade fra NVDB.",
+  },
 ];
 const GDO_VT = "https://vector.services.geodataonline.no/arcgis/rest/services/GeocacheVector";
 

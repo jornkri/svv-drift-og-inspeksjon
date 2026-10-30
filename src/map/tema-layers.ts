@@ -91,7 +91,15 @@ export class TemaLayers {
             const tol = view.resolution * 8;
             for (const fl of lag) {
               const res = await fl.queryFeatures({ geometry: punkt, distance: tol, units: "meters", outFields: ["*"], returnGeometry: false });
-              for (const f of res.features.slice(0, 5)) ut.push({ lag: fl.title ?? d.navn, tema: d.navn, attributter: rens(f.attributes, d.felt) });
+              // Kodede verdier (domener) vises som tekst, f.eks. føreforhold 6462 → «Tørr, bar veg»
+              const kode = (k: string, v: unknown) => {
+                const dom = fl.getFieldDomain(k);
+                return dom?.type === "coded-value" ? (dom.getName(v as string | number) ?? v) : v;
+              };
+              for (const f of res.features.slice(0, 5)) {
+                const a = Object.fromEntries(Object.entries(f.attributes as Record<string, unknown>).map(([k, v]) => [k, kode(k, v)]));
+                ut.push({ lag: fl.title ?? d.navn, tema: d.navn, attributter: rens(a, d.felt) });
+              }
             }
             return;
           }
@@ -135,11 +143,27 @@ function featureLag(def: TemalagDef, url: string): FeatureLayer {
   });
 }
 
+/** Lesbare feltnavn for valgte felt (ellers «snake_case» gjort om til tekst). */
+const FELTNAVN: Record<string, string> = {
+  gids: "Gnr/bnr",
+  malemetodebeskr: "Målemetode",
+  noyaktighet: "Nøyaktighet",
+  ulykkesdato: "Dato",
+  ulykkesklokkeslett: "Klokkeslett",
+  ulykkestype__ny_: "Ulykkestype",
+  antall_drepte_i_ulykken: "Drepte",
+  antall_meget_alvorlig_skadet: "Meget alvorlig skadde",
+  antall_alvorlig_skadet: "Alvorlig skadde",
+  antall_lettere_skadet: "Lettere skadde",
+  ådt__ny_: "ÅDT",
+};
+const feltnavn = (k: string) => FELTNAVN[k] ?? (k.replace(/__ny_$/, "").replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()));
+
 function rens(a: Record<string, unknown>, felt?: string[]): [string, string][] {
   if (felt) {
     return felt
       .filter((k) => a[k] != null && a[k] !== "" && String(a[k]).trim() !== "")
-      .map((k) => [k, verdi(k, a[k])] as [string, string]);
+      .map((k) => [feltnavn(k), verdi(k, a[k])] as [string, string]);
   }
   return Object.entries(a)
     .filter(([k, v]) => !SKJULTE.test(k) && v != null && v !== "" && v !== "Null" && String(v).trim() !== "")

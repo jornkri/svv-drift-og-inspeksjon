@@ -9,5 +9,7 @@
   "Geomap_UTM33_EUREF89/GeomapEiendom2/FeatureServer": "https://utility.arcgis.com/usrsvcs/servers/4d8ad55fc5d74ff894f4f2812ec7aab7/rest/services/Geomap_UTM33_EUREF89/GeomapEiendom2/FeatureServer",
   "Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer": "https://utility.arcgis.com/usrsvcs/servers/be4887efde104e88b438c13f2f1dfc53/rest/services/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer",
   "Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer": "https://utility.arcgis.com/usrsvcs/servers/c41398b80aef4454a5dde4286a0e07db/rest/services/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer",
-  "Geocache_UTM33_EUREF89/GeocacheHelning/MapServer": "https://utility.arcgis.com/usrsvcs/servers/d0c5ae97462047ec8afa5b1a8f90435e/rest/services/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer"
+  "Geocache_UTM33_EUREF89/GeocacheHelning/MapServer": "https://utility.arcgis.com/usrsvcs/servers/d0c5ae97462047ec8afa5b1a8f90435e/rest/services/Geocache_UTM33_EUREF89/GeocacheHelning/MapServer",
+  "Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer": "https://utility.arcgis.com/usrsvcs/servers/f926ccb8ffe341f798726453702a7181/rest/services/Geomap_UTM33_EUREF89/GeomapNVDB/FeatureServer",
+  "GeocacheVector/GeocacheHoydekurver/VectorTileServer": "direkte"
 }
