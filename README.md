@@ -131,7 +131,15 @@ Piloten kjører mot ArcGIS Online-organisasjonen `geodata.maps.arcgis.com`, med 
   - `objekt_globalid` og `url` gir dokumenter.
 
   Det spiller ingen rolle om feltnavnene har store eller små bokstaver.
-- **Manglende tabeller:** mangler inspeksjons- eller oppgavetabell, lagres postene lokalt i nettleseren, og brukeren får beskjed.
+- **BIM-lag fra IFC:** ArcGIS BIM-skjemaet har feltene `GlobalId`, `Objekttype`, `Delmodell`, `MMI` og `Fagmodell`. Slike lag leses inn og gjøres om til appens datamodell (`bimTilObjekter` i `src/data/auto-mapping.ts`):
+  - Fag bestemmes av `Fagmodell`.
+  - MMI kommer fra `MMI` eller modellfilnavnet.
+  - Objekt-ID er delmodellen, med løpenummer når flere objekter deler den.
+  - Vegreferansen slås opp i NVDB (`/vegnett/api/v4/posisjon`) med høyeste vegkategori nærmest.
+
+  Pilotens webkart gir 91 objekter: 15 VA, 40 elektro og 36 veg.
+- **Manglende tabeller:** mangler inspeksjons- eller oppgavetabell, lagres postene lokalt i nettleseren, og brukeren får beskjed. For å lagre i ArcGIS Online legger du til en tabell med feltene i `INSPEKSJON_FIELDS` i webkartet. Den blir da funnet automatisk.
+- **3D-klikk:** klikk på et scenelag velger objektet når scenelaget har IFC `GlobalId` per element. Vegmodellen i piloten er publisert som ett samlet 3D-objekt, så der gjelder ikke dette.
 - **3D:** er webscenen global (Web Mercator), brukes webscenens bakgrunn, terreng og kamera. App-objektene og NVDB projiseres inn. Er den i UTM33, legges lagene inn i den lokale scenen med Geodata Online-terreng.
 - **Uten innlogging:** `npm run dev:mock` kjører mock-modus (`.env.mock`).
 

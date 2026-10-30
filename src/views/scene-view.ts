@@ -57,6 +57,7 @@ export class SvvSceneView extends StoreElement {
   private sceneLayers: { navn: string; layer: Layer }[] = [];
   /** Webscenen er global (ikke UTM33): bakgrunn og terreng kommer fra webscenen */
   private global = false;
+  private terrengKilde = "";
   private fagmodeller: string[] = [];
   private verktoy: Verktoy = "naviger";
   private underBakken = true;
@@ -103,11 +104,13 @@ export class SvvSceneView extends StoreElement {
 
     const gdo = hasGdoAccess() && !this.global;
     const def = cfg.gdo.basemaps.find((b) => b.id === store.get().basemap) ?? cfg.gdo.basemaps[0]!;
-    const ground = this.global
-      ? ws!.ground.clone()
+    // Terreng fra webscenen (f.eks. prosjektets terrengmodell) når den har det, ellers Geodata Online
+    const ground = ws?.ground?.layers.length
+      ? ws.ground.clone()
       : new Ground({ layers: gdo ? [new ElevationLayer({ url: cfg.gdo.elevationUrl })] : [] });
+    this.terrengKilde = ws?.ground?.layers.length ? ws.ground.layers.map((l) => l.title).filter(Boolean).join(", ") || "webscenen" : gdo ? "Geodata Online høydemodell" : "";
     ground.navigationConstraint = { type: this.underBakken ? "none" : "stay-above" } as never;
-    this.harTerreng = this.global ? ground.layers.length > 0 : gdo;
+    this.harTerreng = ground.layers.length > 0;
     ground.opacity = this.harTerreng ? 1 - this.terrengGjennomsiktig / 100 : 0;
     const basemap = this.global ? ws!.basemap?.clone() : gdo ? createBasemap(def, "3d") : null;
     const map = new EsriMap({ ...(basemap ? { basemap } : {}), ground });
@@ -117,6 +120,8 @@ export class SvvSceneView extends StoreElement {
       ...cfg.sceneLayers.map((s) => ({ navn: s.navn, layer: new SceneLayer({ url: s.url, title: s.navn }) as Layer })),
       ...wsLag.map((l) => ({ navn: l.title ?? "Lag", layer: l })),
     ];
+    // Scenelag (IFC-modeller) kobles til objektene via IFC GlobalId ved klikk
+    for (const s of this.sceneLayers) if (s.layer.type === "scene") (s.layer as SceneLayer).outFields = ["*"];
     map.addMany(this.sceneLayers.map((s) => s.layer));
 
     const [cx, cy] = cfg.prosjekt.senter;
@@ -159,6 +164,11 @@ export class SvvSceneView extends StoreElement {
           store.set({ selection: { globalids: ids, index: 0 }, nvdbValgt: null, popover: null });
           return;
         }
+        const guid = await this.modellTreff(view, e);
+        if (guid && (await data.getObject(guid))) {
+          store.set({ selection: { globalids: [guid], index: 0 }, nvdbValgt: null, popover: null });
+          return;
+        }
         const treff = (await view.hitTest(e, { include: nvdb.layers })).results.find((r) => r.type === "graphic");
         const a = treff && "graphic" in treff ? treff.graphic.attributes : null;
         store.set({ selection: null, nvdbValgt: a ? { typeId: a.type_id as number, id: a.nvdb_id as number } : null, popover: null });
@@ -178,6 +188,24 @@ export class SvvSceneView extends StoreElement {
     this.applyVegOpacity();
     this.setAttribute("data-klar", "");
     this.requestUpdate();
+  }
+
+  /** IFC GlobalId for et klikk på et scenelag (3D-modell) i webscenen, eller null. */
+  private async modellTreff(view: SceneView, e: { x: number; y: number }): Promise<string | null> {
+    const lag = this.sceneLayers.map((s) => s.layer).filter((l) => l.type === "scene" && l.visible);
+    if (!lag.length) return null;
+    const r = (await view.hitTest(e as never, { include: lag })).results.find((x) => x.type === "graphic");
+    if (!r || !("graphic" in r)) return null;
+    const a = (r.graphic.attributes ?? {}) as Record<string, unknown>;
+    const funnet = Object.entries(a).find(([k]) => k.toLowerCase() === "globalid")?.[1];
+    if (typeof funnet === "string") return funnet;
+    const sl = r.graphic.layer as SceneLayer | null;
+    const oid = sl?.objectIdField ? a[sl.objectIdField] : undefined;
+    if (!sl || oid == null) return null;
+    const fs = await sl.queryFeatures({ objectIds: [oid as number], outFields: ["*"], returnGeometry: false }).catch(() => null);
+    const attrs = (fs?.features[0]?.attributes ?? {}) as Record<string, unknown>;
+    const v = Object.entries(attrs).find(([k]) => k.toLowerCase() === "globalid")?.[1];
+    return typeof v === "string" ? v : null;
   }
 
   private async consumeZoom() {
@@ -277,7 +305,11 @@ export class SvvSceneView extends StoreElement {
                 }}
               />
             </label>
-            ${this.harTerreng ? nothing : html`<p class="melding melding--info">Terreng krever Geodata Online-tilgang. Objektene vises i riktig høyde (NN2000).</p>`}
+            ${!this.hasAttribute("data-klar")
+              ? html`<p class="melding melding--info" role="status">Laster 3D-scenen …</p>`
+              : this.harTerreng
+                ? nothing
+                : html`<p class="melding melding--info">Terreng krever Geodata Online-tilgang. Objektene vises i riktig høyde (NN2000).</p>`}
             <fieldset class="fagmodeller">
               <legend class="kategori">${this.sceneLayers.length ? "LAG I WEBSCENEN" : "FAGMODELLER"}</legend>
               ${this.sceneLayers.length
@@ -316,7 +348,7 @@ export class SvvSceneView extends StoreElement {
             <span>Kamera: høyde ${this.kamera.hoyde.toLocaleString("nb-NO")} m · tilt ${this.kamera.tilt}°</span>
             <span>${this.global ? "Webscene (global) · objekter i NN2000" : "EUREF89 UTM33 · NN2000 · lokal scene"}</span>
             <span class="koordlinje__kilde"
-              >Terreng: ${this.harTerreng ? (this.global ? "fra webscenen" : "Geodata Online høydemodell") : "mangler"} · BIM:
+              >Terreng: ${this.harTerreng ? this.terrengKilde : "mangler"} · BIM:
               ${this.sceneLayers.length ? "lag i webscenen" : "objektlag"}</span
             >
           </div>

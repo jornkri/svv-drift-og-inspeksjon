@@ -4,12 +4,10 @@ import Point from "@arcgis/core/geometry/Point.js";
 import Polygon from "@arcgis/core/geometry/Polygon.js";
 import Polyline from "@arcgis/core/geometry/Polyline.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
-import type Field from "@arcgis/core/layers/support/Field.js";
 import {
   deriveHistory,
   type DataService,
   type Fotovedlegg,
-  type GeometryKind,
   type InnsendingResultat,
   type ObjectLayerHandle,
   type ObjektStat,
@@ -17,11 +15,11 @@ import {
   type OppgaveMedLogg,
   type UserInfo,
 } from "./DataService.ts";
+import { lagKlientLag, type KlientLagDef } from "./klientlag.ts";
 import { queryLayersNearby } from "./query.ts";
 import {
   OBJEKT_FIELDS,
   type Dokument,
-  type Fag,
   type HistorikkPost,
   type Inspeksjon,
   type Objekt,
@@ -51,7 +49,7 @@ interface MockTables {
   })[];
 }
 
-const LAYER_DEFS: { key: string; fag: Fag; kind: GeometryKind; title: string }[] = [
+const LAYER_DEFS: KlientLagDef[] = [
   { key: "va_linje", fag: "VA", kind: "polyline", title: "VA – ledninger" },
   { key: "va_punkt", fag: "VA", kind: "point", title: "VA – kummer og sandfang" },
   { key: "el_linje", fag: "Elektro", kind: "polyline", title: "Elektro – kabelgrøfter" },
@@ -60,29 +58,6 @@ const LAYER_DEFS: { key: string; fag: Fag; kind: GeometryKind; title: string }[]
   { key: "veg_linje", fag: "Veg", kind: "polyline", title: "Veg – rekkverk og kantstein" },
 ];
 
-const FIELDS: Partial<Field>[] = [
-  { name: "oid", type: "oid" },
-  { name: "globalid", type: "string", length: 38 },
-  { name: "objekt_id", type: "string", alias: "Objekt-ID" },
-  { name: "navn", type: "string", alias: "Navn" },
-  { name: "fag", type: "string", alias: "Fag" },
-  { name: "objekttype", type: "string", alias: "Objekttype" },
-  { name: "mmi", type: "integer", alias: "MMI" },
-  { name: "revisjon", type: "string", alias: "Revisjon" },
-  { name: "rev_dato", type: "date", alias: "Revisjonsdato" },
-  { name: "status_inspeksjon", type: "string", alias: "Inspeksjonsstatus" },
-  { name: "vegreferanse", type: "string", alias: "Vegreferanse" },
-  { name: "kote_min", type: "double", alias: "Kote min" },
-  { name: "kote_max", type: "double", alias: "Kote maks" },
-  { name: "lengde_m", type: "double", alias: "Lengde (m)" },
-  { name: "fagmodell", type: "string", alias: "Fagmodell" },
-  { name: "modellfil", type: "string", alias: "Modellfil" },
-  { name: "modellert_av", type: "string", alias: "Modellert av" },
-  { name: "prosjekt", type: "string", alias: "Prosjekt" },
-  { name: "ifc_guid", type: "string", alias: "IFC GlobalId" },
-  { name: "ifc_klasse", type: "string", alias: "IFC-klasse" },
-  { name: "lastet_inn", type: "date", alias: "Lastet inn" },
-];
 
 const STORAGE_KEY = "svv-di-mock-innsendte";
 
@@ -97,15 +72,6 @@ function toGeometry(g: MockFeature["geometry"]): Geometry {
     case "Polygon":
       return new Polygon({ rings: g.coordinates, hasZ: true, spatialReference: SR });
   }
-}
-
-function toAttributes(o: Objekt, oid: number): Record<string, unknown> {
-  return {
-    ...o,
-    oid,
-    rev_dato: o.rev_dato ? Date.parse(o.rev_dato) : null,
-    lastet_inn: o.lastet_inn ? Date.parse(o.lastet_inn) : null,
-  };
 }
 
 function localDateIso(daysFromToday: number, clock = "12:00"): string {
@@ -165,26 +131,9 @@ export class MockDataService implements DataService {
   }
 
   private buildLayers(): ObjectLayerHandle[] {
-    return LAYER_DEFS.map((def) => {
-      const source = this.objekter
-        .filter((o) => o.lag === def.key)
-        .map((o) => new Graphic({ geometry: o.geometry.clone(), attributes: toAttributes(o.objekt, o.oid) }));
-      const layer = new FeatureLayer({
-        id: `obj-${def.key}`,
-        title: def.title,
-        source,
-        fields: FIELDS as Field[],
-        objectIdField: "oid",
-        geometryType: def.kind,
-        hasZ: true,
-        spatialReference: SR,
-        outFields: ["*"],
-        popupEnabled: false,
-        elevationInfo: { mode: "absolute-height" },
-      });
-      return { key: def.key, fag: def.fag, geometryKind: def.kind, title: def.title, layer };
-    });
+    return lagKlientLag(LAYER_DEFS, this.objekter);
   }
+
 
   async objectStats(): Promise<ObjektStat[]> {
     return this.objekter.map(({ objekt: o }) => ({

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { formaterVerdi, hentTilstander, hentVegobjekter, minsteAvstand, lesTilstand, oppsummer, parseWkt, tilstandSammendrag, type NvdbVegobjekt } from "../../src/nvdb/vegobjekter.ts";
+import { formaterVerdi, hentTilstander, hentVegobjekter, hentVegreferanse, minsteAvstand, lesTilstand, oppsummer, parseWkt, tilstandSammendrag, type NvdbVegobjekt } from "../../src/nvdb/vegobjekter.ts";
 
 describe("NVDB vegobjekter", () => {
   it("tolker WKT for punkt, linje og flate", () => {
@@ -86,5 +86,32 @@ describe("NVDB vegobjekter", () => {
     expect(fetchFn).toHaveBeenCalledTimes(3);
     expect(ut).toHaveLength(5);
     expect(ut[0]!.dato).toBe("2019-11-15");
+  });
+});
+
+describe("hentVegreferanse", () => {
+  it("velger høyeste vegkategori, deretter nærmeste, og sender posisjon og X-Client", async () => {
+    let kalt = "";
+    let hode: Record<string, string> = {};
+    const fetchFn = (async (url: string, init?: RequestInit) => {
+      kalt = url;
+      hode = init?.headers as Record<string, string>;
+      return new Response(
+        JSON.stringify([
+          { vegsystemreferanse: { kortform: "PA98075 S1001D1 m35", vegsystem: { vegkategori: "P" } }, avstand: 2 },
+          { vegsystemreferanse: { kortform: "EV45 S2D1 m10167", vegsystem: { vegkategori: "E" } }, avstand: 40 },
+          { vegsystemreferanse: { kortform: "EA45 S1002D20 m72", vegsystem: { vegkategori: "E" } }, avstand: 6 },
+        ]),
+      );
+    }) as unknown as typeof fetch;
+    const v = await hentVegreferanse({ baseUrl: "https://nvdb", client: "test" }, 816955, 7764330, { fetchFn });
+    expect(v).toBe("EA45 S1002D20 m72");
+    expect(kalt).toContain("/vegnett/api/v4/posisjon?nord=7764330.00&ost=816955.00&srid=5973");
+    expect(hode["X-Client"]).toBe("test");
+  });
+
+  it("gir null når ingen veg er i nærheten", async () => {
+    const fetchFn = (async () => new Response("[]")) as unknown as typeof fetch;
+    expect(await hentVegreferanse({ baseUrl: "https://nvdb", client: "t" }, 0, 0, { fetchFn })).toBeNull();
   });
 });

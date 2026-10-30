@@ -284,3 +284,30 @@ export async function hentAadt(k: NvdbKlient, x: number, y: number, radius = 30)
   if (!beste) return null;
   return { aadt: beste.aadt, aar: typeof beste.aar === "number" ? beste.aar : null, vegref: beste.o.lokasjon?.vegsystemreferanser?.[0]?.kortform ?? null };
 }
+
+/** Vegkategorier i prioritert rekkefølge: europa-, riks-, fylkes-, kommunal, privat og skogsbilveg. */
+const KATEGORI_REKKEFOLGE = ["E", "R", "F", "K", "P", "S"];
+
+/**
+ * Vegsystemreferanse for et punkt (NVDB API Les, /vegnett/api/v4/posisjon), f.eks.
+ * «EV45 S2D1 m10167». Høyeste vegkategori innenfor maksAvstand meter vinner, deretter nærmeste,
+ * slik at en stikkrenne under E45 får E45 og ikke en anleggsveg like ved. Null når ingen veg er nær.
+ */
+export async function hentVegreferanse(
+  k: NvdbKlient,
+  x: number,
+  y: number,
+  opts: { maksAvstand?: number; fetchFn?: typeof fetch } = {},
+): Promise<string | null> {
+  const f = opts.fetchFn ?? fetch;
+  const url = `${k.baseUrl}/vegnett/api/v4/posisjon?nord=${y.toFixed(2)}&ost=${x.toFixed(2)}&srid=5973&maks_avstand=${opts.maksAvstand ?? 50}&maks_antall=10`;
+  const r = await f(url, { headers: headers(k) });
+  if (!r.ok) return null;
+  const liste = (await r.json()) as { vegsystemreferanse?: { kortform?: string; vegsystem?: { vegkategori?: string } }; avstand?: number }[];
+  const rang = (x: (typeof liste)[number]) => {
+    const i = KATEGORI_REKKEFOLGE.indexOf(x.vegsystemreferanse?.vegsystem?.vegkategori ?? "");
+    return i < 0 ? KATEGORI_REKKEFOLGE.length : i;
+  };
+  const beste = liste.filter((x) => x.vegsystemreferanse?.kortform).sort((a, b) => rang(a) - rang(b) || (a.avstand ?? 0) - (b.avstand ?? 0))[0];
+  return beste?.vegsystemreferanse?.kortform ?? null;
+}

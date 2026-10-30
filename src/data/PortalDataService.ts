@@ -1,11 +1,14 @@
 import Graphic from "@arcgis/core/Graphic.js";
+import type Geometry from "@arcgis/core/geometry/Geometry.js";
 import type Layer from "@arcgis/core/layers/Layer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import type Portal from "@arcgis/core/portal/Portal.js";
 import WebMap from "@arcgis/core/WebMap.js";
 import WebScene from "@arcgis/core/WebScene.js";
 import type { AppConfig, LayerRef } from "../config.ts";
-import { fagFraTittel, finnLag, manglendeFelt, tilpassFelt, type AutoMapping, type LagInfo } from "./auto-mapping.ts";
+import { bimTilObjekter, erBimLag, fagFraTittel, finnLag, manglendeFelt, tilpassFelt, type AutoMapping, type LagInfo } from "./auto-mapping.ts";
+import { hentVegreferanse } from "../nvdb/vegobjekter.ts";
+import { lagKlientLag, type KlientLagDef, type KlientObjekt } from "./klientlag.ts";
 import {
   deriveHistory,
   type DataService,
@@ -21,6 +24,7 @@ import {
 import { queryLayersNearby, queryLayersWhere } from "./query.ts";
 import {
   FAG,
+  OBJEKT_FIELDS,
   fromAttributes,
   sqlString,
   toAttributes,
@@ -78,6 +82,17 @@ function lagUrl(l: FeatureLayer | null | undefined): string {
   return /\/\d+$/.test(l.url) || l.layerId == null ? l.url : `${l.url}/${l.layerId}`;
 }
 
+/** Enkeltlag (grupper flates ut) som ikke er objektlag eller tabeller, klonet for en ny visning. */
+function referanselag(alle: Layer[], brukt: Set<string>): Layer[] {
+  return alle
+    .filter((l) => l.type !== "group")
+    .filter((l) => !(l.type === "feature" && brukt.has(lagUrl(l as FeatureLayer))))
+    .flatMap((l) => {
+      const k = l as unknown as { clone?: () => Layer };
+      return typeof k.clone === "function" ? [k.clone()] : [];
+    });
+}
+
 function geometriType(l: FeatureLayer): GeometryKind {
   return l.geometryType === "point" || l.geometryType === "multipoint" ? "point" : l.geometryType === "polygon" ? "polygon" : "polyline";
 }
@@ -115,6 +130,9 @@ export class PortalDataService implements DataService {
   private inspTable: FeatureLayer | null = null;
   private dokTable: FeatureLayer | null = null;
   private oppgaveLayer: FeatureLayer | null = null;
+  /** BIM-lag (IFC-eksport) lest inn og gjort om til appens skjema i klientlag */
+  private klient: { objekter: KlientObjekt[]; defs: KlientLagDef[]; urler: Set<string> } | null = null;
+  private klientHandles: ObjectLayerHandle[] = [];
   private lokalInsp = lesLokalt<Inspeksjon>(LOKAL_INSP);
   private lokalOppg = lesLokalt<OppgaveMedLogg>(LOKAL_OPPG);
 
@@ -159,6 +177,15 @@ export class PortalDataService implements DataService {
       await this.autoKartlegg();
     }
     await Promise.all([this.inspTable?.load(), this.dokTable?.load(), this.oppgaveLayer?.load()]);
+
+    if (this.klient) {
+      this.objektFields = OBJEKT_FIELDS;
+      this.objektFeltFinnes = new Set(Object.values(OBJEKT_FIELDS));
+      this.queryLayers = lagKlientLag(this.klient.defs, this.klient.objekter).map((h) => h.layer);
+      this.lokalt = [...(this.inspTable ? [] : (["inspeksjoner"] as const)), ...(this.oppgaveLayer ? [] : (["oppgaver"] as const))];
+      for (const i of this.lokalInsp) this.oppdaterKlientStatus(i);
+      return;
+    }
 
     // Feltnavn med andre store/små bokstaver enn mappingen (vanlig i ArcGIS Online)
     const forste = this.resolved[0] ? new FeatureLayer({ url: this.resolved[0].url }) : null;
@@ -215,10 +242,61 @@ export class PortalDataService implements DataService {
         }
       }
     }
+    if (!m.objektlag.length) {
+      const bim = lag.filter((l) => erBimLag(l.info));
+      if (bim.length) await this.lastBim(bim);
+    }
     const tabell = (i: LagInfo | null) => (i ? new FeatureLayer({ url: i.url, outFields: ["*"] }) : null);
     this.inspTable = tabell(m.inspeksjon);
     this.oppgaveLayer = tabell(m.oppgave);
     this.dokTable = tabell(m.dokument);
+  }
+
+  /**
+   * Leser alle objekter i BIM-lagene (IFC → ArcGIS) og gjør dem om til appens skjema.
+   * Egnet for prosjektmodeller (hundrer til noen tusen objekter); store forvaltningslag
+   * bør i stedet konfigureres med VITE_LAYERS_* og feltmapping.
+   */
+  private async lastBim(lag: { info: LagInfo; layer: FeatureLayer }[]) {
+    const objekter: KlientObjekt[] = [];
+    const defs: KlientLagDef[] = [];
+    let oid = 1;
+    for (const [i, { info, layer }] of lag.entries()) {
+      const rader: { attrs: Record<string, unknown>; geometry: Geometry }[] = [];
+      const pageSize = layer.capabilities?.query.maxRecordCount ?? 1000;
+      for (let start = 0; ; start += pageSize) {
+        const fs = await layer.queryFeatures({ where: "1=1", outFields: ["*"], returnGeometry: true, returnZ: true, outSpatialReference: { wkid: 25833 }, start, num: pageSize });
+        rader.push(...fs.features.filter((f) => f.geometry).map((f) => ({ attrs: f.attributes as Record<string, unknown>, geometry: f.geometry! })));
+        if (!fs.exceededTransferLimit) break;
+      }
+      const konvertert = bimTilObjekter(rader.map((r) => ({ attrs: r.attrs, lagTittel: info.tittel })));
+      const key = `bim-${i}`;
+      const egne = konvertert.flatMap((o, j) => (o ? [{ objekt: o, geometry: rader[j]!.geometry, lag: key, oid: oid++ }] : []));
+      if (!egne.length) continue;
+      objekter.push(...egne);
+      const fag = FAG.map((f) => [f, egne.filter((o) => o.objekt.fag === f).length] as const).sort((a, b) => b[1] - a[1])[0]![0];
+      defs.push({ key, fag, kind: geometriType(layer), title: info.tittel.replace(/\s*2D$/i, "") });
+    }
+    // Objekt-ID-er må være unike på tvers av lagene
+    const sett = new Map<string, number>();
+    for (const o of objekter) sett.set(o.objekt.objekt_id, (sett.get(o.objekt.objekt_id) ?? 0) + 1);
+    for (const o of objekter) if ((sett.get(o.objekt.objekt_id) ?? 0) > 1) o.objekt.objekt_id = `${o.objekt.objekt_id} (${o.objekt.fag})`;
+    this.klient = { objekter, defs, urler: new Set(lag.map((l) => l.info.url)) };
+  }
+
+  /** Oppdaterer inspeksjonsstatus i klientlagene etter en lokal inspeksjon. */
+  private oppdaterKlientStatus(i: Inspeksjon) {
+    const o = this.klient?.objekter.find((x) => x.objekt.globalid === i.objekt_globalid);
+    if (!o) return;
+    const status = i.tilstandsgrad >= 2 ? "Avvik" : "OK";
+    o.objekt.status_inspeksjon = status;
+    this.klientHandles = this.klientHandles.filter((h) => !h.layer.destroyed);
+    for (const layer of [...this.klientHandles.map((h) => h.layer), ...this.queryLayers]) {
+      if (!layer.loaded || layer.destroyed) continue;
+      layer
+        .applyEdits({ updateFeatures: [new Graphic({ attributes: { oid: o.oid, status_inspeksjon: status } })] })
+        .catch((e: unknown) => console.warn("Kunne ikke oppdatere status i klientlag", e));
+    }
   }
 
   /** Webscenen (VITE_WEBSCENE_ID) for 3D, lastet én gang. */
@@ -246,10 +324,17 @@ export class PortalDataService implements DataService {
 
   /** URL-ene til objektlagene og tabellene (de vises ikke som referanselag). */
   private brukteUrler(): Set<string> {
-    return new Set([...this.resolved.map((r) => r.url), lagUrl(this.inspTable), lagUrl(this.oppgaveLayer), lagUrl(this.dokTable)].filter(Boolean));
+    return new Set(
+      [...this.resolved.map((r) => r.url), ...(this.klient?.urler ?? []), lagUrl(this.inspTable), lagUrl(this.oppgaveLayer), lagUrl(this.dokTable)].filter(Boolean),
+    );
   }
 
   createObjectLayers(): ObjectLayerHandle[] {
+    if (this.klient) {
+      const handles = lagKlientLag(this.klient.defs, this.klient.objekter);
+      this.klientHandles.push(...handles);
+      return handles;
+    }
     return this.resolved.map((r, i) => ({
       key: `${r.fag}-${i}`,
       fag: r.fag,
@@ -267,22 +352,14 @@ export class PortalDataService implements DataService {
 
   async createReferenceLayers(): Promise<Layer[]> {
     if (!this.webmap) return [];
-    const brukt = this.brukteUrler();
-    return this.webmap.layers
-      .toArray()
-      .filter((l) => !(l.type === "feature" && brukt.has(lagUrl(l as FeatureLayer))))
-      .map((l) => (l as unknown as { clone(): Layer }).clone());
+    return referanselag(this.webmap.allLayers.toArray(), this.brukteUrler());
   }
 
   /** Operative lag i webscenen som ikke er objektlag (fagmodeller, bygg, mesh osv.). */
   async sceneLag(): Promise<Layer[]> {
     const ws = await this.webscene();
     if (!ws) return [];
-    const brukt = this.brukteUrler();
-    return ws.layers
-      .toArray()
-      .filter((l) => !(l.type === "feature" && brukt.has(lagUrl(l as FeatureLayer))))
-      .map((l) => (l as unknown as { clone(): Layer }).clone());
+    return referanselag(ws.allLayers.toArray(), this.brukteUrler());
   }
 
   async objectStats(): Promise<ObjektStat[]> {
@@ -312,7 +389,21 @@ export class PortalDataService implements DataService {
   async getObject(globalid: string): Promise<ObjektTreff | null> {
     const hits = await queryLayersWhere(this.queryLayers, this.objektFields, `${this.objektFields.globalid} = ${sqlString(globalid)}`, 1);
     const t = hits[0];
-    return t ? { ...t, objekt: this.medLokalStatus(t.objekt) } : null;
+    if (!t) return null;
+    const objekt = this.medLokalStatus(t.objekt);
+    if (this.klient && !objekt.vegreferanse) objekt.vegreferanse = await this.vegreferanse(objekt.globalid, t.geometry);
+    return { ...t, objekt };
+  }
+
+  /** Vegreferanse fra NVDB for BIM-objekter (som mangler den), slått opp ved første visning. */
+  private async vegreferanse(globalid: string, g: Geometry): Promise<string | null> {
+    const k = this.klient?.objekter.find((o) => o.objekt.globalid === globalid);
+    if (k?.objekt.vegreferanse) return k.objekt.vegreferanse;
+    const c = g.extent?.center ?? (g.type === "point" ? (g as unknown as { x: number; y: number }) : null);
+    if (!c) return null;
+    const v = await hentVegreferanse(this.cfg.nvdb, c.x, c.y).catch(() => null);
+    if (k && v) k.objekt.vegreferanse = v;
+    return v;
   }
 
   async findByObjektId(objektId: string): Promise<ObjektTreff | null> {
@@ -435,6 +526,7 @@ export class PortalDataService implements DataService {
       const globalid = `{${crypto.randomUUID().toUpperCase()}}`;
       this.lokalInsp.push({ ...insp, globalid, antall_bilder: 0 });
       skrivLokalt(LOKAL_INSP, this.lokalInsp);
+      this.oppdaterKlientStatus({ ...insp, globalid });
       if (insp.oppgave_id) await this.setTaskStatus(insp.oppgave_id, "Klar for kontroll").catch(() => undefined);
       return { globalid, vedleggFeilet: bilder.length };
     }
@@ -469,12 +561,14 @@ export class PortalDataService implements DataService {
     const rolle = (url: string): string => {
       const r = this.resolved.filter((x) => x.url === url);
       if (r.length) return `Objektlag (${r.map((x) => x.fag).join(", ")})`;
+      if (this.klient?.urler.has(url)) return "Objektlag (BIM, lest inn i appen)";
       if (url === lagUrl(this.inspTable)) return "Inspeksjoner";
       if (url === lagUrl(this.oppgaveLayer)) return "Oppgaver";
       if (url === lagUrl(this.dokTable)) return "Dokumenter";
       return "Referanselag";
     };
     const mangler = (r: string, felt: string[]): string[] => {
+      if (r.includes("BIM")) return [];
       if (r.startsWith("Objektlag")) return manglendeFelt(this.cfg.fields.objekt, felt);
       if (r === "Inspeksjoner") return manglendeFelt(this.cfg.fields.inspeksjon, felt).filter((k) => k !== "globalid" && k !== "antall_bilder");
       if (r === "Oppgaver") return manglendeFelt(this.cfg.fields.oppgave, felt);
