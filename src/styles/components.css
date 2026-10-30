@@ -1092,7 +1092,7 @@ input[type="radio"] {
   padding: 0;
   border: 2px solid var(--svv-white);
   outline: 1px solid var(--svv-grey-dark-65);
-  background: var(--thumb, #dadada);
+  background: var(--thumb-bilde, none) center / cover, var(--thumb, #dadada);
   display: flex;
   align-items: flex-end;
   cursor: pointer;
@@ -1142,6 +1142,13 @@ input[type="radio"] {
 }
 .bakgrunnskort__bilde {
   height: 56px;
+  overflow: hidden;
+}
+.bakgrunnskort__bilde img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .bakgrunnskort__tekst {
   display: flex;
@@ -2090,4 +2097,52 @@ svv-login {
   align-items: center;
   gap: 6px;
   text-decoration: none;
+}
+
+/* Bildeviser festet til siden av kartet (ikke-modal), så bildepunktet i kartet er synlig */
+.bildeviser--dokket {
+  position: fixed;
+  inset: var(--svv-topbar-h, 52px) 0 0 auto;
+  width: 440px;
+  max-width: 100vw;
+  max-height: none;
+  height: auto;
+  margin: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--svv-grey-dark-65);
+  box-shadow: -4px 0 12px rgb(0 0 0 / 0.12);
+  overflow: auto;
+}
+.bildeviser--dokket .bildeviser__flate img {
+  max-height: 45vh;
+}
+.bildeviser--dokket .bildeviser__fot {
+  flex-direction: column;
+}
+@media (max-width: 699px) {
+  .bildeviser--dokket {
+    inset: auto 0 0 0;
+    width: 100vw;
+    height: 55vh;
+    border-left: 0;
+    border-top: 1px solid var(--svv-grey-dark-65);
+  }
+  .bildeviser--dokket .bildeviser__flate img {
+    max-height: 26vh;
+  }
+}
+body[data-bilde-dokket] .kartkontroller,
+body[data-bilde-dokket] .bakgrunnsvelger {
+  right: 452px;
+}
+@media (max-width: 699px) {
+  body[data-bilde-dokket] .kartkontroller,
+  body[data-bilde-dokket] .bakgrunnsvelger {
+    right: 12px;
+  }
+  body[data-bilde-dokket] .bakgrunnsvelger {
+    bottom: calc(55vh + 12px);
+  }
 }

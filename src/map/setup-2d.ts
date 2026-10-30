@@ -3,6 +3,7 @@ import type Basemap from "@arcgis/core/Basemap.js";
 import Graphic from "@arcgis/core/Graphic.js";
 import EsriMap from "@arcgis/core/Map.js";
 import Point from "@arcgis/core/geometry/Point.js";
+import LOD from "@arcgis/core/layers/support/LOD.js";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference.js";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol.js";
@@ -20,6 +21,12 @@ import { NvdbVegnettLayer } from "./nvdb-layer.ts";
 import { ObjectLayerController } from "./object-layers.ts";
 import { FeltbildeLag } from "./feltbilde-lag.ts";
 import { apneFeltbilder } from "../ui/feltbilde-viser.ts";
+
+/** UTM33-nivåer fra 1:2 560 000 til 1:156 (Geodata Online-skjemaet, halvering per nivå). */
+const ZOOMNIVAER = Array.from({ length: 15 }, (_, i) => {
+  const scale = 2_560_000 / 2 ** i;
+  return new LOD({ level: i, scale, resolution: scale / (96 / 0.0254) });
+});
 
 export interface Map2D {
   view: MapView;
@@ -56,7 +63,10 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
   el.spatialReference = new SpatialReference({ wkid: cfg.wkid });
   el.center = new Point({ x: cfg.prosjekt.senter[0], y: cfg.prosjekt.senter[1], spatialReference: { wkid: cfg.wkid } });
   el.scale = opts.scale ?? cfg.prosjekt.skala;
-  el.constraints = { minScale: 1_500_000, maxScale: 150, rotationEnabled: false } as never;
+  // Faste zoomnivåer for alle bakgrunnskart og jevn zoom (ikke låst til flisnivåene). Med
+  // minScale/maxScale og et rasterkart (Bilder, siste flisnivå 1:625) regner ArcGIS ut et feil
+  // skalaspenn og låser kartet på 1:1 280 000, så grensene ligger i nivålista i stedet.
+  el.constraints = { lods: ZOOMNIVAER, snapToZoom: false, rotationEnabled: false } as never;
   await el.viewOnReady();
   const view = el.view as MapView;
   view.background = { color: [236, 238, 237, 1] } as never;
@@ -76,6 +86,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
   const bilder = new FeltbildeLag();
   bilder.layer.visible = store.get().referanse.feltbilder ?? true;
   map.add(bilder.layer);
+  map.add(bilder.valgt);
   void bilder.last(view);
   const markor = new GraphicsLayer({ id: "markor", listMode: "hide" });
   map.add(markor);
@@ -138,6 +149,7 @@ export async function setup2DMap(el: ArcgisMap, elementId: string, opts: { scale
     }),
     store.select((s) => s.zoomTil, () => void consumeZoom()),
     store.select((s) => s.markor, (m) => void showMarkor(m)),
+    store.select((s) => s.feltbildeAktiv, (a) => void bilder.marker(view, a)),
     store.select((s) => s.dataVersjon, () => void objects.refreshStats()),
   ];
   void consumeZoom();

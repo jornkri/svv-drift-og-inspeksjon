@@ -93,7 +93,7 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: "autoUpdate",
         injectRegister: false,
-        includeAssets: ["svv-merke.svg", "svv-logo.svg", "svv-logo-print.svg", "icons/*.png", "mock-dok/*"],
+        includeAssets: ["svv-merke.svg", "svv-logo.svg", "svv-logo-print.svg", "icons/*.png", "basemaps/*.jpg", "mock-dok/*"],
         manifest: {
           name: "Drift og inspeksjon – Statens vegvesen",
           short_name: "Drift og inspeksjon",
@@ -114,12 +114,20 @@ export default defineConfig(({ mode }) => {
           // Ny versjon tar over straks (autoUpdate laster siden på nytt når den nye arbeideren styrer)
           skipWaiting: true,
           clientsClaim: true,
-          globPatterns: ["**/*.{js,css,html,svg,png,json,woff2}"],
+          // Bare app-skallet forhåndslastes. Med alle ~1500 JS-bitene svarte GitHub Pages 503 på
+          // noen av dem, installasjonen feilet og brukerne ble stående på en gammel versjon.
+          // JS/CSS (hash i filnavnet) bufres i stedet ved første bruk (se runtimeCaching).
+          globPatterns: ["*.{html,svg,png,json,webmanifest}", "icons/*.png", "basemaps/*.jpg"],
           globIgnores: ["arcgis/**", "calcite/**", "mock-dok/**"],
-          maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
           navigateFallback: "index.html",
           navigateFallbackDenylist: [/^\/api\//],
           runtimeCaching: [
+            {
+              // Appens JS/CSS (navnene endres ved hver bygging): buffer ved første bruk, også frakoblet
+              urlPattern: ({ url }) => url.pathname.includes("/assets/"),
+              handler: "CacheFirst",
+              options: { cacheName: "app", expiration: { maxEntries: 3000, maxAgeSeconds: 60 * 24 * 3600 } },
+            },
             {
               // ArcGIS-/Calcite-ressurser: bufres ved første bruk
               urlPattern: ({ url }) => /\/(arcgis|calcite)\//.test(url.pathname),

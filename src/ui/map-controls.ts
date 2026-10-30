@@ -187,6 +187,9 @@ export class SvvMapControls extends StoreElement {
 }
 
 /** Bakgrunnskartvelger som miniatyrknapp nederst til høyre. */
+/** Forhåndsvisning av bakgrunnskartet over prosjektområdet (public/basemaps, laget fra kartet). */
+const thumbUrl = (id: string) => `${import.meta.env.BASE_URL}basemaps/${id}.jpg`;
+
 export class SvvBasemapPicker extends StoreElement {
   static override properties = { dim: { type: String } };
   declare dim: "2d" | "3d";
@@ -199,7 +202,7 @@ export class SvvBasemapPicker extends StoreElement {
     return html`<div class="popwrap bakgrunnsvelger">
       <button
         class="bakgrunnsvelger__knapp"
-        style="--thumb:${current.thumb}"
+        style="--thumb:${current.thumb};--thumb-bilde:url(${thumbUrl(current.id)})"
         aria-label="Bytt bakgrunnskart – nå ${current.navn} fra Geodata Online"
         aria-expanded=${s.popover === "bakgrunn"}
         @click=${() => togglePopover("bakgrunn")}
@@ -222,7 +225,7 @@ export class SvvBasemapPicker extends StoreElement {
                   class="bakgrunnskort ${b.id === s.basemap ? "is-valgt" : ""}"
                   @click=${() => store.set({ basemap: b.id as BasemapId, popover: null })}
                 >
-                  <span class="bakgrunnskort__bilde" style="background:${b.thumb}"></span>
+                  <span class="bakgrunnskort__bilde" style="background:${b.thumb}"><img src=${thumbUrl(b.id)} alt="" loading="lazy" /></span>
                   <span class="bakgrunnskort__tekst"><strong>${b.navn}</strong><span>Geodata Online</span></span>
                 </button>`,
               )}

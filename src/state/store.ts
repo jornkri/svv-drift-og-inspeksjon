@@ -60,6 +60,8 @@ export interface AppState {
   zoomTil: string | null;
   /** 3D: vis punktskyen og gjør vegmodellen halvgjennomsiktig ved neste zoom (kontroll mot punktsky) */
   punktskyFokus: boolean;
+  /** Feltbildet som vises i bildeviseren (markeres i kartet); dokket = festet som sidepanel */
+  feltbildeAktiv: { x: number; y: number; retning: number | null; dokket: boolean } | null;
   /** Søkeresultat som ikke er et objekt (vegreferanse, adresse) */
   markor: { x: number; y: number; tekst: string } | null;
   /** Økes når data er endret (ny inspeksjon o.l.) slik at visninger kan laste på nytt */
@@ -104,6 +106,7 @@ export const initialState: AppState = {
   meldinger: [],
   zoomTil: null,
   punktskyFokus: false,
+  feltbildeAktiv: null,
   markor: null,
   dataVersjon: 0,
   oppgaver: [],
