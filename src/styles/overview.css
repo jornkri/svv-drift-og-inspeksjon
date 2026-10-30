@@ -324,3 +324,8 @@ svv-report-view {
     max-width: none;
   }
 }
+
+.rapport__logo {
+  display: block;
+  margin: 0 0 8px auto;
+}

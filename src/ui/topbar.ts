@@ -70,7 +70,7 @@ export class SvvTopbar extends StoreElement {
     return html`
       <header class="topbar">
         <div class="topbar__merke">
-          <img class="topbar__logo" src="/logo-plassholder.svg" alt="Statens vegvesen" width="30" height="30" />
+          <img class="topbar__logo" src="/svv-merke.svg" alt="Statens vegvesen" width="43" height="30" />
           <span class="topbar__app">Drift og inspeksjon</span>
         </div>
         <span class="topbar__skille" aria-hidden="true"></span>

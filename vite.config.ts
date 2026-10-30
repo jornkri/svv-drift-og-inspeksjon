@@ -91,7 +91,7 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: "autoUpdate",
         injectRegister: false,
-        includeAssets: ["logo-plassholder.svg", "icons/*.png", "mock-dok/*"],
+        includeAssets: ["svv-merke.svg", "svv-logo.svg", "svv-logo-print.svg", "icons/*.png", "mock-dok/*"],
         manifest: {
           name: "Drift og inspeksjon – Statens vegvesen",
           short_name: "Drift og inspeksjon",
