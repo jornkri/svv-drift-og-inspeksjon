@@ -11,6 +11,19 @@ import { swatch } from "./legend.ts";
 import { NVDB_MAKS_SKALA, nvdbSynlig } from "../map/nvdb-objekter-layer.ts";
 import { hasGdoAccess } from "../map/basemaps.ts";
 import { NVDB_FARGE, NVDB_TYPER, type NvdbType } from "../nvdb/vegobjekter.ts";
+import type { TemalagDef } from "../config.ts";
+import "./tema-legende.ts";
+
+/** Avkrysning for en gruppe: på når alle er på, delvis når noen er på. */
+function gruppeBoks(paa: number, totalt: number, navn: string, sett: (paa: boolean) => void) {
+  return html`<input
+    type="checkbox"
+    aria-label="Vis alle i ${navn}"
+    .checked=${totalt > 0 && paa === totalt}
+    .indeterminate=${paa > 0 && paa < totalt}
+    @change=${(e: Event) => sett((e.target as HTMLInputElement).checked)}
+  />`;
+}
 
 export function nvdbSwatch(t: NvdbType) {
   const c = `rgb(${NVDB_FARGE.join(",")})`;
@@ -132,7 +145,13 @@ export class SvvLayerPanel extends StoreElement {
         </label>
       </div>
       <div class="laggruppe">
-        <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">NVDB VEGOBJEKTER (I DRIFT)</span></div>
+        <label class="laggruppe__hode">
+          ${gruppeBoks(NVDB_TYPER.filter((t) => nvdbSynlig(t.id)).length, NVDB_TYPER.length, "NVDB vegobjekter", (paa) =>
+            store.set({ nvdbTyper: Object.fromEntries(NVDB_TYPER.map((t) => [t.id, paa])) }),
+          )}
+          <span class="kategori">NVDB VEGOBJEKTER (I DRIFT)</span>
+          <span class="laggruppe__antall">${Object.values(s.nvdbAntall).reduce((a, b) => a + b, 0) || ""}</span>
+        </label>
         ${Object.keys(s.nvdbAntall).length === 0
           ? html`<p class="laggruppe__merknad">Zoom inn til 1:${NVDB_MAKS_SKALA.toLocaleString("nb-NO")} eller nærmere for å hente vegobjekter.</p>`
           : nothing}
@@ -159,23 +178,32 @@ export class SvvLayerPanel extends StoreElement {
       </div>`;
     }
     const grupper = [...new Set(cfg.gdo.temalag.map((t) => t.gruppe))];
+    const paa = (l: TemalagDef[]) => l.filter((t) => s.referanse[`tema:${t.id}`]).length;
+    const sett = (l: TemalagDef[], v: boolean) => store.set({ referanse: { ...s.referanse, ...Object.fromEntries(l.map((t) => [`tema:${t.id}`, v])) } });
     return html`<div class="laggruppe">
-        <div class="laggruppe__hode laggruppe__hode--tekst"><span class="kategori">TEMA (GEODATA ONLINE)</span></div>
-        ${grupper.map(
-          (g) => html`<p class="laggruppe__undertittel">${g}</p>
-            ${cfg.gdo.temalag
-              .filter((t) => t.gruppe === g)
-              .map(
-                (t) => html`<label class="lagrad" title=${t.beskrivelse}>
+        <label class="laggruppe__hode">
+          ${gruppeBoks(paa(cfg.gdo.temalag), cfg.gdo.temalag.length, "temalag", (v) => sett(cfg.gdo.temalag, v))}
+          <span class="kategori">TEMA</span>
+          <span class="laggruppe__antall">${paa(cfg.gdo.temalag) ? `${paa(cfg.gdo.temalag)} på` : ""}</span>
+        </label>
+        ${grupper.map((g) => {
+          const lag = cfg.gdo.temalag.filter((t) => t.gruppe === g);
+          return html`<label class="laggruppe__undertittel laggruppe__undertittel--valg">
+              ${gruppeBoks(paa(lag), lag.length, g, (v) => sett(lag, v))}
+              <span>${g}</span>
+            </label>
+            ${lag.map(
+              (t) => html`<label class="lagrad lagrad--innrykk" title=${t.beskrivelse}>
                   <input
                     type="checkbox"
                     .checked=${!!s.referanse[`tema:${t.id}`]}
                     @change=${() => store.set({ referanse: { ...s.referanse, [`tema:${t.id}`]: !s.referanse[`tema:${t.id}`] } })}
                   />
                   <span class="lagrad__navn">${t.navn}</span>
-                </label>`,
-              )}`,
-        )}
+                </label>
+                ${s.referanse[`tema:${t.id}`] ? html`<svv-tema-legende class="lagrad__legende" .def=${t} kompakt></svv-tema-legende>` : nothing}`,
+            )}`;
+        })}
         <p class="laggruppe__merknad">Klikk i kartet for å se informasjon fra temalagene som er slått på.</p>
       </div>
       <div class="laggruppe">
@@ -193,6 +221,14 @@ export class SvvLayerPanel extends StoreElement {
         </select>
         <p class="laggruppe__merknad">Sammenlign dagens situasjon med eldre flybilder (Geodata Online).</p>
       </div>`;
+  }
+
+  private temaLegend() {
+    const s = this.store.state;
+    const aktive = services().cfg.gdo.temalag.filter((t) => s.referanse[`tema:${t.id}`]);
+    if (!aktive.length) return nothing;
+    return html`<h3 class="kategori">TEMADATA</h3>
+      ${aktive.map((t) => html`<h4 class="tegnforklaring__lag">${t.navn}</h4><svv-tema-legende .def=${t}></svv-tema-legende>`)}`;
   }
 
   private nvdbLegend() {
@@ -213,7 +249,7 @@ export class SvvLayerPanel extends StoreElement {
           (p) => html`<div class="tegnforklaring__rad"><span class="farge" style="background:${p.farge}" aria-hidden="true"></span>${p.navn} (${phaseRange(p)})</div>`,
         )}
         <p class="tegnforklaring__hint">Symbolformen viser fag: linje (VA), stiplet linje (elektro), flate (veg).</p>
-        ${this.nvdbLegend()}
+        ${this.nvdbLegend()} ${this.temaLegend()}
       </div>`;
     }
     return html`<div class="tegnforklaring">
@@ -221,7 +257,7 @@ export class SvvLayerPanel extends StoreElement {
         (fag) => html`<h3 class="kategori">${fag.toUpperCase()}</h3>
           ${(this.types[fag] ?? []).map((t) => html`<div class="tegnforklaring__rad">${swatch(fag, t)} ${t}</div>`)}`,
       )}
-      ${this.nvdbLegend()}
+      ${this.nvdbLegend()} ${this.temaLegend()}
     </div>`;
   }
 }

@@ -107,6 +107,8 @@ export interface TemalagDef {
   felt?: string[];
   /** Feature: etikett (Arcade), f.eks. gnr/bnr */
   etikett?: string;
+  /** Lagene som vises i tegnforklaringen (standard: sublag); for store tjenester som reguleringsplan */
+  legendeLag?: number[];
   beskrivelse: string;
   opasitet?: number;
 }
@@ -128,7 +130,7 @@ export const GDO_TEMALAG: TemalagDef[] = [
     etikett: "$feature.gids",
     beskrivelse: "Eiendomsgrenser og gårds-/bruksnummer fra matrikkelen (vises fra 1:5 000).",
   },
-  { id: "regulering", navn: "Reguleringsplaner", gruppe: "Eiendom og plan", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer`, beskrivelse: "Vedtatte reguleringsplaner.", opasitet: 0.6 },
+  { id: "regulering", navn: "Reguleringsplaner", gruppe: "Eiendom og plan", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapReguleringsplan/MapServer`, legendeLag: [76, 93], beskrivelse: "Vedtatte reguleringsplaner.", opasitet: 0.6 },
   { id: "natur", navn: "Naturvern og vannforekomster", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapDOKNatur/MapServer`, sublag: [809, 813, 807, 837, 828, 861], beskrivelse: "Verneområder, vernede vassdrag, viktige naturtyper, arter og anadrom laksefisk (DOK).", opasitet: 0.6 },
   { id: "kulturminner", navn: "Kulturminner", gruppe: "Natur, kultur og miljø", type: "map-image", url: `${GDO}/Geomap_UTM33_EUREF89/GeomapKulturminner/MapServer`, beskrivelse: "Kulturminner med sikringssoner (Askeladden)." },
   {
